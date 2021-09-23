@@ -535,16 +535,9 @@ function onConnect() {
 
         $('#tabs ul.mode-connected').show();
 
-        MSP.send_message(MSPCodes.MSP_FEATURE_CONFIG, false, false);
-        if (semver.gte(FC.CONFIG.apiVersion, API_VERSION_1_33)) {
-            MSP.send_message(MSPCodes.MSP_BATTERY_CONFIG, false, false);
-        }
-        MSP.send_message(MSPCodes.MSP_STATUS_EX, false, false);
-        MSP.send_message(MSPCodes.MSP_DATAFLASH_SUMMARY, false, false);
-
-        if (FC.CONFIG.boardType == 0 || FC.CONFIG.boardType == 2) {
-            startLiveDataRefreshTimer();
-        }
+        // if (FC.CONFIG.boardType == 0 || FC.CONFIG.boardType == 2) {
+        //     startLiveDataRefreshTimer();
+        // }
     }
 
     const sensorState = $('#sensor-status');

@@ -27,7 +27,8 @@ TABS.setup.initialize = function (callback) {
         $('#content').load("./tabs/setup.html", process_html);
     }
 
-    MSP.send_message(MSPCodes.MSP_ACC_TRIM, false, false, load_status);
+    //MSP.send_message(MSPCodes.MSP_ACC_TRIM, false, false, load_status);
+    load_html();
 
     let gyroX = [0,0,0,0,0,0,0,0,0,0];
     let gyroY = [0,0,0,0,0,0,0,0,0,0];
@@ -377,9 +378,9 @@ TABS.setup.initialize = function (callback) {
         }
 
         function get_fast_data() {
-            console.log("update fast data");
+            //console.log("update fast data");
 
-            const tb = $('.cf_table tbody');//[0].style.background = "yellow";
+            const tb = $('.cf_table tbody');
             const rows = tb.find("tr");
 
             MSP.send_message(MSPCodes.MSP_ANALOG, false, false, function () {
