@@ -2,7 +2,7 @@
 
 //MSPCodes needs to be re-integrated inside MSP object
 const MSPCodes = {
-    MSP_API_VERSION:                1,
+    MSP_API_VERSION:                2,
     MSP_FC_VARIANT:                 2,
     MSP_FC_VERSION:                 3,
     MSP_BOARD_INFO:                 4,
@@ -141,9 +141,9 @@ const MSPCodes = {
     MSP_MAG_CALIBRATION:            206,
     MSP_SET_MISC:                   207, // DEPRECATED
     MSP_RESET_CONF:                 208,
-    MSP_SET_WP:                     209, // Not used
+    MSP_SET_SPRAY:                  209, // Not used
     MSP_SELECT_SETTING:             210,
-    MSP_SET_HEADING:                211, // Not used
+    MSP_SET_FAN:                    211, // Not used
     MSP_SET_SERVO_CONFIGURATION:    212,
     MSP_SET_MOTOR:                  214,
     MSP_SET_MOTOR_3D_CONFIG:        217,

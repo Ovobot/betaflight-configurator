@@ -1,6 +1,6 @@
 {
-  "name": "betaflight-configurator",
-  "productName": "Betaflight Configurator",
+  "name": "cleanrobot-test",
+  "productName": "擦窗机生产测试软件",
   "description": "Crossplatform configuration tool for Betaflight flight control system.",
   "version": "10.8.0",
   "main": "main.html",
@@ -23,7 +23,7 @@
     "id": "main-window",
     "min_width": 1024,
     "min_height": 550,
-    "title": "Betaflight Configurator"
+    "title": "擦窗机生产测试软件V1.0"
   },
   "repository": {
     "type": "git",

@@ -255,21 +255,21 @@ function onOpen(openInfo) {
 
             if (semver.gte(FC.CONFIG.apiVersion, CONFIGURATOR.API_VERSION_ACCEPTED)) {
 
-                MSP.send_message(MSPCodes.MSP_FC_VARIANT, false, false, function () {
+                // MSP.send_message(MSPCodes.MSP_FC_VARIANT, false, false, function () {
+                    FC.CONFIG.flightControllerIdentifier = 'BTFL';
                     analytics.setFlightControllerData(analytics.DATA.FIRMWARE_TYPE, FC.CONFIG.flightControllerIdentifier);
                     if (FC.CONFIG.flightControllerIdentifier === 'BTFL') {
-                        MSP.send_message(MSPCodes.MSP_FC_VERSION, false, false, function () {
-                            analytics.setFlightControllerData(analytics.DATA.FIRMWARE_VERSION, FC.CONFIG.flightControllerVersion);
+                        //MSP.send_message(MSPCodes.MSP_FC_VERSION, false, false, function () {
+                            analytics.setFlightControllerData(analytics.DATA.FIRMWARE_VERSION, FC.CONFIG.firmwareVersion);
 
-                            GUI.log(i18n.getMessage('fcInfoReceived', [FC.CONFIG.flightControllerIdentifier, FC.CONFIG.flightControllerVersion]));
+                            GUI.log(i18n.getMessage('fcInfoReceived', [FC.CONFIG.firmwareVersion]));
 
                             MSP.send_message(MSPCodes.MSP_BUILD_INFO, false, false, function () {
 
                                 GUI.log(i18n.getMessage('buildInfoReceived', [FC.CONFIG.buildInfo]));
-
-                                MSP.send_message(MSPCodes.MSP_BOARD_INFO, false, false, processBoardInfo);
+                                processBoardInfo();
                             });
-                        });
+                        //});
                     } else {
                         analytics.sendEvent(analytics.EVENT_CATEGORIES.FLIGHT_CONTROLLER, 'ConnectionRefusedFirmwareType', FC.CONFIG.flightControllerIdentifier);
 
@@ -285,7 +285,7 @@ function onOpen(openInfo) {
 
                         connectCli();
                     }
-                });
+                // });
             } else {
                 analytics.sendEvent(analytics.EVENT_CATEGORIES.FLIGHT_CONTROLLER, 'ConnectionRefusedFirmwareVersion', FC.CONFIG.apiVersion);
 
@@ -330,6 +330,7 @@ function onOpenVirtual() {
 }
 
 function abortConnect() {
+    FC.CONFIG.hw = 0;
     $('div#connectbutton div.connect_state').text(i18n.getMessage('connect'));
     $('div#connectbutton a.connect').removeClass('active');
 
@@ -341,47 +342,47 @@ function abortConnect() {
 }
 
 function processBoardInfo() {
-    analytics.setFlightControllerData(analytics.DATA.BOARD_TYPE, FC.CONFIG.boardIdentifier);
-    analytics.setFlightControllerData(analytics.DATA.TARGET_NAME, FC.CONFIG.targetName);
-    analytics.setFlightControllerData(analytics.DATA.BOARD_NAME, FC.CONFIG.boardName);
-    analytics.setFlightControllerData(analytics.DATA.MANUFACTURER_ID, FC.CONFIG.manufacturerId);
-    analytics.setFlightControllerData(analytics.DATA.MCU_TYPE, FC.getMcuType());
+    // analytics.setFlightControllerData(analytics.DATA.BOARD_TYPE, FC.CONFIG.boardIdentifier);
+    // analytics.setFlightControllerData(analytics.DATA.TARGET_NAME, FC.CONFIG.targetName);
+    // analytics.setFlightControllerData(analytics.DATA.BOARD_NAME, FC.CONFIG.boardName);
+    // analytics.setFlightControllerData(analytics.DATA.MANUFACTURER_ID, FC.CONFIG.manufacturerId);
+    // analytics.setFlightControllerData(analytics.DATA.MCU_TYPE, FC.getMcuType());
 
-    GUI.log(i18n.getMessage('boardInfoReceived', [FC.getHardwareName(), FC.CONFIG.boardVersion]));
+    //GUI.log(i18n.getMessage('boardInfoReceived', [FC.getHardwareName(), FC.CONFIG.boardVersion]));
+    // FC.CONFIG.targetCapabilities = (1 << 0);
+    // if (bit_check(FC.CONFIG.targetCapabilities, FC.TARGET_CAPABILITIES_FLAGS.SUPPORTS_CUSTOM_DEFAULTS) && bit_check(FC.CONFIG.targetCapabilities, FC.TARGET_CAPABILITIES_FLAGS.HAS_CUSTOM_DEFAULTS) && FC.CONFIG.configurationState === FC.CONFIGURATION_STATES.DEFAULTS_BARE) {
+        //const dialog = $('#dialogResetToCustomDefaults')[0];
 
-    if (bit_check(FC.CONFIG.targetCapabilities, FC.TARGET_CAPABILITIES_FLAGS.SUPPORTS_CUSTOM_DEFAULTS) && bit_check(FC.CONFIG.targetCapabilities, FC.TARGET_CAPABILITIES_FLAGS.HAS_CUSTOM_DEFAULTS) && FC.CONFIG.configurationState === FC.CONFIGURATION_STATES.DEFAULTS_BARE) {
-        const dialog = $('#dialogResetToCustomDefaults')[0];
+        // $('#dialogResetToCustomDefaults-acceptbtn').click(function() {
+        //     analytics.sendEvent(analytics.EVENT_CATEGORIES.FLIGHT_CONTROLLER, 'AcceptResetToCustomDefaults');
 
-        $('#dialogResetToCustomDefaults-acceptbtn').click(function() {
-            analytics.sendEvent(analytics.EVENT_CATEGORIES.FLIGHT_CONTROLLER, 'AcceptResetToCustomDefaults');
+        //     const buffer = [];
+        //     buffer.push(mspHelper.RESET_TYPES.CUSTOM_DEFAULTS);
+        //     MSP.send_message(MSPCodes.MSP_RESET_CONF, buffer, false);
 
-            const buffer = [];
-            buffer.push(mspHelper.RESET_TYPES.CUSTOM_DEFAULTS);
-            MSP.send_message(MSPCodes.MSP_RESET_CONF, buffer, false);
+        //     dialog.close();
 
-            dialog.close();
+        //     GUI.timeout_add('disconnect', function () {
+        //         $('div.connect_controls a.connect').click(); // disconnect
+        //     }, 0);
+        // });
 
-            GUI.timeout_add('disconnect', function () {
-                $('div.connect_controls a.connect').click(); // disconnect
-            }, 0);
-        });
+        // $('#dialogResetToCustomDefaults-cancelbtn').click(function() {
+        //     analytics.sendEvent(analytics.EVENT_CATEGORIES.FLIGHT_CONTROLLER, 'CancelResetToCustomDefaults');
 
-        $('#dialogResetToCustomDefaults-cancelbtn').click(function() {
-            analytics.sendEvent(analytics.EVENT_CATEGORIES.FLIGHT_CONTROLLER, 'CancelResetToCustomDefaults');
+        //     dialog.close();
 
-            dialog.close();
+        //     setConnectionTimeout();
 
-            setConnectionTimeout();
+        //     checkReportProblems();
+        // });
 
-            checkReportProblems();
-        });
-
-        dialog.showModal();
-
+       // dialog.showModal();
+       finishOpen();
         GUI.timeout_remove('connecting'); // kill connecting timer
-    } else {
-        checkReportProblems();
-    }
+    // } else {
+    //     checkReportProblems();
+    // }
 }
 
 function checkReportProblems() {
@@ -473,9 +474,9 @@ function setRtc() {
 function finishOpen() {
     CONFIGURATOR.connectionValid = true;
     GUI.allowedTabs = GUI.defaultAllowedFCTabsWhenConnected.slice();
-    if (semver.lt(FC.CONFIG.apiVersion, "1.4.0")) {
-        GUI.allowedTabs.splice(GUI.allowedTabs.indexOf('led_strip'), 1);
-    }
+    // if (semver.lt(FC.CONFIG.apiVersion, "1.4.0")) {
+    //     GUI.allowedTabs.splice(GUI.allowedTabs.indexOf('led_strip'), 1);
+    // }
 
     if (GUI.isCordova()) {
         UI_PHONES.reset();
@@ -527,7 +528,7 @@ function onConnect() {
         return found;
     }).show();
 
-    if (FC.CONFIG.flightControllerVersion !== '') {
+    if (FC.CONFIG.firmwareVersion !== '') {
         FC.FEATURE_CONFIG.features = new Features(FC.CONFIG);
         FC.BEEPER_CONFIG.beepers = new Beepers(FC.CONFIG);
         FC.BEEPER_CONFIG.dshotBeaconConditions = new Beepers(FC.CONFIG, [ "RX_LOST", "RX_SET" ]);
@@ -557,6 +558,7 @@ function onConnect() {
 }
 
 function onClosed(result) {
+    FC.CONFIG.hw = 0;
     if (result) { // All went as expected
         GUI.log(i18n.getMessage('serialPortClosedOk'));
     } else { // Something went wrong

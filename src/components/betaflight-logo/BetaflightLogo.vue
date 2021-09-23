@@ -71,7 +71,7 @@
 </style>
 
 <template>
-  <div class="logo">
+  <div class="logo" style="display:none;">
     <div class="logo_text">
       <span>
         {{ $t("versionLabelConfigurator") }}: {{ configuratorVersion }}

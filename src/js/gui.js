@@ -30,26 +30,6 @@ const GuiControl = function () {
     ];
     this.defaultAllowedFCTabsWhenConnected = [
         'setup',
-        'failsafe',
-        'transponder',
-        'osd',
-        'power',
-        'adjustments',
-        'auxiliary',
-        'cli',
-        'configuration',
-        'gps',
-        'led_strip',
-        'logging',
-        'onboard_logging',
-        'modes',
-        'motors',
-        'pid_tuning',
-        'ports',
-        'receiver',
-        'sensors',
-        'servos',
-        'vtx',
     ];
 
     this.allowedTabs = this.defaultAllowedTabsWhenDisconnected;
@@ -387,13 +367,13 @@ GuiControl.prototype.content_ready = function (callback) {
 };
 
 GuiControl.prototype.selectDefaultTabWhenConnected = function() {
-    ConfigStorage.get(['rememberLastTab', 'lastTab'], function (result) {
-        if (result.rememberLastTab && result.lastTab) {
-            $(`#tabs ul.mode-connected .${result.lastTab} a`).click();
-        } else {
+    // ConfigStorage.get(['rememberLastTab', 'lastTab'], function (result) {
+    //     if (result.rememberLastTab && result.lastTab) {
+    //         $(`#tabs ul.mode-connected .${result.lastTab} a`).click();
+    //     } else {
             $('#tabs ul.mode-connected .tab_setup a').click();
-        }
-    });
+    //     }
+    // });
 };
 
 GuiControl.prototype.isNWJS = function () {

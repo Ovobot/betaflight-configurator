@@ -556,7 +556,7 @@
         "message": "当前固件发布时间： <strong>$1</strong>"
     },
     "fcInfoReceived": {
-        "message": "飞控信息，识别名：<strong>$1</strong>，版本：<strong>$2</strong>"
+        "message": "版本：<strong>$1</strong>"
     },
     "versionLabelTarget": {
         "message": "飞控型号"
@@ -605,7 +605,7 @@
         "message": "EEPROM <span class=\"message-positive\">已保存</span>"
     },
     "defaultWelcomeIntro": {
-        "message": "欢迎使用 <strong>Betaflight - 配置程序</strong>，为简化固件升级，设置和调校飞控而生的工具。"
+        "message": "欢迎使用 <strong>擦窗机生产测试软件</strong>。"
     },
     "defaultWelcomeHead": {
         "message": "硬件"
@@ -698,6 +698,28 @@
     "initialSetupButtonCalibrateMag": {
         "message": "校准磁力计"
     },
+
+    "initialMotorButtonClockWiseRun": {
+        "message": "正转"
+    },
+    "initialMotorButtonAntiClockWiseRun": {
+        "message": "反转"
+    },
+    "initialMotorButtonStop": {
+        "message": "停止"
+    }, 
+    "initialMotorSetup": {
+        "message": "马达控制:"
+    },
+    "initialSpraySetup": {
+        "message": "喷水控制:"
+    },
+    "initialSprayButton": {
+        "message": "喷水"
+    },
+    "fanSlider":{
+        "message": "风机控制:"
+    },         
     "initialSetupCalibrateMagText": {
         "message": "将飞行器在所有轴向上都移动至少<strong>360</strong>度，你有30秒的时间可供进行这项操作。"
     },
@@ -779,15 +801,92 @@
     "initialSetupMagHead": {
         "message": "磁力计"
     },
-    "initialSetupInfoHead": {
-        "message": "信息"
+    "initialSetupAttiHead": {
+        "message": "姿态"
     },
+    "initialSetupInfoHead": {
+        "message": "AD检测"
+    },
+    "leftMotorCurrent": {
+        "message": "左轮电流"
+    },
+    "rightMotorCurrent": {
+        "message": "右轮电流"
+    },    
     "initialSetupBattery": {
         "message": "电池电压："
     },
+    "initialGyroInfoHead": {
+        "message":"陀螺仪"
+    },
+    "fanCurrent": {
+        "message": "风机电流"
+    },
+
+    "gyroX": {
+       "message":"gyroX" 
+    },
+    "gyroY": {
+        "message":"gyroY" 
+    },
+    "gyroZ": {
+        "message":"gyroZ" 
+    },
+    "initialAccInfoHead": {
+        "message":"加速度"
+    },
+    "accX": {
+        "message":"accX" 
+    },
+    "accY": {
+        "message":"accY" 
+    },
+    "accZ": {
+        "message":"accZ" 
+    },        
     "initialSetupBatteryValue": {
         "message": "$1 V"
     },
+    "attiYawValue": {
+        "message": "$1 °"
+    },
+    "fanAdcValue": {
+        "message": "$1" 
+    },
+    "gyroXValue": {
+        "message": "$1"
+    },
+    "gyroYValue": {
+        "message": "$1"
+    }, 
+    "gyroZValue": {
+        "message": "$1"
+    },    
+    "accXValue": {
+        "message": "$1"
+    },
+    "accYValue": {
+        "message": "$1"
+    }, 
+    "accZValue": {
+        "message": "$1"
+    },     
+    
+    "attitudeYaw": {
+      "message": "角度"  
+    },
+    "leftMotorCurrentValue": {
+        "message": "$1"
+    },
+    "rightMotorCurrentValue": {
+        "message": "$1"
+    }, 
+    "rightMotorErrorCurrentValue": {
+        "message": "<span class=\"message-negative\">$1</span>"
+    },  
+    "leftMotorErrorCurrentValue": {
+        "message": "<span class=\"message-negative\">$1</span>"
+    },   
     "initialSetupDrawn": {
         "message": "已用容量："
     },

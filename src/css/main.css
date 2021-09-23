@@ -2413,7 +2413,7 @@ input {
     box-sizing: border-box;
 }
 .grid-col {
-    margin-left: 7px;
+    /* margin-left: 7px; */
     margin-right: 7px;
 }
 .grid-col.col1 {

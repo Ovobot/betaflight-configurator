@@ -41,8 +41,9 @@ const INITIAL_CONFIG = {
 };
 
 const INITIAL_ANALOG = {
-    voltage:                    0,
-    mAhdrawn:                   0,
+    leftMotorAdc:               0,
+    rightMotorAdc:              0,
+    fanAdc:                     0,
     rssi:                       0,
     amperage:                   0,
     last_received_timestamp:    Date.now(), // FIXME this code lies, it's never been received at this point

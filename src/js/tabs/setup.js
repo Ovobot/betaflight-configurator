@@ -1,7 +1,11 @@
 'use strict';
 
 TABS.setup = {
-    yaw_fix: 0.0
+    yaw_fix: 0.0,
+    sampleCnt:0,
+    sampleAccCnt:0,
+    bufLen:10,
+
 };
 
 TABS.setup.initialize = function (callback) {
@@ -25,26 +29,63 @@ TABS.setup.initialize = function (callback) {
 
     MSP.send_message(MSPCodes.MSP_ACC_TRIM, false, false, load_status);
 
+    let gyroX = [0,0,0,0,0,0,0,0,0,0];
+    let gyroY = [0,0,0,0,0,0,0,0,0,0];
+    let gyroZ = [0,0,0,0,0,0,0,0,0,0];
+
+    let accX = [0,0,0,0,0,0,0,0,0,0];
+    let accY = [0,0,0,0,0,0,0,0,0,0];
+    let accZ = [0,0,0,0,0,0,0,0,0,0];
+
+
+    function updateGyroData(val1,val2,val3) {
+
+        for (let i = 0; i < self.bufLen - 1; i++) {
+            gyroX[i] = gyroX[i + 1];
+            gyroY[i] = gyroY[i + 1];
+            gyroZ[i] = gyroZ[i + 1];
+        }
+        gyroX[self.bufLen - 1] = val1;
+        gyroY[self.bufLen - 1] = val2;
+        gyroZ[self.bufLen - 1] = val3;
+        if(self.sampleCnt > self.bufLen) {
+            return 1;
+        } else {
+            self.sampleCnt++;
+            return 0;
+        }
+    }
+
+    function updateAccData(val1,val2,val3) {
+
+        for (let i = 0; i < self.bufLen - 1; i++) {
+            accX[i] = accX[i + 1];
+            accY[i] = accY[i + 1];
+            accZ[i] = accZ[i + 1];
+        }
+        accX[self.bufLen - 1] = val1;
+        accY[self.bufLen - 1] = val2;
+        accZ[self.bufLen - 1] = val3;
+        if(self.sampleAccCnt > self.bufLen) {
+            return 1;
+        } else {
+            self.sampleAccCnt++;
+            return 0;
+        }
+    }
+
     function process_html() {
         // translate to user-selected language
         i18n.localizePage();
 
+
         const backupButton = $('#content .backup');
-
-        if (semver.lt(FC.CONFIG.apiVersion, CONFIGURATOR.API_VERSION_MIN_SUPPORTED_BACKUP_RESTORE)) {
-            backupButton.addClass('disabled');
-            $('#content .restore').addClass('disabled');
-
-            GUI.log(i18n.getMessage('initialSetupBackupAndRestoreApiVersion', [FC.CONFIG.apiVersion, CONFIGURATOR.API_VERSION_MIN_SUPPORTED_BACKUP_RESTORE]));
-        }
 
         // saving and uploading an imaginary config to hardware is a bad idea
         if (CONFIGURATOR.virtualMode) {
             backupButton.addClass('disabled');
         }
 
-        // initialize 3D Model
-        self.initModel();
 
         // set roll in interactive block
         $('span.roll').text(i18n.getMessage('initialSetupAttitude', [0]));
@@ -138,6 +179,47 @@ TABS.setup.initialize = function (callback) {
             dialogConfirmReset.showModal();
         });
 
+        $('a.clockwise').click(function () {
+            MSP.send_message(MSPCodes.MSP_SET_MOTOR, [1], false, function () {
+
+            });
+        });
+        $('a.anti_clockwise').click(function () {
+            MSP.send_message(MSPCodes.MSP_SET_MOTOR, [2], false, function () {
+
+            });
+        });
+        $('a.stop').click(function () {
+            MSP.send_message(MSPCodes.MSP_SET_MOTOR, [0], false, function () {
+
+            });
+        });
+
+        $('a.spray').click(function () {
+            MSP.send_message(MSPCodes.MSP_SET_SPRAY, [1], false, false);
+        });
+
+        $('#sliderGyroFilterMultiplier').val(0);
+        $('#sliderGyroFilterMultiplier').on('input', function () {
+            const val = $(this).val();
+            MSP.send_message(MSPCodes.MSP_SET_FAN, [val], false, function () {
+
+            });
+        });
+        $('div.permanentExpertMode input').prop('checked', false);
+        $('div.permanentExpertMode input').change(function () {
+            const checked = $(this).is(':checked');
+            //console.log("checked:" + checked)
+            if(checked) {
+                MSP.send_message(MSPCodes.MSP_SET_FAN, [100], false, function () {
+
+                });
+            } else {
+                MSP.send_message(MSPCodes.MSP_SET_FAN, [0], false, function () {
+
+                });
+            }
+        });
         $('.dialogConfirmReset-cancelbtn').click(function() {
             dialogConfirmReset.close();
         });
@@ -188,22 +270,35 @@ TABS.setup.initialize = function (callback) {
         });
 
         // cached elements
-        const bat_voltage_e = $('.bat-voltage'),
-            bat_mah_drawn_e = $('.bat-mah-drawn'),
-            bat_mah_drawing_e = $('.bat-mah-drawing'),
-            rssi_e = $('.rssi'),
-            arming_disable_flags_e = $('.arming-disable-flags'),
-            gpsFix_e = $('.gpsFix'),
-            gpsSats_e = $('.gpsSats'),
-            gpsLat_e = $('.gpsLat'),
-            gpsLon_e = $('.gpsLon'),
-            roll_e = $('dd.roll'),
-            pitch_e = $('dd.pitch'),
-            heading_e = $('dd.heading');
+        const left_adc_e = $('.leftAdc'),
+            right_adc_e = $('.rightAdc'),
+            fan_adc_e = $('.fanAdc'),
+            atti_yaw_e = $('.attiYaw'),
+            gyro_x_e = $('.gyroXData'),
+            gyro_y_e = $('.gyroYData'),
+            gyro_z_e = $('.gyroZData'),
+            acc_x_e = $('.accXData'),
+            acc_y_e = $('.accYData'),
+            acc_z_e = $('.accZData'),
+            arming_disable_flags_e = $('.arming-disable-flags');
 
         if (semver.lt(FC.CONFIG.apiVersion, API_VERSION_1_36)) {
             arming_disable_flags_e.hide();
         }
+
+        const calcFc = function(arr) {
+            var sum=0;
+            var s=0;
+            for(var i=0;i<arr.length;i++){
+                sum+=arr[i];
+            }
+            let ave=sum/arr.length;
+            for(var j=0;j<arr.length;j++){
+                s+=Math.pow((ave-arr[j]),2);
+            }
+            return Math.sqrt((s/arr.length),2);
+        };
+
 
         // DISARM FLAGS
         // We add all the arming/disarming flags available, and show/hide them if needed.
@@ -279,46 +374,104 @@ TABS.setup.initialize = function (callback) {
 
         function get_slow_data() {
 
-            MSP.send_message(MSPCodes.MSP_STATUS, false, false, function() {
-
-                $('#initialSetupArmingAllowed').toggle(FC.CONFIG.armingDisableFlags == 0);
-
-                for (let i = 0; i < FC.CONFIG.armingDisableCount; i++) {
-                    $('#initialSetupArmingDisableFlags'+i).css('display',(FC.CONFIG.armingDisableFlags & (1 << i)) == 0 ? 'none':'inline-block');
-                }
-
-            });
-
-            MSP.send_message(MSPCodes.MSP_ANALOG, false, false, function () {
-                bat_voltage_e.text(i18n.getMessage('initialSetupBatteryValue', [FC.ANALOG.voltage]));
-                bat_mah_drawn_e.text(i18n.getMessage('initialSetupBatteryMahValue', [FC.ANALOG.mAhdrawn]));
-                bat_mah_drawing_e.text(i18n.getMessage('initialSetupBatteryAValue', [FC.ANALOG.amperage.toFixed(2)]));
-                rssi_e.text(i18n.getMessage('initialSetupRSSIValue', [((FC.ANALOG.rssi / 1023) * 100).toFixed(0)]));
-            });
-
-            if (have_sensor(FC.CONFIG.activeSensors, 'gps')) {
-                MSP.send_message(MSPCodes.MSP_RAW_GPS, false, false, function () {
-                    gpsFix_e.html((FC.GPS_DATA.fix) ? i18n.getMessage('gpsFixTrue') : i18n.getMessage('gpsFixFalse'));
-                    gpsSats_e.text(FC.GPS_DATA.numSat);
-                    gpsLat_e.text((FC.GPS_DATA.lat / 10000000).toFixed(4) + ' deg');
-                    gpsLon_e.text((FC.GPS_DATA.lon / 10000000).toFixed(4) + ' deg');
-                });
-            }
         }
 
         function get_fast_data() {
-            MSP.send_message(MSPCodes.MSP_ATTITUDE, false, false, function () {
-                roll_e.text(i18n.getMessage('initialSetupAttitude', [FC.SENSOR_DATA.kinematics[0]]));
-                pitch_e.text(i18n.getMessage('initialSetupAttitude', [FC.SENSOR_DATA.kinematics[1]]));
-                heading_e.text(i18n.getMessage('initialSetupAttitude', [FC.SENSOR_DATA.kinematics[2]]));
+            console.log("update fast data");
 
-                self.renderModel();
-                self.updateInstruments();
+            const tb = $('.cf_table tbody');//[0].style.background = "yellow";
+            const rows = tb.find("tr");
+
+            MSP.send_message(MSPCodes.MSP_ANALOG, false, false, function () {
+                if(FC.ANALOG.leftMotorAdc < 2000) {
+                    rows[0].style.background = "red";
+                } else {
+                    rows[0].style.background = "green";
+                }
+
+
+                left_adc_e.text(i18n.getMessage('leftMotorCurrentValue', [FC.ANALOG.leftMotorAdc]));
+                if(FC.ANALOG.rightMotorAdc < 2000) {
+                    rows[1].style.background = "red";
+                } else {
+                    rows[1].style.background = "green";
+                }
+
+                right_adc_e.text(i18n.getMessage('rightMotorCurrentValue', [FC.ANALOG.rightMotorAdc]));
+                if(FC.ANALOG.fanAdc < 1000) {
+                    rows[2].style.background = "red";
+                } else {
+                    rows[2].style.background = "green";
+                }
+                fan_adc_e.text(i18n.getMessage('fanAdcValue', [FC.ANALOG.fanAdc]));
             });
+
+            MSP.send_message(MSPCodes.MSP_ATTITUDE, false, false, function () {
+                rows[3].style.background = "green";
+                atti_yaw_e.text(i18n.getMessage('attiYawValue', [FC.SENSOR_DATA.kinematics[0]]));
+            });
+
+            MSP.send_message(MSPCodes.MSP_RAW_IMU, false, false, function () {
+
+                if(updateGyroData(FC.SENSOR_DATA.gyroscope[0],FC.SENSOR_DATA.gyroscope[1],FC.SENSOR_DATA.gyroscope[2])) {
+                    let fcgx = calcFc(gyroX);
+                    let fcgy = calcFc(gyroY);
+                    let fcgz = calcFc(gyroZ);
+
+                    if(fcgx == 0 || FC.SENSOR_DATA.gyroscope[0] > 20) {
+                        rows[4].style.background = "red";
+                    } else {
+                        rows[4].style.background = "green";
+                    }
+
+                    if(fcgy == 0 || FC.SENSOR_DATA.gyroscope[1] > 20) {
+                        rows[5].style.background = "red";
+                    } else {
+                        rows[5].style.background = "green";
+                    }
+                    if(fcgz == 0 || FC.SENSOR_DATA.gyroscope[2] > 20) {
+                        rows[6].style.background = "red";
+                    } else {
+                        rows[6].style.background = "green";
+                    }
+                }
+
+                if(updateAccData(FC.SENSOR_DATA.accelerometer[0],FC.SENSOR_DATA.accelerometer[1],FC.SENSOR_DATA.accelerometer[2])) {
+                    let fcax = calcFc(accX);
+                    let fcay = calcFc(accY);
+                    let fcaz = calcFc(accZ);
+
+                    if(fcax == 0 || FC.SENSOR_DATA.accelerometer[0] > 300) {
+                        rows[7].style.background = "red";
+                    } else {
+                        rows[7].style.background = "green";
+                    }
+
+                    if(fcay == 0 || FC.SENSOR_DATA.accelerometer[1] > 300) {
+                        rows[8].style.background = "red";
+                    } else {
+                        rows[8].style.background = "green";
+                    }
+                    if(fcaz == 0 || FC.SENSOR_DATA.accelerometer[2] <  300) {
+                        rows[9].style.background = "red";
+                    } else {
+                        rows[9].style.background = "green";
+                    }
+                }
+
+                gyro_x_e.text(i18n.getMessage('gyroXValue', [FC.SENSOR_DATA.gyroscope[0]]));
+                gyro_y_e.text(i18n.getMessage('gyroYValue', [FC.SENSOR_DATA.gyroscope[1]]));
+                gyro_z_e.text(i18n.getMessage('gyroZValue', [FC.SENSOR_DATA.gyroscope[2]]));
+
+                acc_x_e.text(i18n.getMessage('accXValue', [FC.SENSOR_DATA.accelerometer[0]]));
+                acc_y_e.text(i18n.getMessage('accYValue', [FC.SENSOR_DATA.accelerometer[1]]));
+                acc_z_e.text(i18n.getMessage('accZValue', [FC.SENSOR_DATA.accelerometer[2]]));
+            });
+
         }
 
         GUI.interval_add('setup_data_pull_fast', get_fast_data, 33, true); // 30 fps
-        GUI.interval_add('setup_data_pull_slow', get_slow_data, 250, true); // 4 fps
+        //GUI.interval_add('setup_data_pull_slow', get_slow_data, 250, true); // 4 fps
 
         GUI.content_ready(callback);
     }

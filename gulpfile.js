@@ -689,7 +689,7 @@ function release_zip(arch, appDirectory) {
     const output = getReleaseFilename(arch, 'zip');
     const base = path.join(appDirectory, metadata.name, arch);
 
-    return compressFiles(src, base, output, 'Betaflight Configurator');
+    return compressFiles(src, base, output, 'CleanRobotTest Desktop');
 }
 
 // Compress files from srcPath, using basePath, to outputFile in the RELEASE_DIR
