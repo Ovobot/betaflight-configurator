@@ -346,7 +346,7 @@ const MSP = {
             bufView[0] = 0xff; // preamble
             bufView[1] = 0xff; // option
 
-            if(FC.CONFIG.hw) {
+            if(FC.CONFIG.hw && code != MSPCodes.MSP_API_VERSION) {
                 bufView[2] = FC.CONFIG.hw; // device
             } else {
                 bufView[2] = 0x00; // device
@@ -415,7 +415,7 @@ const MSP = {
                     callback_msp();
                 }
                 serial.send(bufferOut, false);
-            }, 1000); // we should be able to define timeout in the future
+            }, 200); // we should be able to define timeout in the future
         }
 
         MSP.callbacks.push(obj);

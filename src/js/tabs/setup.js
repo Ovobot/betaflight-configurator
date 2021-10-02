@@ -38,6 +38,7 @@ TABS.setup.initialize = function (callback) {
     let accY = [0,0,0,0,0,0,0,0,0,0];
     let accZ = [0,0,0,0,0,0,0,0,0,0];
 
+    let fanOpened = false;
 
     function updateGyroData(val1,val2,val3) {
 
@@ -213,11 +214,11 @@ TABS.setup.initialize = function (callback) {
             //console.log("checked:" + checked)
             if(checked) {
                 MSP.send_message(MSPCodes.MSP_SET_FAN, [100], false, function () {
-
+                    fanOpened = true;
                 });
             } else {
                 MSP.send_message(MSPCodes.MSP_SET_FAN, [0], false, function () {
-
+                    fanOpened = false;
                 });
             }
         });
@@ -399,11 +400,20 @@ TABS.setup.initialize = function (callback) {
                 }
 
                 right_adc_e.text(i18n.getMessage('rightMotorCurrentValue', [FC.ANALOG.rightMotorAdc]));
-                if(FC.ANALOG.fanAdc < 1000) {
-                    rows[2].style.background = "red";
+                if(!fanOpened) {
+                    if(FC.ANALOG.fanAdc < 100) {
+                        rows[2].style.background = "green";
+                    } else {
+                        rows[2].style.background = "red";
+                    }
                 } else {
-                    rows[2].style.background = "green";
+                    if(FC.ANALOG.fanAdc > 500) {
+                        rows[2].style.background = "green";
+                    } else {
+                        rows[2].style.background = "red";
+                    }
                 }
+
                 fan_adc_e.text(i18n.getMessage('fanAdcValue', [FC.ANALOG.fanAdc]));
             });
 
