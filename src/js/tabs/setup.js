@@ -213,7 +213,7 @@ TABS.setup.initialize = function (callback) {
             const checked = $(this).is(':checked');
             //console.log("checked:" + checked)
             if(checked) {
-                MSP.send_message(MSPCodes.MSP_SET_FAN, [100], false, function () {
+                MSP.send_message(MSPCodes.MSP_SET_FAN, [60], false, function () {
                     fanOpened = true;
                 });
             } else {
