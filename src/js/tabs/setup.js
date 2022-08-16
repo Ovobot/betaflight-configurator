@@ -24,7 +24,11 @@ TABS.setup.initialize = function (callback) {
     }
 
     function load_html() {
-        $('#content').load("./tabs/setup.html", process_html);
+        if(FC.CONFIG.hw == 2) {
+            $('#content').load("./tabs/esl_setup.html", process_html);
+        } else {
+            $('#content').load("./tabs/setup.html", process_html);
+        }
     }
 
     //MSP.send_message(MSPCodes.MSP_ACC_TRIM, false, false, load_status);
@@ -400,21 +404,28 @@ TABS.setup.initialize = function (callback) {
                 }
 
                 right_adc_e.text(i18n.getMessage('rightMotorCurrentValue', [FC.ANALOG.rightMotorAdc]));
-                if(!fanOpened) {
-                    if(FC.ANALOG.fanAdc < 100) {
-                        rows[2].style.background = "green";
+
+                if(FC.CONFIG.hw == 1) {
+                    if(!fanOpened) {
+                        if(FC.ANALOG.fanAdc < 100) {
+                            rows[2].style.background = "green";
+                        } else {
+                            rows[2].style.background = "red";
+                        }
                     } else {
-                        rows[2].style.background = "red";
+                        if(FC.ANALOG.fanAdc > 500) {
+                            rows[2].style.background = "green";
+                        } else {
+                            rows[2].style.background = "red";
+                        }
                     }
                 } else {
-                    if(FC.ANALOG.fanAdc > 500) {
-                        rows[2].style.background = "green";
-                    } else {
-                        rows[2].style.background = "red";
-                    }
+                    rows[2].style.background = "green";
                 }
 
+
                 fan_adc_e.text(i18n.getMessage('fanAdcValue', [FC.ANALOG.fanAdc]));
+
             });
 
             MSP.send_message(MSPCodes.MSP_ATTITUDE, false, false, function () {

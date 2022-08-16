@@ -1,0 +1,295 @@
+<div class="tab-setup">
+    <div class="content_wrapper">
+        <!-- should be the first DIV on each tab -->
+        <div class="tab_title" i18n="tabSetup">Setup</div>
+        <div class="cf_doc_version_bt">
+            <!-- <a id="button-documentation" href="" target="_blank"></a> -->
+        </div>
+
+        <!-- <div class="grid-row">
+            <div class="grid-col col3">
+                <div class="default_btn">
+                    <div id="mag_calib_rest">
+                        <a class="calibrateMag" href="#" i18n="initialSetupButtonCalibrateMag"></a>
+                    </div>
+                    <div id="mag_calib_running">
+                        <div class="data-loading-setup">
+                            <p i18n="initialSetupButtonCalibratingText"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-col col9">
+                <div class="cell_setup">
+                    <span i18n="initialSetupCalibrateMagText"></span>
+                </div>
+            </div>
+        </div>
+        <div class="grid-row">
+            <div class="grid-col col3">
+                <div class="default_btn">
+                    <a class="resetSettings" href="#" i18n="initialSetupButtonReset"></a>
+                </div>
+            </div>
+            <div class="grid-col col9">
+                <div class="cell_setup">
+                    <span i18n="initialSetupResetText"></span>
+                </div>
+            </div>
+        </div>
+        <div class="grid-row">
+            <div class="grid-col col3">
+                <div class="grid-row">
+                    <div class="grid-col col6">
+                        <div class="default_btn">
+                            <a class="backup" href="#" i18n="initialSetupButtonBackup"></a>
+                        </div>
+                    </div>
+                    <div class="grid-col col6">
+                        <div class="default_btn">
+                            <a class="restore" href="#" i18n="initialSetupButtonRestore"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-col col9">
+                <div class="cell_setup">
+                    <span i18n="initialSetupBackupRestoreText"></span>
+                </div>
+            </div>
+        </div>
+        <div class="grid-row">
+            <div class="grid-col col3">
+                <div class="default_btn initialSetupRebootBootloader">
+                    <a class="rebootBootloader" href="#" i18n="initialSetupButtonRebootBootloader"></a>
+                </div>
+            </div>
+            <div class="grid-col col9">
+                <div class="cell_setup initialSetupRebootBootloader">
+                    <span i18n="initialSetupRebootBootloaderText"></span>
+                </div>
+            </div>
+        </div> -->
+        <div class="modelwrapper"></div>
+        <div class="grid-row">
+            <!-- <div class="grid-col col9 model-and-info">
+                <div id="interactive_block">
+                    <div id="canvas_wrapper" class="background_paper">
+                        <canvas id="canvas"></canvas>
+                        <div class="attitude_info">
+                            <dl>
+                                <dt>Heading:</dt>
+                                <dd class="heading">&nbsp;</dd>
+                                <dt>Pitch:</dt>
+                                <dd class="pitch">&nbsp;</dd>
+                                <dt>Roll:</dt>
+                                <dd class="roll">&nbsp;</dd>
+                            </dl>
+                        </div>
+                    </div>
+                    <a class="reset sm-min" href="#" i18n="initialSetupButtonResetZaxis"></a>
+                </div>
+            </div> -->
+            <div class="grid-col col3">
+                <div class="gui_box grey">
+                    <div class="gui_box_titlebar">
+                        <div class="spacer_box_title" i18n="initialSetupInfoHead"></div>
+                    </div>
+                    <div class="spacer_box">
+                        <table id="adcTable" width="100%" border="0" cellpadding="0" cellspacing="0" class="cf_table">
+                            <tbody>
+                            
+                            <tr>
+                                <td i18n="leftMotorCurrent"></td>
+                                <td class="leftAdc">0</td>
+                            </tr>
+                            <tr>
+                                <td i18n="rightMotorCurrent"></td>
+                                <td class="rightAdc">0</td>
+                            </tr>
+                            <tr>
+                                <td i18n="fanCurrent"></td>
+                                <td class="fanAdc">0</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-col col3">
+                <div class="gui_box grey">
+                    <div class="gui_box_titlebar">
+                        <div class="spacer_box_title" i18n="initialSetupAttiHead"></div>
+                    </div>
+                    <div class="spacer_box">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="cf_table">
+                            <tbody>
+                                <tr>
+                                    <td i18n="attitudeYaw"></td>
+                                    <td class="attiYaw"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-col col3">
+                <div class="gui_box grey">
+                    <div class="gui_box_titlebar">
+                        <div class="spacer_box_title" i18n="initialGyroInfoHead"></div>
+                    </div>
+                    <div class="spacer_box">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="cf_table">
+                            <tbody>
+                            
+                            <tr>
+                                <td i18n="gyroX"></td>
+                                <td class="gyroXData"></td>
+                            </tr>
+                            <tr>
+                                <td i18n="gyroY"></td>
+                                <td class="gyroYData"></td>
+                            </tr>
+                            <tr>
+                                <td i18n="gyroZ"></td>
+                                <td class="gyroZData"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-col col3">
+                <div class="gui_box grey">
+                    <div class="gui_box_titlebar">
+                        <div class="spacer_box_title" i18n="initialAccInfoHead"></div>
+                    </div>
+                    <div class="spacer_box">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="cf_table">
+                            <tbody>
+                            <tr>
+                                <td i18n="accX"></td>
+                                <td class="accXData"></td>
+                            </tr>
+                            <tr>
+                                <td i18n="accY"></td>
+                                <td class="accYData"></td>
+                            </tr>
+                            <tr>
+                                <td i18n="accZ"></td>
+                                <td class="accZData"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modelwrapper"></div>
+        <div class="gui_box">
+            <div class="gui_box_titlebar">
+                <div class="spacer_box_title" i18n="tabOptions"></div>
+            </div>
+            <div class="spacer">
+<!--                 
+                <div class="default_btn margin-bottom">
+                    <div  class="default_btn" style="width: 80px;" i18n="initialMotorSetup">
+                        
+                    </div>
+                    
+                    <div class="default_btn" style="width: 50px;">
+                        <a class="clockwise" href="#" i18n="initialMotorButtonClockWiseRun"></a>
+                    </div>
+                    <div class="default_btn" style="width: 50px;">
+                        <a class="anti_clockwise" href="#" i18n="initialMotorButtonAntiClockWiseRun"></a>
+                    </div>
+                    <div class="default_btn" style="width: 50px;">
+                        <a class="stop" href="#" i18n="initialMotorButtonStop"></a>
+                    </div>
+                    
+                </div>
+                <div class="checkForConfiguratorUnstableVersions margin-bottom">
+                    <div>
+                        <input type="checkbox" class="toggle" />
+                    </div>
+                    <span class="freelabel" i18n="checkForConfiguratorUnstableVersions"></span>
+                </div> -->
+
+
+                    <div class="grid-col col6 margin-bottom">
+                            <div class="grid-row">
+                                <div class="grid-col col2">
+                                    <span i18n="initialMotorSetup"></span>
+                                </div>
+                                <div class="grid-col col2">
+                                    <div class="default_btn">
+                                        <a class="clockwise" href="#" i18n="initialMotorButtonClockWiseRun"></a>
+                                    </div>
+                                </div>
+                                <div class="grid-col col2">
+                                    <div class="default_btn">
+                                        <a class="anti_clockwise" href="#" i18n="initialMotorButtonAntiClockWiseRun"></a>
+                                    </div>
+                                </div>
+    
+                                <div class="grid-col col2">
+                                    <div class="default_btn">
+                                        <a class="stop" href="#" i18n="initialMotorButtonStop"></a>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+
+                                        
+                    <div class="grid-col col6 margin-bottom">
+                        <div class="grid-row">
+                            <div class="grid-col col2">
+                                <span i18n="fanSlider"></span>
+                            </div>
+                            <div class="grid-col col2">
+                                <div class="permanentExpertMode">
+                                    <input type="checkbox" class="toggle" />
+                                </div>
+                            </div>
+                            <div class="grid-col col2">
+                                <div class="default_btn" style="display:none;">
+                                    <a class="anti_clockwise" href="#" i18n="initialMotorButtonAntiClockWiseRun"></a>
+                                </div>
+                            </div>
+
+                            <div class="grid-col col2">
+                                <div class="default_btn" style="display:none;">
+                                    <a class="stop" href="#" i18n="initialMotorButtonStop"></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- <div style="float: left;">
+                            <span i18n="fanSlider"></span>
+                        </div>
+                            
+                        
+                        
+                        <div colspan="3">
+                            <input type="range" min="0" max="100" step="1" class="tuningSlider" id="sliderGyroFilterMultiplier" />
+                        </div> -->
+                        
+                    </div>
+                    
+            </div>
+        </div>
+
+    </div>
+
+    <dialog class="dialogConfirmReset">
+        <h3 i18n="dialogConfirmResetTitle"></h3>
+        <div class="content">
+            <div i18n="dialogConfirmResetNote" style="margin-top: 10px"></div>
+        </div>
+        <div class="buttons">
+            <a href="#" class="dialogConfirmReset-confirmbtn regular-button" i18n="dialogConfirmResetConfirm"></a>
+            <a href="#" class="dialogConfirmReset-cancelbtn regular-button" i18n="dialogConfirmResetClose"></a>
+        </div>
+    </dialog>
+
+</div>
