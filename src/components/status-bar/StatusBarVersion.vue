@@ -16,16 +16,29 @@ export default {
   props: {
     configuratorVersion: {
       type: String,
+      default: "",
     },
     firmwareVersion: {
       type: String,
+      default: "",
     },
     firmwareId: {
       type: String,
+      default: "",
     },
     hardwareId: {
       type: String,
+      default: "",
     },
   },
 };
 </script>
+
+<style>
+.version {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  margin-left: auto;
+}
+</style>

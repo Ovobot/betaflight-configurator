@@ -6,7 +6,7 @@ const NODE_ENV = process.env.NODE_ENV || 'test';
 
 module.exports = function(config) {
     config.set({
-        reporters: ['tfs', 'spec'],
+        reporters: ['tfs', 'spec','junit'],
         basePath: '../',
         frameworks: ['mocha', 'chai', 'sinon-chai'],
         files: [
@@ -19,7 +19,7 @@ module.exports = function(config) {
             { pattern: './src/js/localization.js', type: 'module', watched: false },
             './src/js/gui.js',
             './src/js/CliAutoComplete.js',
-            './src/js/tabs/cli.js',
+            { pattern: './src/js/tabs/cli.js', type: 'module', watched: false },
             './src/js/phones_ui.js',
             './test/**/*.js',
         ],
@@ -34,9 +34,13 @@ module.exports = function(config) {
             outputDir: 'testresults',
             outputFile: 'test_results.xml',
         },
+        junitReporter: {
+            outputDir: 'test-results-junit',
+        },
         singleRun: true,
         preprocessors: {
              './src/js/localization.js': ['rollup'],
+             './src/js/tabs/cli.js': ['rollup'],
         },
         rollupPreprocessor: {
             plugins: [

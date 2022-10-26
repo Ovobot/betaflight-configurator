@@ -1,10 +1,11 @@
-'use strict';
+import semver from 'semver';
+import { i18n } from "../localization";
 
-TABS.ports = {
+const ports = {
     analyticsChanges: {},
 };
 
-TABS.ports.initialize = function (callback, scrollPosition) {
+ports.initialize = function (callback) {
     const self = this;
 
     let board_definition = {};
@@ -55,6 +56,14 @@ TABS.ports.initialize = function (callback, scrollPosition) {
 
     if (semver.gte(FC.CONFIG.apiVersion, API_VERSION_1_43)) {
         functionRules.push({ name: 'FRSKY_OSD', groups: ['peripherals'], maxPorts: 1 });
+    }
+
+    if (semver.gte(FC.CONFIG.apiVersion, API_VERSION_1_45)) {
+        functionRules.push({ name: 'VTX_MSP', groups: ['peripherals'], maxPorts: 1 });
+    }
+
+    if (semver.gte(FC.CONFIG.apiVersion, API_VERSION_1_45)) {
+        functionRules.push({ name: 'MSP_DISPLAYPORT', groups: ['peripherals'], maxPorts: 1 });
     }
 
     for (const rule of functionRules) {
@@ -160,6 +169,7 @@ TABS.ports.initialize = function (callback, scrollPosition) {
            20: 'USB VCP',
            30: 'SOFTSERIAL1',
            31: 'SOFTSERIAL2',
+           40: 'LPUART1',
         };
 
         let gpsBaudrateElement = $('select.gps_baudrate');
@@ -411,13 +421,15 @@ TABS.ports.initialize = function (callback, scrollPosition) {
             GUI.log(i18n.getMessage('configurationEepromSaved'));
 
             GUI.tab_switch_cleanup(function() {
-                MSP.send_message(MSPCodes.MSP_SET_REBOOT, false, false);
-                reinitialiseConnection(self);
+                MSP.send_message(MSPCodes.MSP_SET_REBOOT, false, false, reinitializeConnection);
             });
         }
     }
 };
 
-TABS.ports.cleanup = function (callback) {
+ports.cleanup = function (callback) {
     if (callback) callback();
 };
+
+window.TABS.ports = ports;
+export { ports };

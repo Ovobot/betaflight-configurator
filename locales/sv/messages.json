@@ -443,10 +443,6 @@
     "firmwareUpgradeRequired": {
         "message": "Firmwaren på den här enheten behöver uppgraderas till en nyare version. Använd CLI för säkerhetskopiering innan du flashar. CLI-säkerhetskopierings/återställningsförfarandet finns i dokumentationen.<br />Alternativt kan du ladda ner och använda en gammal version av konfiguratorn om du inte vill uppgradera."
     },
-    "infoVersions": {
-        "message": "Kör - OS: <strong>{{operatingSystem}}</strong>, Chrome: <strong>{{chromeVersion}}</strong>, Konfigurator: <strong>{{configuratorVersion}}</strong>",
-        "description": "Message that appears in the GUI log panel indicating operating system, Chrome version and Configurator version"
-    },
     "buildServerLoaded": {
         "message": "Hämtade versionsinformation för $1 från versionsservern."
     },
@@ -624,12 +620,6 @@
     },
     "initialSetupResetText": {
         "message": "Återställ till <strong>standardinställningarna</strong>"
-    },
-    "initialSetupButtonBackup": {
-        "message": "Säkerhetskopiera"
-    },
-    "initialSetupButtonRestore": {
-        "message": "Återställ"
     },
     "initialSetupButtonRebootBootloader": {
         "message": "Aktivera Boot Loader / DFU"
@@ -862,17 +852,11 @@
     "featureNone": {
         "message": "&lt;Välj En&gt;"
     },
-    "featureRX_PPM": {
-        "message": "PPM RX-input"
-    },
     "featureVBAT": {
         "message": "Batterispänningsövervakning"
     },
     "featureINFLIGHT_ACC_CAL": {
         "message": "Nivåkalibrering under flygning"
-    },
-    "featureRX_SERIAL": {
-        "message": "Seriell-baserad mottagare (SPEKSAT, SBUS, SUMD)"
     },
     "featureMOTOR_STOP": {
         "message": "Starta inte motorerna vid aktivering"
@@ -907,12 +891,6 @@
     "feature3D": {
         "message": "3D läge (för användning med reversibla ESCs)"
     },
-    "featureRX_PARALLEL_PWM": {
-        "message": "PWM RX anslutning (en kabel per kanal)"
-    },
-    "featureRX_MSP": {
-        "message": "MSP RX anslutning (kontroll via MSP port)"
-    },
     "featureRSSI_ADC": {
         "message": "Analog RSSI-anslutning"
     },
@@ -936,9 +914,6 @@
     },
     "featureBLACKBOXTip": {
         "message": "Konfigurera via BlackBox-fliken efter aktivering."
-    },
-    "featureRX_SPI": {
-        "message": "SPI RX-stöd"
     },
     "featureESC_SENSOR": {
         "message": "Använd KISS/BLHeli_32 ESC-telemetri <b>över en separat kabel</b>"
@@ -1014,9 +989,6 @@
     },
     "configurationFeaturesHelp": {
         "message": "<strong>Observera:</strong> Alla kombinationer av funktioner är inte giltiga. När flygkontrollerfirmwaren uppäcker ogiltiga funktionskombinationer kommer motstridiga funktioner att inaktiveras.<br /><strong>Observera:</strong> Konfigurera seriella portar <span class=\"message-negative\">innan</span> funktioner som använder dessa portar aktiveras."
-    },
-    "configurationSerialRXHelp": {
-        "message": "<strong>Observera:</strong> Kom ihåg att konfigurera en seriell port (via fliken Portar) och välja en seriell mottagartyp när du använder RX_SERIAL-funktionen."
     },
     "configurationSpiRxHelp": {
         "message": "<strong>Observera:</strong> SPI RX-typen fungerar bara om maskinvaran som krävs finns på styrkortet eller är ansluten till en SPI-buss."
@@ -1098,9 +1070,6 @@
     },
     "configurationDisarmKillSwitchHelp": {
         "message": "Motoraktivering är alltid inaktiverad när trottelvärdet inte är i botten. Var försiktig eftersom du kan råka avaktivera motorerna av misstag med en switch om du flyger med detta alternativ aktivt."
-    },
-    "configurationDigitalIdlePercent": {
-        "message": "Motorns tomgångstrottelvärde [percent]"
     },
     "configurationThrottleMinimum": {
         "message": "Minimitrottel (Lägsta ESC-värde när motorerna är aktiverade)"
@@ -1398,20 +1367,13 @@
         "message": "Tröskel",
         "description": "Anti Gravity Threshold Parameter"
     },
-    "pidTuningDMin": {
-        "message": "D Min",
-        "description": "Table header of the D Min feature in the PIDs tab"
-    },
-    "pidTuningDMinDisabledNote": {
-        "message": "<strong>Note:</strong> D Min-funktionen är avaktiverad och dess parametrar visas ej. Aktivera D Min i $t(pidTuningPidSettings.message) för att använda den."
-    },
     "pidTuningDMinGain": {
         "message": "Ökning",
-        "description": "Gain of the D Min feature"
+        "description": "Gain of the D Max feature"
     },
     "pidTuningDMinAdvance": {
         "message": "Advance",
-        "description": "Advance of the D Min feature"
+        "description": "Advance of the D Max feature"
     },
     "pidTuningPidSettings": {
         "message": "PID-kontrollerinställningar"
@@ -1425,16 +1387,6 @@
     "receiverRcSmoothingManual": {
         "message": "Manuell"
     },
-    "receiverRcSmoothingAutoSmoothness": {
-        "message": "Automatisk utjämning",
-        "description": "Auto Smoothness parameter for RC smoothing"
-    },
-    "receiverRcDerivativeTypeSelect": {
-        "message": "Derivativ cutoff-typ"
-    },
-    "receiverRcInputTypeSelect": {
-        "message": "Input cutoff-typ"
-    },
     "receiverRcSmoothingInterpolation": {
         "message": "Interpolering"
     },
@@ -1444,38 +1396,8 @@
     "receiverRcSmoothingTypeHelp": {
         "message": "Typ av RC-utjämning som används"
     },
-    "rcSmoothingInputCutoffHelp": {
-        "message": "Cutoff-frekvensen i Hz som används av input-filtret. Lägre värden ger utjämnade inputvärden och passar bra för långsammare mottagarprotokoll. De flesta användare bör låta detta vara 0, vilket motsvarar \"Auto\"."
-    },
-    "rcSmoothingDerivativeCutoffHelp": {
-        "message": "Cutoff-frekvensen i Hz som används av setpoint derivat-filtret. Lägre värden ger utjämnade inputvärden och passar bra för långsammare mottagarprotokoll. De flesta användare bör låta detta vara 0, vilket motsvarar \"Auto\"."
-    },
     "rcSmoothingChannelsSmoothedHelp": {
         "message": "Kanalutjämningen gäller"
-    },
-    "rcSmoothingInputTypeHelp": {
-        "message": "Typen av filtreringsmetod som används för inputen. De flesta användare bör använda standardvärdet \"BIQUAD\" eftersom det ger en bra balans mellan utjämning och fördröjning. \"PT1\" minskar fördröjningen något men ger mindre utjämning."
-    },
-    "receiverRcSmoothingInputManual": {
-        "message": "Väljer om input-filtrets cutoff-frekvens räknas ut automatiskt (rekommenderas) eller sätts manuellt av användaren. Att använda \"Manuellt\" rekommenderas inte för mottagarprotokoll som Crossfire, som kan ändras under flygning."
-    },
-    "receiverRcSmoothingDerivativeManual": {
-        "message": "Väljer om setpoint-derivativfiltrets cutoff-frekvens räknas ut automatiskt (rekommenderas) eller sätts manuellt av användaren. Att använda \"Manuellt\" rekommenderas inte för mottagarprotokoll som Crossfire, som kan ändras under flygning."
-    },
-    "receiverRcSmoothingInputHz": {
-        "message": "Input cutoff-frekvens"
-    },
-    "receiverRcSmoothingDerivativeCutoff": {
-        "message": "Derivativ cutoff-frekvens"
-    },
-    "receiverRcInputType": {
-        "message": "Input-filtertyp"
-    },
-    "receiverRcDerivativeType": {
-        "message": "Derivativ filtertyp"
-    },
-    "receiverRcSmoothingDerivativeTypeOff": {
-        "message": "Av"
     },
     "receiverRcSmoothingChannel": {
         "message": "Utjämnade kanaler"
@@ -1507,38 +1429,17 @@
     "receiverRcInterpolationInterval": {
         "message": "RC-interpolationsintervall [ms]"
     },
-    "pidTuningFeedforwardTransition": {
-        "message": "Framkopplingsövergång"
-    },
-    "pidTuningFeedforwardTransitionHelp": {
-        "message": "Med denna parameter kan framkopplings-termen reduceras nära mitten av spakarna, vilket resulterar i jämnare avslut på flippar och rollar.<br> Värdet representerar en böjningspunkt: 0 - spaken centrerad, 1 - full böjning. När spaken är över denna punkt, hålls framkoppling konstant vid sitt konfigurerade värde. När spaken är under denna punkt, reduceras framkoppling proportionellt, och blir 0 vid spakens mittposition.<br> Värdet 1 ger maximal utjämningseffekt, medan värdet 0 håller framkoppling konstant vid sitt konfigurerade värde över hela spakens räckvidd."
-    },
     "pidTuningDtermSetpointTransition": {
         "message": "D setpoint-övergång"
     },
     "pidTuningDtermSetpoint": {
         "message": "D setpoint-vikt"
     },
-    "pidTuningDtermSetpointTransitionHelp": {
-        "message": "Med denna parameter kan D setpoint-vikten reduceras nära mitten av spakarna, vilket resulterar i jämnare avslut på flippar och rollar.<br> Värdet representerar en böjningspunkt: 0 - spaken centrerad, 1 - full böjning. När spaken är över denna punkt, hålls setpoint-vikten konstant vid sitt konfigurerade värde. När spaken är under denna punkt, reduceras setpoint-vikten proportionellt, och blir 0 vid spakens mittposition.<br> Värdet 1 ger maximal utjämningseffekt, medan värdet 0 håller setpoint-vikten konstant vid sitt konfigurerade värde över hela spakens räckvidd."
-    },
-    "pidTuningDtermSetpointHelp": {
-        "message": "Denna parameter bestämmer spakens accelerationseffekt inom den derivativa komponenten.<br> Värdet 0 innebär en äldre mätbaserad metod där D endast följer gyron, och värdet 1 innebär en äldre felbaserad metod där gyro- och spakar följs likvärdigt.<br> Lägre värden innebär långsammare/jämnare spakrespons, och högre värden ger en mer accelererande spakrespons.<br> Observera att aktivering av RC-interpolering rekommenderas vid högre värden för att undvika att plötsliga ändringar orsakar brus."
-    },
     "pidTuningDtermSetpointTransitionWarning": {
         "message": "<span class=\"message-negative\"><strong>$t(warningTitle.message):</strong> Användning av en D setpoint-övergång mellan 0 och 0.1 avråds bestämt. Det kan resultera i instabilitet och sämre spakrespons när spakarna korsar mittpunkten.</span>"
     },
-    "pidTuningProportional": {
-        "message": "Proportionell"
-    },
-    "pidTuningIntegral": {
-        "message": "Integrering"
-    },
     "pidTuningDerivative": {
         "message": "Derivering"
-    },
-    "pidTuningFeedforward": {
-        "message": "Framkoppling (Feedforward)"
     },
     "pidTuningRcRate": {
         "message": "RC Rate"
@@ -1612,12 +1513,6 @@
     "pidTuningControllerHead": {
         "message": "PID-kontroller"
     },
-    "pidTuningCopyProfile": {
-        "message": "Kopiera profilvärden"
-    },
-    "pidTuningCopyRateProfile": {
-        "message": "Kopiera rate-profilvärden"
-    },
     "dialogCopyProfileText": {
         "message": "Kopiera värden från aktuell profil till"
     },
@@ -1635,12 +1530,6 @@
     },
     "dialogCopyProfileClose": {
         "message": "Avbryt"
-    },
-    "pidTuningResetProfile": {
-        "message": "Återställ alla profilvärden"
-    },
-    "pidTuningProfileReset": {
-        "message": "Laddade standard-profilvärden."
     },
     "pidTuningReceivedProfile": {
         "message": "Flygkontrollern aktiverade profil: <strong class=\"message-positive\">$1</strong>"
@@ -1660,14 +1549,8 @@
     "pidTuningEepromSaved": {
         "message": "EEPROM <span class=\"message-positive\">sparad</span>"
     },
-    "receiverHelp": {
-        "message": "Läs kapitlet om mottagare i dokumentationen. Konfigurera en seriell port (om nödvändigt), mottagarläge (seriell/ppm/pwm), typ (för seriella mottagare), koppla mottagaren, välj kanalmappning, konfigurera kanalernas slutvärden/räckvidd så att alla kanaler går från ~1000 till ~2000. Sätt mittlägena (standardvärde 1500), trimma kanalerna till 1500, konfigurera spakarnas dödband, säkerställ funktionen när TX är avstängd eller utom räckhåll.<br /><span class=\"message-negative\">VIKTIGT:</span> Före flygning, läs kapitlet om failsafe i dokumentationen och konfigurera failsafe."
-    },
     "tuningHelp": {
         "message": "<b>Inställningstips</b><br /><span class=\"message-negative\">VIKTIGT:</span> Det är viktigt att kontrollera motorernas temperatur under de första flygningarna. Ett högre filtervärde kan ge en bättre flygning, men det kommer också att ge mer brus i motorerna.<br>Standardvärdet 100 Hz är optimalt, men om du drabbas av brus kan du försöka sänka Dterm-filtret till 50 Hz och eventuellt också gyrofiltret."
-    },
-    "filterWarning": {
-        "message": "<span class=\"message-negative\"><b>Varning:</b></span> Filtervärdet är farligt lågt. Farkosten blir troligen svår att styra, och risken ökar för att den flyger iväg okontrollerat. Det är starkt rekommenderat att du <b>aktiverar åtminstone ett av Gyro dynamiskt lågpass eller Gyro lågpass 1, och åtminstone ett av D Term dynamiskt lågpass eller D Term lågpass 1</b>."
     },
     "receiverThrottleMid": {
         "message": "Trottel MITT"
@@ -1746,9 +1629,6 @@
     },
     "receiverModelPreview": {
         "message": "Förhandsvisa"
-    },
-    "receiverMspWarningText": {
-        "message": "Dessa spakar låter Betaflight aktiveras och testas utan tillgång till sändare eller mottagare. <strong>Denna funktion är dock inte avsedd för flygning, och propellrar får inte vara monterade.</strong><br><br>Denna funktion kan inte garantera tillförlitlig kontroll över farkosten. <strong>Risk för allvarlig skada om propellrarna lämnas på.</strong>"
     },
     "receiverMspEnableButton": {
         "message": "Aktivera kontroller"
@@ -2093,9 +1973,6 @@
     "gpsSignalSatId": {
         "message": "Satellit-ID"
     },
-    "gpsSignalQty": {
-        "message": "Antal"
-    },
     "motorsVoltage": {
         "message": "Spänning:"
     },
@@ -2357,12 +2234,6 @@
     "dataflashButtonSaveFile": {
         "message": "Spara flashminne till fil..."
     },
-    "dataflashButtonSaveFileDeprecated": {
-        "message": "Spara flashminne till fil (utfasad)"
-    },
-    "dataflashSaveFileDepreciationHint": {
-        "message": "Att spara blackbox-loggar via konfiguratorn är en långsam och relativt felkänslig process. Rekommendationen är att istället använda '<b>$t(onboardLoggingRebootMscText.message)</b>' (nedan) för att aktivera masslagringsläge, och koppla dig mot flygkontrollern som en lagringsenhet för att ladda ner loggfilerna."
-    },
     "dataflashButtonErase": {
         "message": "Radera flashminne"
     },
@@ -2458,9 +2329,6 @@
     },
     "firmwareFlasherOnlineSelectBuildType": {
         "message": "Välj versionstyp för att se tillgängliga styrkort."
-    },
-    "firmwareFlasherOnlineSelectBoardDescription": {
-        "message": "Välj ditt styrkort för att se tillgängliga firmware-utgåvor online - Välj rätt firmware som passar ditt styrkort."
     },
     "firmwareFlasherOnlineSelectFirmwareVersionDescription": {
         "message": "Välj firmware-version för ditt styrkort."
@@ -2564,9 +2432,6 @@
     "firmwareFlasherMessage": {
         "message": "Meddelande:"
     },
-    "firmwareFlasherWarningText": {
-        "message": "Försök <span class=\"message-negative\">inte</span> uppdatera <strong>icke-Betaflight</strong>-hårdvara med denna firmware-uppdaterare.<br /><strong>Koppla</strong> <span class=\"message-negative\">inte</span> <strong>bort</strong> styrkortet eller <strong>stäng av </strong> din dator medan uppdatering pågår.<br /><br /><strong>Observera: </strong>STM32-bootloadern är lagrad i ROM, den kan inte förstöras.<br /><strong>Observera: </strong><span class=\"message-negative\">Anslut automatiskt</span> är alltid inaktiverad medan Firmware-uppdateraren är aktiv.<br /><strong>Observera: </strong>Säkerställ att du har gjort en säkerhetskopia; vissa uppdateringar/nedgraderingar kommer att radera din konfiguration.<br /><strong>Observera:</strong> Om du har problem med att uppdatera, <strong>försök att koppla loss alla kablar från din flygkontroller</strong> först, starta om, uppgradera Chrome, uppgradera drivrutiner.<br /><strong>Observera:</strong> Vid uppdatering av styrkort som har direktanslutna USB-uttag (de flesta nyare styrkort), läs först USB Flashing-sektionen i Betaflight-manualen och se till att rätt programvara och drivrutiner är installerade."
-    },
     "firmwareFlasherRecoveryHead": {
         "message": "<strong>Återställning / tappad kommunikation</strong>"
     },
@@ -2575,12 +2440,6 @@
     },
     "firmwareFlasherFirmwareNotLoaded": {
         "message": "Firmware ej laddad"
-    },
-    "firmwareFlasherFirmwareLocalLoaded": {
-        "message": "Laddade lokal firmware: ($1 bytes)"
-    },
-    "firmwareFlasherFirmwareOnlineLoaded": {
-        "message": "Laddade online-firmware: ($1 bytes)"
     },
     "firmwareFlasherHexCorrupted": {
         "message": "HEX-filen verkar vara korrupt"
@@ -3021,77 +2880,28 @@
     },
     "pidTuningPDGainSlider": {
         "message": "P- och D-ökning:",
-        "description": "P and D gain tuning slider label"
-    },
-    "pidTuningResponseSlider": {
-        "message": "Spakresponsökning:",
-        "description": "Response tuning slider label"
+        "description": "P and D Gain tuning slider label"
     },
     "pidTuningGyroLowpassFiltersGroup": {
         "message": "Gyro lågpassfilter"
     },
-    "pidTuningGyroLowpassFrequency": {
-        "message": "Gyro lågpass 1 cutoff-frekvens [Hz]"
-    },
     "pidTuningGyroLowpassType": {
         "message": "Gyro lågpassfiltertyp 1"
-    },
-    "pidTuningGyroLowpassDynMinFrequency": {
-        "message": "Gyro lågpass 1 dynamisk Min cutoff-frekvens [Hz]"
-    },
-    "pidTuningGyroLowpassDynMaxFrequency": {
-        "message": "Gyro lågpass 1 dynamisk Max cutoff-frekvens [Hz]"
     },
     "pidTuningGyroLowpassDynType": {
         "message": "Gyro lågpass 1 dynamisk filtertyp"
     },
-    "pidTuningGyroLowpass2Frequency": {
-        "message": "Gyro lågpass 2 cutoff-frekvens [Hz]"
-    },
-    "pidTuningGyroLowpass2Type": {
-        "message": "Gyro lågpassfiltertyp 2"
-    },
-    "pidTuningLowpassFilterHelp": {
-        "message": "Lågpassfiltren finns i två varianter: statiska och dynamiska. För ett förutbestämt lågpassfilternummer kan bara ett (statiskt eller dynamiskt) vara aktivt samtidigt. Det statiska filtret har ett Cutoff-värde som på något sätt definierar var filtret startar. Det dynamiska filtret sätter ett min- och ett maxvärde, som är Cutoff-omfånget. Denna Cutoff förflyttas från min till max samtidigt som styrspaken flyttas."
-    },
     "pidTuningGyroNotchFiltersGroup": {
         "message": "Gyro bandspärrfilter"
     },
-    "pidTuningGyroNotch1Frequency": {
-        "message": "Gyro bandspärrfilter 1 mittfrekvens [Hz]"
-    },
-    "pidTuningGyroNotch2Frequency": {
-        "message": "Gyro bandspärrfilter 2 mittfrekvens [Hz]"
-    },
-    "pidTuningGyroNotch1Cutoff": {
-        "message": "Gyro bandspärrfilter 1 cutoff-frekvens [Hz]"
-    },
-    "pidTuningGyroNotch2Cutoff": {
-        "message": "Gyro bandspärrfilter 2 cutoff-frekvens [Hz]"
-    },
-    "pidTuningNotchFilterHelp": {
-        "message": "Bandspärrfiltret har ett centrum och en cutoff. Filtret är symmetriskt. Centrumfrekvensen är filtrets centrum och cutoff-frekvensen är där bandspärrfiltret börjar. Exempelvis så kommer en cutoff på 160 och centrum på 260 att ge ett omfång på 160-360Hz med mest försvagning kring centrum"
-    },
     "pidTuningDynamicNotchFilterGroup": {
         "message": "Dynamiskt bandspärrfilter"
-    },
-    "pidTuningDynamicNotchFilterHelp": {
-        "message": "Dynamiskt bandspärrfilter spårar motorernas högsta brusfrekvens och sätter ett eller två bandspärrfilter med centrum vid den frekvensen."
-    },
-    "pidTuningDynamicNotchFilterDisabledWarning": {
-        "message": "<strong>Observera:</strong> Det dynamiska bandspärrfiltret är avstängt. För att konfigurera och använda det, aktivera funktionen 'DYNAMIC_FILTER' i sektionen '$t(configurationFeatures.message)' under fliken '$t(tabConfiguration.message)'."
     },
     "pidTuningDynamicNotchRange": {
         "message": "Dynamiskt bandspärrfilteromfång"
     },
     "pidTuningDynamicNotchWidthPercent": {
         "message": "Dynamisk bandspärrviddsprocent"
-    },
-    "pidTuningDynamicNotchQ": {
-        "message": "Dynamisk bandspärr Q"
-    },
-    "pidTuningDynamicNotchMinHz": {
-        "message": "Dynamisk bandspärr Min Hz"
     },
     "pidTuningDynamicNotchRangeHelp": {
         "message": "Den dynamiska bandspärren kan arbeta i tre frekvensomfång: LOW(80-330hz) för långsamt roterande quadar, som 6 tum eller större, MEDIUM(140-550hz) för en normal 5-tumsquad, HIGH(230-800hz) för snabbt roterande 2.5-3-tumsquadar. Alternativet AUTO väljer omfång utifrån värdet på den maximala cutoff-frekvensen på gyrons dynamiska lågpassfilter 1."
@@ -3107,42 +2917,6 @@
     },
     "pidTuningDTermLowpassFiltersGroup": {
         "message": "D Term lågpassfilter"
-    },
-    "pidTuningDTermLowpassType": {
-        "message": "D Term lågpassfiltertyp 1"
-    },
-    "pidTuningDTermLowpassFrequency": {
-        "message": "D Term lågpass 1 cutoff-frekvens [Hz]"
-    },
-    "pidTuningDTermLowpass2Frequency": {
-        "message": "D Term lågpass 2 cutoff-frekvens [Hz]"
-    },
-    "pidTuningDTermLowpass2Type": {
-        "message": "D Term lågpass 2 filtertyp"
-    },
-    "pidTuningDTermLowpassDynMinFrequency": {
-        "message": "D Term lågpass 1 dynamisk Min cutoff-frekvens [Hz]"
-    },
-    "pidTuningDTermLowpassDynMaxFrequency": {
-        "message": "D Term lågpass 1 dynamisk Max cutoff-frekvens [Hz]"
-    },
-    "pidTuningDTermLowpassDynType": {
-        "message": "D Term lågpass 1 dynamisk filtertyp"
-    },
-    "pidTuningDTermNotchFiltersGroup": {
-        "message": "D Term bandspärrfilter"
-    },
-    "pidTuningDTermNotchFrequency": {
-        "message": "D Term bandspärrfilter mittfrekvens [Hz]"
-    },
-    "pidTuningDTermNotchCutoff": {
-        "message": "D Term bandspärrfilter cutoff-frekvens [Hz]"
-    },
-    "pidTuningYawLospassFiltersGroup": {
-        "message": "Gir lågpassfilter"
-    },
-    "pidTuningYawLowpassFrequency": {
-        "message": "Gir lågpass cutoff-frekvens [Hz]"
     },
     "pidTuningVbatPidCompensation": {
         "message": "Vbat PID-kompensation"
@@ -3165,18 +2939,9 @@
     "pidTuningItermRelax": {
         "message": "I Term Relax"
     },
-    "pidTuningItermRelaxHelp": {
-        "message": "Begränsar ackumuleringen av I Term när snabba rörelser inträffar. Detta hjälper särskilt till med att reducera tillbakastuds vid slutet av rollar och andra snabba rörelser. Du kan välja vilka axlar detta ska aktiveras på, och om den snabba rörelsen ska upptäckas av gyron eller setpointen (spaken)."
-    },
     "pidTuningItermRelaxAxes": {
         "message": "Axlar",
         "description": "Iterm Relax Axes selection"
-    },
-    "pidTuningItermRelaxAxesOptionRP": {
-        "message": "RP"
-    },
-    "pidTuningItermRelaxAxesOptionRPY": {
-        "message": "RPY"
     },
     "pidTuningItermRelaxAxesOptionRPInc": {
         "message": "RP (endast ökning)"
@@ -3201,26 +2966,14 @@
     "pidTuningAbsoluteControlGain": {
         "message": "Absolut kontroll"
     },
-    "pidTuningAbsoluteControlGainHelp": {
-        "message": "Denna funktion löser några underliggande problem med $t(pidTuningItermRotation.message) och kommer förhoppningsvis att ersätta den helt så småningom. Funktionen ackumulerar det absoluta gyro-felet i quad-koordinater och mixar in ett proportionellt korrigeringsvärde i setpointen. För att det ska fungera måste du aktivera AirMode och $t(pidTuningItermRelax.message) (for $t(pidTuningItermRelaxAxesOptionRP.message)). Om du kombinerar denna funktion med $t(pidTuningIntegratedYaw.message), kan du sätta $t(pidTuningItermRelax.message) till aktiverad för $t(pidTuningItermRelaxAxesOptionRPY.message)."
-    },
     "pidTuningThrottleBoost": {
         "message": "Trottelförstärkning"
-    },
-    "pidTuningThrottleBoostHelp": {
-        "message": "Denna funktion låter trotteln ökas tillfälligt vid snabba spakrörelser, för att öka accelerationens vridmoment till motorerna, vilket ger en mycket snabbare gasrespons."
     },
     "pidTuningAcroTrainerAngleLimit": {
         "message": "Acro Trainer vinkelgräns"
     },
-    "pidTuningAcroTrainerAngleLimitHelp": {
-        "message": "Lägger till ett nytt vinkelbegränsningsläge för piloter som lär sig flyga i acro-läge. Det giltiga intervallet är 10-80, och det måste aktiveras med en switch i fliken $t(tabAuxiliary.message)."
-    },
     "pidTuningIntegratedYaw": {
         "message": "Integrerad Gir"
-    },
-    "pidTuningIntegratedYawHelp": {
-        "message": "Integrerad Gir är en funktion som korrigerar ett fundamentalt problem med quadstyrning: looping- och roll-axlarna styrs av tryckskillnader som genereras av propellrarna, men gir fungerar annorlunda. Integrerad Gir löser detta genom att integrera utdatat från gir-pid och sedan tillämpa det på mixern. Detta normaliserar pid-funktionen. Du kan nu justera den som de andra axlarna. Det kräver absolut kontroll eftersom inget I behövs med Integrerad Gir."
     },
     "configHelp2": {
         "message": "Godtycklig styrkortsrotation i grader, för att möjliggöra montering sidledes / upp och ner / roterat etc. Vid användning av externa sensorer, använd sensorinriktning (Gyro, Acc, Mag) för att definiera sensorpositionen oberoende från styrkortsrotationen."
@@ -3261,23 +3014,14 @@
     "failsafeStageTwoSettingsTitle": {
         "message": "Etapp 2 - Inställningar"
     },
-    "failsafeDelayItem": {
-        "message": "Väntetid för aktivering av etapp 2 efter att signalen förlorats [1 = 0.1 sek.]"
-    },
     "failsafeDelayHelp": {
         "message": "Tiden som etapp 1 väntar på återhämtning"
-    },
-    "failsafeThrottleLowItem": {
-        "message": "Failsafe \"trottel låg\"-fördröjning [1 = 0.1 sek.]"
     },
     "failsafeThrottleLowHelp": {
         "message": "Avaktivera farkosten istället för att utföra den valda failsafe-proceduren när trotteln varit låg under denna tidsperiod"
     },
     "failsafeThrottleItem": {
         "message": "Trottelvärde som används under landning"
-    },
-    "failsafeOffDelayItem": {
-        "message": "Fördröjning innan motorerna stängs av under Failsafe [1 = 0.1 sek.]"
     },
     "failsafeOffDelayHelp": {
         "message": "Tid att stanna kvar i landningsläge innan motorerna stängs av och farkosten avaktiveras"
@@ -4937,9 +4681,6 @@
     },
     "pidTuningDeltaMeasurement": {
         "message": "Mätning"
-    },
-    "pidTuningDeltaTip": {
-        "message": "<b>Derivativ från Fel</b> ger en mer direkt spakrespons och föredras oftast för racing.<br><br><b>Derivativ från Mätning</b> ger en mjukare spakrespons och är mer lämplig för freestyling"
     },
     "pidTuningPidControllerTip": {
         "message": "<b>Legacy vs Betaflight (float):</b> PID-skalning och PID-logik är exakt samma. Omjustering behövs inte nödvändigtvis. Legacy är en äldre version som är en grundläggande PID-kontroller baserad på heltalsmatematik. Betaflight PID-kontroller använder flyttalsmatematik och har många nya funktioner som designats specifikt för multirotorapplikationer<br><b>Float vs Integer:</b>PID-skalning och PID-logik är exakt samma. Ingen omjustering behövs. F1-kort har ingen inbyggd FPU och flyttalsmatematik ökar belastningen på CPU:n. Heltalsmatematik ger bättre prestanda, men flyttalsmatematik kan ge något bättre precision."

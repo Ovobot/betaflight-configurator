@@ -14,7 +14,7 @@
 #define CompanyUrl "https://betaflight.com/"
 #define ExecutableFileName "betaflight-configurator.exe"
 #define GroupName "Betaflight"
-#define InstallerFileName "betaflight-configurator-installer_" + version + "_" + archName
+#define InstallerFileName "betaflight-configurator_" + version + "_" + archName + "-installer"
 #define SourcePath "..\..\" + sourceFolder + "\betaflight-configurator\" + archName
 #define TargetFolderName "Betaflight-Configurator"
 #define UpdatesUrl "https://github.com/betaflight/betaflight-configurator/releases"
@@ -39,6 +39,7 @@ Name: "{group}\Uninstall {#ApplicationName}"; Filename: "{uninstallexe}"; Check:
 Name: "en"; MessagesFile: "compiler:Default.isl"
 ; Official languages
 Name: "ca"; MessagesFile: "compiler:Languages\Catalan.isl"
+Name: "da"; MessagesFile: "compiler:Languages\Danish.isl"
 Name: "de"; MessagesFile: "compiler:Languages\German.isl"
 Name: "es"; MessagesFile: "compiler:Languages\Spanish.isl"
 Name: "fr"; MessagesFile: "compiler:Languages\French.isl"

@@ -1,6 +1,6 @@
-'use strict';
+import { i18n } from "../localization";
 
-TABS.vtx = {
+const vtx = {
     supported: false,
     vtxTableSavePending: false,
     vtxTableFactoryBandsSupported: false,
@@ -14,16 +14,16 @@ TABS.vtx = {
     env: new djv(),
     get _DEVICE_STATUS_UPDATE_INTERVAL_NAME() {
         return "vtx_device_status_request";
-    }
+    },
 };
 
-TABS.vtx.isVtxDeviceStatusNotReady = function()
+vtx.isVtxDeviceStatusNotReady = function()
 {
     const isReady = (null !== FC.VTX_DEVICE_STATUS) && (FC.VTX_DEVICE_STATUS.deviceIsReady);
     return !isReady;
 };
 
-TABS.vtx.updateVtxDeviceStatus = function()
+vtx.updateVtxDeviceStatus = function()
 {
     MSP.send_message(MSPCodes.MSP2_GET_VTX_DEVICE_STATUS, false, false, vtxDeviceStatusReceived);
 
@@ -33,7 +33,7 @@ TABS.vtx.updateVtxDeviceStatus = function()
     }
 };
 
-TABS.vtx.getVtxTypeString = function()
+vtx.getVtxTypeString = function()
 {
     let result = i18n.getMessage(`vtxType_${FC.VTX_CONFIG.vtx_type}`);
 
@@ -47,7 +47,7 @@ TABS.vtx.getVtxTypeString = function()
     return result;
 };
 
-TABS.vtx.initialize = function (callback) {
+vtx.initialize = function (callback) {
     const self = this;
 
     if (GUI.active_tab !== 'vtx') {
@@ -96,7 +96,7 @@ TABS.vtx.initialize = function (callback) {
                 GUI.interval_add_condition(self._DEVICE_STATUS_UPDATE_INTERVAL_NAME,
                     TABS.vtx.updateVtxDeviceStatus,
                     1000, false,
-                    TABS.vtx.isVtxDeviceStatusNotReady
+                    TABS.vtx.isVtxDeviceStatusNotReady,
                 );
             }
 
@@ -178,7 +178,7 @@ TABS.vtx.initialize = function (callback) {
 
                     console.log("Validation against schema result:", valid);
                     valid ? callback_valid() : callback_error();
-                }
+                },
             );
         }
 
@@ -574,6 +574,10 @@ TABS.vtx.initialize = function (callback) {
                     powerMinMax = {min: 1, max: 5};
                     break;
 
+                case VtxDeviceTypes.VTXDEV_MSP:
+                    powerMinMax = {min: 1, max: 5};
+                    break;
+
                 case VtxDeviceTypes.VTXDEV_UNKNOWN:
                 default:
                     powerMinMax = {min: 0, max: 7};
@@ -754,7 +758,7 @@ TABS.vtx.initialize = function (callback) {
                                 console.error('VTX Config from file failed validation against schema');
                                 GUI.log(i18n.getMessage('vtxLoadFileKo'));
 
-                            }
+                            },
                         );
 
                     } catch (err) {
@@ -803,13 +807,13 @@ TABS.vtx.initialize = function (callback) {
                             // JSON is NOT valid
                             GUI.log(i18n.getMessage('vtxLoadClipboardKo'));
                             console.error('VTX Config from clipboard failed validation against schema');
-                        }
+                        },
                     );
 
                 }, function(err) {
                     GUI.log(i18n.getMessage('vtxLoadClipboardKo'));
                     console.error('Failed to read clipboard contents: ', err);
-                }
+                },
             );
 
         } catch (err) {
@@ -881,13 +885,21 @@ TABS.vtx.initialize = function (callback) {
 
             TABS.vtx.vtxTableSavePending = false;
 
-            const oldText = $("#save_button").text();
-            $("#save_button").html(i18n.getMessage('vtxButtonSaved'));
-            setTimeout(function () {
-                $("#save_button").html(oldText);
-            }, 2000);
+            const saveButton = $("#save_button");
+            const oldText = saveButton.text();
+            const buttonDelay = 2000;
 
-            TABS.vtx.initialize();
+            saveButton.html(i18n.getMessage('vtxButtonSaving')).addClass('disabled');
+
+             // Allow firmware to make relevant changes before initialization
+            setTimeout(() => {
+                saveButton.html(i18n.getMessage('vtxButtonSaved'));
+
+                setTimeout(() => {
+                    TABS.vtx.initialize();
+                    saveButton.html(oldText).removeClass('disabled');
+                }, buttonDelay);
+            }, buttonDelay);
         }
     }
 
@@ -1004,7 +1016,7 @@ TABS.vtx.initialize = function (callback) {
 
 };
 
-TABS.vtx.cleanup = function (callback) {
+vtx.cleanup = function (callback) {
 
     // Add here things that need to be cleaned or closed before leaving the tab
     this.vtxTableSavePending = false;
@@ -1016,4 +1028,9 @@ TABS.vtx.cleanup = function (callback) {
     if (callback) {
         callback();
     }
+};
+
+window.TABS.vtx = vtx;
+export {
+    vtx,
 };

@@ -1,9 +1,8 @@
-'use strict';
+import { i18n } from "../localization";
 
-TABS.failsafe = {};
+const failsafe = {};
 
-TABS.failsafe.initialize = function (callback, scrollPosition) {
-    const self = this;
+failsafe.initialize = function (callback) {
 
     if (GUI.active_tab != 'failsafe') {
         GUI.active_tab = 'failsafe';
@@ -118,7 +117,7 @@ TABS.failsafe.initialize = function (callback, scrollPosition) {
                 let modeName = FC.AUX_CONFIG[modeIndex];
                 modeName = adjustBoxNameIfPeripheralWithModeID(modeId, modeName);
 
-                auxAssignment[modeRange.auxChannelIndex] += "<span class=\"modename\">" + modeName + "</span>";
+                auxAssignment[modeRange.auxChannelIndex] += `<span class="modename">${modeName}</span>`;
             }
         }
 
@@ -127,7 +126,7 @@ TABS.failsafe.initialize = function (callback, scrollPosition) {
                 i18n.getMessage('controlAxisRoll'),
                 i18n.getMessage('controlAxisPitch'),
                 i18n.getMessage('controlAxisYaw'),
-                i18n.getMessage('controlAxisThrottle')
+                i18n.getMessage('controlAxisThrottle'),
             ],
             fullChannels_e = $('div.activechannellist');
         let aux_index = 1,
@@ -136,52 +135,53 @@ TABS.failsafe.initialize = function (callback, scrollPosition) {
         for (let i = 0; i < FC.RXFAIL_CONFIG.length; i++) {
             if (i < channelNames.length) {
                 if (semver.lt(FC.CONFIG.apiVersion, API_VERSION_1_41)) {
-                    fullChannels_e.append('\
+                    fullChannels_e.append(`\
                         <div class="number">\
                             <div class="channelprimary">\
-                                <span>' + channelNames[i] + '</span>\
+                                <span>${channelNames[i]}</span>\
                             </div>\
-                            <div class="cf_tip channelsetting" title="' + i18n.getMessage("failsafeChannelFallbackSettingsAuto") + '">\
-                                <select class="aux_set" id="' + i + '">\
+                            <div class="cf_tip channelsetting" title="${i18n.getMessage("failsafeChannelFallbackSettingsAuto")}">\
+                                <select class="aux_set" id="${i}">\
                                     <option value="0">Auto</option>\
                                     <option value="1">Hold</option>\
                                 </select>\
                             </div>\
                         </div>\
-                    ');
+                    `);
                 } else {
-                    fullChannels_e.append('\
+                    fullChannels_e.append(`\
                         <div class="number">\
                             <div class="channelprimary">\
-                                <span>' + channelNames[i] + '</span>\
+                                <span>${channelNames[i]}</span>\
                             </div>\
-                            <div class="cf_tip channelsetting" title="' + i18n.getMessage("failsafeChannelFallbackSettingsAuto") + '">\
-                                <select class="aux_set" id="' + i + '">\
+                            <div class="cf_tip channelsetting" title="${i18n.getMessage("failsafeChannelFallbackSettingsAuto")}">\
+                                <select class="aux_set" id="${i}">\
                                     <option value="0">Auto</option>\
                                     <option value="1">Hold</option>\
                                     <option value="2">Set</option>\
                                 </select>\
                             </div>\
-                            <div class="auxiliary"><input type="number" name="aux_value" min="750" max="2250" step="25" id="' + i + '"/></div>\
+                            <div class="auxiliary"><input type="number" name="aux_value" min="750" max="2250" step="25" id="${i}"/></div>\
                         </div>\
-                    ');
+                    `);
                 }
             } else {
-                fullChannels_e.append('\
+                const messageKey = `controlAxisAux${aux_index++}`;
+                fullChannels_e.append(`\
                     <div class="number">\
                         <div class="channelauxiliary">\
-                            <span class="channelname">' + i18n.getMessage("controlAxisAux" + (aux_index++)) + '</span>\
-                            ' + auxAssignment[aux_assignment_index++] + '\
+                            <span class="channelname">${i18n.getMessage(messageKey)}</span>\
+                            ${auxAssignment[aux_assignment_index++]}\
                         </div>\
-                        <div class="cf_tip channelsetting" title="' + i18n.getMessage("failsafeChannelFallbackSettingsHold") + '">\
-                            <select class="aux_set" id="' + i + '">\
+                        <div class="cf_tip channelsetting" title="${i18n.getMessage("failsafeChannelFallbackSettingsHold")}">\
+                            <select class="aux_set" id="${i}">\
                                 <option value="1">Hold</option>\
                                 <option value="2">Set</option>\
                             </select>\
                         </div>\
-                        <div class="auxiliary"><input type="number" name="aux_value" min="750" max="2250" step="25" id="' + i + '"/></div>\
+                        <div class="auxiliary"><input type="number" name="aux_value" min="750" max="2250" step="25" id="${i}"/></div>\
                     </div>\
-                ');
+                `);
             }
         }
 
@@ -218,11 +218,6 @@ TABS.failsafe.initialize = function (callback, scrollPosition) {
             FC.RXFAIL_CONFIG[i].value = parseInt($(this).val());
         });
 
-        // for some odd reason chrome 38+ changes scroll according to the touched select element
-        // i am guessing this is a bug, since this wasn't happening on 37
-        // code below is a temporary fix, which we will be able to remove in the future (hopefully)
-        $('#content').scrollTop((scrollPosition) ? scrollPosition : 0);
-
         // fill stage 1 Valid Pulse Range Settings
         $('input[name="rx_min_usec"]').val(FC.RX_CONFIG.rx_min_usec);
         $('input[name="rx_max_usec"]').val(FC.RX_CONFIG.rx_max_usec);
@@ -248,9 +243,9 @@ TABS.failsafe.initialize = function (callback, scrollPosition) {
         }
 
         $('input[name="failsafe_throttle"]').val(FC.FAILSAFE_CONFIG.failsafe_throttle);
-        $('input[name="failsafe_off_delay"]').val(FC.FAILSAFE_CONFIG.failsafe_off_delay);
-        $('input[name="failsafe_throttle_low_delay"]').val(FC.FAILSAFE_CONFIG.failsafe_throttle_low_delay);
-        $('input[name="failsafe_delay"]').val(FC.FAILSAFE_CONFIG.failsafe_delay);
+        $('input[name="failsafe_off_delay"]').val((FC.FAILSAFE_CONFIG.failsafe_off_delay / 10.0).toFixed(1));
+        $('input[name="failsafe_throttle_low_delay"]').val((FC.FAILSAFE_CONFIG.failsafe_throttle_low_delay / 10.0).toFixed(1));
+        $('input[name="failsafe_delay"]').val((FC.FAILSAFE_CONFIG.failsafe_delay / 10.0).toFixed(1));
 
         // set stage 2 failsafe procedure
         $('input[type="radio"].procedure').change(function () {
@@ -344,9 +339,9 @@ TABS.failsafe.initialize = function (callback, scrollPosition) {
             FC.RX_CONFIG.rx_max_usec = parseInt($('input[name="rx_max_usec"]').val());
 
             FC.FAILSAFE_CONFIG.failsafe_throttle = parseInt($('input[name="failsafe_throttle"]').val());
-            FC.FAILSAFE_CONFIG.failsafe_off_delay = parseInt($('input[name="failsafe_off_delay"]').val());
-            FC.FAILSAFE_CONFIG.failsafe_throttle_low_delay = parseInt($('input[name="failsafe_throttle_low_delay"]').val());
-            FC.FAILSAFE_CONFIG.failsafe_delay = parseInt($('input[name="failsafe_delay"]').val());
+            FC.FAILSAFE_CONFIG.failsafe_off_delay = Math.round(10.0 * parseFloat($('input[name="failsafe_off_delay"]').val()));
+            FC.FAILSAFE_CONFIG.failsafe_throttle_low_delay = Math.round(10.0 * parseFloat($('input[name="failsafe_throttle_low_delay"]').val()));
+            FC.FAILSAFE_CONFIG.failsafe_delay = Math.round(10.0 * parseFloat($('input[name="failsafe_delay"]').val()));
 
             if( $('input[id="land"]').is(':checked')) {
                 FC.FAILSAFE_CONFIG.failsafe_procedure = 0;
@@ -412,8 +407,7 @@ TABS.failsafe.initialize = function (callback, scrollPosition) {
                 GUI.log(i18n.getMessage('configurationEepromSaved'));
 
                 GUI.tab_switch_cleanup(function() {
-                    MSP.send_message(MSPCodes.MSP_SET_REBOOT, false, false);
-                    reinitialiseConnection(self);
+                    MSP.send_message(MSPCodes.MSP_SET_REBOOT, false, false, reinitializeConnection);
                 });
             }
 
@@ -432,6 +426,11 @@ TABS.failsafe.initialize = function (callback, scrollPosition) {
     }
 };
 
-TABS.failsafe.cleanup = function (callback) {
+failsafe.cleanup = function (callback) {
     if (callback) callback();
+};
+
+window.TABS.failsafe = failsafe;
+export {
+    failsafe,
 };

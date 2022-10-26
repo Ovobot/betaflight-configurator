@@ -1,15 +1,16 @@
 name: 'Close stale issues'
 
 on:
+  workflow_dispatch:
   schedule:
   - cron: "30 4 * * *"
 
 jobs:
   stale:
     name: 'Check and close stale issues'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-    - uses: actions/stale@v3
+    - uses: actions/stale@v4
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         operations-per-run: 30

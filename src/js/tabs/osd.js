@@ -1,4 +1,4 @@
-'use strict';
+import { i18n } from "../localization";
 
 const FONT = {};
 const SYM = {};
@@ -306,6 +306,21 @@ OSD.generateAltitudePreview = function(osdData) {
     return `${FONT.symbol(SYM.ALTITUDE)}399${variantSelected === 0? '.7' : ''}${unit}`;
 };
 
+OSD.generateVTXChannelPreview = function(osdData) {
+    const variantSelected = OSD.getVariantForPreview(osdData, 'VTX_CHANNEL');
+    let value;
+    switch (variantSelected) {
+        case 0:
+            value = 'R:2:200:P';
+            break;
+
+        case 1:
+            value = '200';
+            break;
+    }
+    return value;
+};
+
 OSD.generateBatteryUsagePreview = function(osdData) {
     const variantSelected = OSD.getVariantForPreview(osdData, 'MAIN_BATT_USAGE');
 
@@ -565,7 +580,13 @@ OSD.loadDisplayFields = function() {
             defaultPosition: 1,
             draw_order: 120,
             positionable: true,
-            preview: 'R:2:200:P',
+            variants: [
+                'osdTextElementVTXchannelVariantFull',
+                'osdTextElementVTXchannelVariantPower',
+            ],
+            preview(osdData) {
+                return OSD.generateVTXChannelPreview(osdData);
+            },
         },
         VOLTAGE_WARNING: {
             name: 'VOLTAGE_WARNING',
@@ -907,6 +928,15 @@ OSD.loadDisplayFields = function() {
             draw_order: 250,
             positionable: true,
             preview: `${FONT.symbol(SYM.PITCH)}-00.0`,
+        },
+        READY_MODE: {
+            name: 'READY_MODE',
+            text: 'osdTextElementReadyMode',
+            desc: 'osdDescElementReadyMode',
+            defaultPosition: -1,
+            draw_order: 255,
+            positionable: true,
+            preview: 'READY',
         },
         ROLL_ANGLE: {
             name: 'ROLL_ANGLE',
@@ -1286,6 +1316,24 @@ OSD.loadDisplayFields = function() {
             positionable: true,
             preview: `${FONT.symbol(SYM.RSSI)}250MW`,
         },
+        WH_DRAWN: {
+            name: 'WH_DRAWN',
+            text: 'osdTextElementWhDrawn',
+            desc: 'osdDescElementWhDrawn',
+            defaultPosition: -1,
+            draw_order: 475,
+            positionable: true,
+            preview: '1.10 WH',
+        },
+        AUX_VALUE: {
+            name: 'AUX_VALUE',
+            text: 'osdTextElementAuxValue',
+            desc: 'osdDescElementAuxValue',
+            defaultPosition: -1,
+            draw_order: 480,
+            positionable: true,
+            preview: 'AUX',
+        },
     };
 };
 
@@ -1351,6 +1399,11 @@ OSD.constants = {
             name: 'USED_MAH',
             text: 'osdTextStatUsedMah',
             desc: 'osdDescStatUsedMah',
+        },
+        USED_WH: {
+            name: 'USED_WH',
+            text: 'osdTextStatUsedWh',
+            desc: 'osdDescStatUsedWh',
         },
         MAX_ALTITUDE: {
             name: 'MAX_ALTITUDE',
@@ -1628,6 +1681,7 @@ OSD.chooseFields = function() {
             F.GPS_SATS,
             F.ALTITUDE,
         ]);
+
         if (semver.gte(FC.CONFIG.apiVersion, API_VERSION_1_31)) {
             OSD.constants.DISPLAY_FIELDS = OSD.constants.DISPLAY_FIELDS.concat([
                 F.PID_ROLL,
@@ -1704,13 +1758,20 @@ OSD.chooseFields = function() {
                                                         F.CAMERA_FRAME,
                                                         F.OSD_EFFICIENCY,
                                                     ]);
-                                                }
-                                                if (semver.gte(FC.CONFIG.apiVersion, API_VERSION_1_44)) {
-                                                    OSD.constants.DISPLAY_FIELDS = OSD.constants.DISPLAY_FIELDS.concat([
-                                                        F.TOTAL_FLIGHTS,
-                                                        F.OSD_UP_DOWN_REFERENCE,
-                                                        F.OSD_TX_UPLINK_POWER,
-                                                    ]);
+                                                    if (semver.gte(FC.CONFIG.apiVersion, API_VERSION_1_44)) {
+                                                        OSD.constants.DISPLAY_FIELDS = OSD.constants.DISPLAY_FIELDS.concat([
+                                                            F.TOTAL_FLIGHTS,
+                                                            F.OSD_UP_DOWN_REFERENCE,
+                                                            F.OSD_TX_UPLINK_POWER,
+                                                        ]);
+                                                        if (semver.gte(FC.CONFIG.apiVersion, API_VERSION_1_45)) {
+                                                            OSD.constants.DISPLAY_FIELDS = OSD.constants.DISPLAY_FIELDS.concat([
+                                                                F.WH_DRAWN,
+                                                                F.AUX_VALUE,
+                                                                F.READY_MODE,
+                                                            ]);
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
@@ -1810,6 +1871,11 @@ OSD.chooseFields = function() {
                 F.MIN_RSSI_DBM,
             ]);
         }
+        if (semver.gte(FC.CONFIG.apiVersion, API_VERSION_1_45)) {
+            OSD.constants.STATISTIC_FIELDS = OSD.constants.STATISTIC_FIELDS.concat([
+                F.USED_WH,
+            ]);
+        }
     }
 
     // Choose warnings
@@ -1872,6 +1938,9 @@ OSD.updateDisplaySize = function() {
         y: OSD.constants.VIDEO_LINES[videoType],
         total: null,
     };
+    // Adjust css background grid
+    const previewLayoutElement = $(".tab-osd .display-layout");
+    videoType === 'PAL' ? previewLayoutElement.addClass('video-pal').removeClass('video-ntsc') : previewLayoutElement.addClass('video-ntsc').removeClass('video-pal');
 };
 
 OSD.drawByOrder = function(selectedPosition, field, charCode, x, y) {
@@ -2352,7 +2421,11 @@ OSD.GUI.preview = {
         ev.dataTransfer.setData("text/plain", $(ev.target).data('field').index);
         ev.dataTransfer.setData("x", ev.currentTarget.dataset.x);
         ev.dataTransfer.setData("y", ev.currentTarget.dataset.y);
-        ev.dataTransfer.setDragImage($(this).data('field').preview_img, offsetX, offsetY);
+
+        if (GUI.operating_system !== "Linux") {
+            // latest NW.js (0.6x.x) has introduced an issue with Linux displaying a rectangle while moving an element
+            ev.dataTransfer.setDragImage($(this).data('field').preview_img, offsetX, offsetY);
+        }
     },
     onDragOver(e) {
         const ev = e.originalEvent;
@@ -2441,11 +2514,11 @@ OSD.GUI.preview = {
 };
 
 
-TABS.osd = {
+const osd = {
     analyticsChanges: {},
 };
 
-TABS.osd.initialize = function(callback) {
+osd.initialize = function(callback) {
     if (GUI.active_tab !== 'osd') {
         GUI.active_tab = 'osd';
     }
@@ -2569,7 +2642,7 @@ TABS.osd.initialize = function(callback) {
                             .append($(`<input name="video_system" type="radio"/>${videoFormatOptionText}</label>`)
                             .prop('checked', i === OSD.data.video_system)
                             .data('type', type)
-                            .data('type', i)
+                            .data('type', i),
                         );
                         $videoTypes.append($checkbox);
                     }
@@ -2592,7 +2665,7 @@ TABS.osd.initialize = function(callback) {
                                 .append($(`<input name="unit_mode" type="radio"/>${setupUnitOptionText}</label>`)
                                 .prop('checked', i === OSD.data.unit_mode)
                                 .data('type', type)
-                                .data('type', i)
+                                .data('type', i),
                             );
                             $unitMode.append($checkbox);
                         }
@@ -2636,7 +2709,7 @@ TABS.osd.initialize = function(callback) {
                                 timerTableRow.append(`<td>${tim.index + 1}</td>`);
 
                                 // Source
-                                const sourceTimerTableData = $('<td class="osd_tip"></td>');
+                                const sourceTimerTableData = $('<td class="timer-detail osd_tip"></td>');
                                 sourceTimerTableData.attr('title', i18n.getMessage('osdTimerSourceTooltip'));
                                 sourceTimerTableData.append(`<label for="timerSource_${tim.index}" class="char-label">${i18n.getMessage('osdTimerSource')}</label>`);
                                 const src = $(`<select class="timer-option" id="timerSource_${tim.index}"></select>`);
@@ -2659,7 +2732,7 @@ TABS.osd.initialize = function(callback) {
                                 // Precision
                                 timerTableRow = $('<tr />');
                                 timerTable.append(timerTableRow);
-                                const precisionTimerTableData = $('<td class="osd_tip"></td>');
+                                const precisionTimerTableData = $('<td class="timer-detail osd_tip"></td>');
                                 precisionTimerTableData.attr('title', i18n.getMessage('osdTimerPrecisionTooltip'));
                                 precisionTimerTableData.append(`<label for="timerPrec_${tim.index}" class="char-label">${i18n.getMessage('osdTimerPrecision')}</label>`);
                                 const precision = $(`<select class="timer-option osd_tip" id="timerPrec_${tim.index}"></select>`);
@@ -2683,7 +2756,7 @@ TABS.osd.initialize = function(callback) {
                                 // Alarm
                                 timerTableRow = $('<tr />');
                                 timerTable.append(timerTableRow);
-                                const alarmTimerTableData = $('<td class="osd_tip"></td>');
+                                const alarmTimerTableData = $('<td class="timer-detail osd_tip"></td>');
                                 alarmTimerTableData.attr('title', i18n.getMessage('osdTimerAlarmTooltip'));
                                 alarmTimerTableData.append(`<label for="timerAlarm_${tim.index}" class="char-label">${i18n.getMessage('osdTimerAlarm')}</label>`);
                                 const alarm = $(`<input class="timer-option osd_tip" name="alarm" type="number" min=0 id="timerAlarm_${tim.index}"/>`);
@@ -2739,7 +2812,7 @@ TABS.osd.initialize = function(callback) {
                                                 .then(function() {
                                                     updateOsdView();
                                                 });
-                                        })
+                                        }),
                                 );
                                 $field.append(`<label for="${field.name}" class="char-label">${titleizeField(field)}</label>`);
 
@@ -2783,7 +2856,7 @@ TABS.osd.initialize = function(callback) {
                                                 .then(function() {
                                                     updateOsdView();
                                                 });
-                                        })
+                                        }),
                                 );
 
                                 const finalFieldName = titleizeField(field);
@@ -2877,7 +2950,7 @@ TABS.osd.initialize = function(callback) {
                             enabledCount++;
                         }
 
-                        const $field = $(`<div class="switchable-field field-${field.index}"></div>`);
+                        const $field = $(`<div class="switchable-field switchable-field-flex field-${field.index}"></div>`);
                         let desc = null;
                         if (field.desc && field.desc.length) {
                             desc = i18n.getMessage(field.desc);
@@ -2912,12 +2985,14 @@ TABS.osd.initialize = function(callback) {
                                                 .then(function() {
                                                     updateOsdView();
                                                 });
-                                        })
+                                        }),
                                 );
                         }
 
                         const finalFieldName = titleizeField(field);
-                        $field.append(`<label for="${field.name}" class="char-label">${finalFieldName}</label>`);
+                        const $labelAndVariant = $('<div class="switchable-field-description"></div>');
+                        $labelAndVariant.append(`<label for="${field.name}" class="char-label">${finalFieldName}</label>`);
+
 
 
                         if (semver.gte(FC.CONFIG.apiVersion, API_VERSION_1_44) && field.variants && field.variants.length > 0) {
@@ -2941,7 +3016,7 @@ TABS.osd.initialize = function(callback) {
 
                             selectVariant.val(field.variant);
 
-                            $field.append(selectVariant);
+                            $labelAndVariant.append(selectVariant);
                         }
 
                         if (field.positionable && field.isVisible[OSD.getCurrentPreviewProfile()]) {
@@ -2957,10 +3032,11 @@ TABS.osd.initialize = function(callback) {
                                             .then(function() {
                                                 updateOsdView();
                                             });
-                                    }))
+                                    })),
                             );
                         }
 
+                        $field.append($labelAndVariant);
                         // Insert in alphabetical order, with unknown fields at the end
                         $field.name = field.name;
                         insertOrdered($displayFields, $field);
@@ -3277,7 +3353,7 @@ TABS.osd.initialize = function(callback) {
     });
 };
 
-TABS.osd.cleanup = function(callback) {
+osd.cleanup = function(callback) {
     PortHandler.flush_callbacks();
 
     if (OSD.GUI.fontManager) {
@@ -3291,4 +3367,10 @@ TABS.osd.cleanup = function(callback) {
     if (callback) {
         callback();
     }
+};
+
+window.TABS.osd = osd;
+window.OSD = OSD;
+export {
+    osd,
 };

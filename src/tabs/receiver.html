@@ -8,9 +8,27 @@
             <p i18n="receiverHelp"></p>
         </div>
         <div class="grid-row">
-            <div class="grid-col col6 bars"></div>
+            <div class="grid-col col6 bars">
+                <div class="gui_box grey tunings topspacer">
+                    <table class="pid_titlebar">
+                        <thead>
+                        <tr>
+                            <th i18n="receiverModelPreview"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="model_preview_cell">
+                                <div class="model_preview background_paper">
+                                    <canvas id="canvas"></canvas>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
             <div class="grid-col col6">
-
                 <!-- RECEIVER -->
                 <div class="receiver">
                     <div class="gui_box receiver grey">
@@ -44,8 +62,23 @@
                     </div>
                 </div>
 
-                <!-- RSSI -->
-                <div class="rssi">
+                <div class="feature">
+                    <div class="gui_box grey">
+                        <div class="gui_box_titlebar">
+                            <div class="spacer_box_title" i18n="configurationTelemetry"></div>
+                            <div class="helpicon cf_tip" i18n_title="configurationTelemetryHelp"></div>
+                        </div>
+                        <div class="spacer_box">
+                            <table>
+                                <tbody class="features telemetry">
+                                    <!-- table generated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feature">
                     <div class="gui_box grey">
                         <div class="gui_box_titlebar">
                             <div class="spacer_box_title" i18n="configurationRSSI"></div>
@@ -53,22 +86,13 @@
                         </div>
                         <div class="spacer_box">
                             <table>
-                                <thead>
-                                <tr>
-                                    <th scope="rssi" i18n="configurationFeatureEnabled"></th>
-                                    <th scope="rssi" i18n="configurationFeatureDescription"></th>
-                                    <th scope="rssi" i18n="configurationFeatureName"></th>
-                                </tr>
-                                </thead>
                                 <tbody class="features rssi">
-                                <!-- table generated here -->
+                                    <!-- table generated here -->
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-
-                <!-- RSSI CHANNEL-->
 
                 <div class="rssi_channel_wrapper grey">
                     <div class="head" i18n="receiverRssiChannel"></div>
@@ -296,7 +320,7 @@
                                 </div>
                             </td>
                             <td>
-                                <div class="helpicon cf_tip" i18n_title="receiverRcSmoothingAutoFactorHelp"></div>
+                                <div class="helpicon cf_tip receiverRcSmoothingAutoFactorHelp" i18n_title="receiverRcSmoothingAutoFactorHelp"></div>
                             </td>
                         </tr>
                         <tr class="rcInterpolation">
@@ -328,24 +352,6 @@
                                 </div>
                             </td>
                         </tr>
-                    </table>
-                </div>
-                <div class="gui_box grey tunings topspacer">
-                    <table class="pid_titlebar">
-                        <thead>
-                        <tr>
-                            <th i18n="receiverModelPreview"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td class="model_preview_cell">
-                                <div class="model_preview background_paper">
-                                    <canvas id="canvas"></canvas>
-                                </div>
-                            </td>
-                        </tr>
-                        </tbody>
                     </table>
                 </div>
             </div>

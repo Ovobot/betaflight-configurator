@@ -103,7 +103,7 @@ CliAutoComplete.builderStart = function() {
         };
         this.builder.commandSequence = ['help', 'dump', 'get', 'mixer list'];
         this.builder.currentSetting = null;
-        this.builder.sentinel = '# ' + Math.random();
+        this.builder.sentinel = `# ${Math.random()}`;
         this.builder.state = 'init';
         this.writeToOutput('<br># Building AutoComplete Cache ... ');
         this.sendLine(this.builder.sentinel);
@@ -123,7 +123,7 @@ CliAutoComplete.builderParseLine = function(line) {
 
         if (command && this.configEnabled) {
             // next state
-            builder.state = 'parse-' + command;
+            builder.state = `parse-${command}`;
             this.sendLine(command);
             this.sendLine(builder.sentinel);
         } else {
@@ -276,7 +276,7 @@ CliAutoComplete._initTextcomplete = function() {
                     }, 0);
                 }
             },
-        }
+        },
     )
     .on('textComplete:show', function() {
         /**
@@ -289,23 +289,32 @@ CliAutoComplete._initTextcomplete = function() {
          * Then add `mousemove` handler. If the mouse moves we consider that mouse interaction
          * is desired so we reenable the `mouseover` handler
          */
+
+        const textCompleteDropDownElement = $('.textcomplete-dropdown');
+
         if (!savedMouseoverItemHandler) {
             // save the original 'mouseover' handeler
-            savedMouseoverItemHandler = $._data($('.textcomplete-dropdown')[0], 'events').mouseover[0].handler;
-        }
+            try {
+                savedMouseoverItemHandler = $._data(textCompleteDropDownElement[0], 'events').mouseover[0].handler;
+            } catch (error) {
+                console.log(error);
+            }
 
-        $('.textcomplete-dropdown')
-            .off('mouseover') // initially disable it
-            .off('mousemove') // avoid `mousemove` accumulation if previous show did not trigger `mousemove`
-            .on('mousemove', '.textcomplete-item', function(e) {
-                // the mouse has moved so reenable `mouseover`
-                $(this).parent()
+            if (savedMouseoverItemHandler) {
+                textCompleteDropDownElement
+                .off('mouseover') // initially disable it
+                .off('mousemove') // avoid `mousemove` accumulation if previous show did not trigger `mousemove`
+                .on('mousemove', '.textcomplete-item', function(e) {
+                        // the mouse has moved so reenable `mouseover`
+                    $(this).parent()
                     .off('mousemove')
                     .on('mouseover', '.textcomplete-item', savedMouseoverItemHandler);
 
-                // trigger the mouseover handler to select the item under the cursor
-                savedMouseoverItemHandler(e);
-            });
+                    // trigger the mouseover handler to select the item under the cursor
+                    savedMouseoverItemHandler(e);
+                });
+            }
+        }
     });
 
     // textcomplete autocomplete strategies
@@ -398,7 +407,7 @@ CliAutoComplete._initTextcomplete = function() {
                     value = this.value;
                 }
 
-                return '$1 = ' + value; // cosmetic - make sure we have spaces around the `=`
+                return `$1 = ${value}`; // cosmetic - make sure we have spaces around the `=`
             },
             index: 3,
             isSettingValueArray: false,

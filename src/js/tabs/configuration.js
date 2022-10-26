@@ -1,10 +1,11 @@
-'use strict';
+import semver from 'semver';
+import { i18n } from '../localization';
 
-TABS.configuration = {
+const configuration = {
     analyticsChanges: {},
 };
 
-TABS.configuration.initialize = function (callback) {
+configuration.initialize = function (callback) {
     const self = this;
 
     if (GUI.active_tab != 'configuration') {
@@ -626,8 +627,7 @@ TABS.configuration.initialize = function (callback) {
                 GUI.log(i18n.getMessage('configurationEepromSaved'));
 
                 GUI.tab_switch_cleanup(function() {
-                    MSP.send_message(MSPCodes.MSP_SET_REBOOT, false, false);
-                    reinitialiseConnection(self);
+                    MSP.send_message(MSPCodes.MSP_SET_REBOOT, false, false, reinitializeConnection);
                 });
             }
 
@@ -642,6 +642,9 @@ TABS.configuration.initialize = function (callback) {
     }
 };
 
-TABS.configuration.cleanup = function (callback) {
+configuration.cleanup = function (callback) {
     if (callback) callback();
 };
+
+window.TABS.configuration = configuration;
+export { configuration };

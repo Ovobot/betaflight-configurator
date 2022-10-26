@@ -11,7 +11,7 @@ function seek(firmware, address) {
     for (; index < firmware.data.length && address >= firmware.data[index].address + firmware.data[index].bytes; index++);
 
     const result = {
-        lineIndex: index
+        lineIndex: index,
     };
 
     if (firmware.data[index] && address >= firmware.data[index].address) {
@@ -59,7 +59,7 @@ function generateData(firmware, input, startAddress) {
     }
 
     // Add 0 terminator
-    input = input + '\0';
+    input = `${input}\0`;
 
     let inputIndex = 0;
     while (inputIndex < input.length) {
@@ -67,7 +67,7 @@ function generateData(firmware, input, startAddress) {
         const line = {
             address: address,
             bytes: BLOCK_SIZE > remaining ? remaining : BLOCK_SIZE,
-            data: []
+            data: [],
         };
 
         if (firmware.data[index.lineIndex] && (line.address + line.bytes) > firmware.data[index.lineIndex].address) {

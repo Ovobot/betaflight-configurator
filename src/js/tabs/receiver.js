@@ -1,18 +1,15 @@
-'use strict';
+import { i18n } from "../localization";
 
-TABS.receiver = {
+const receiver = {
     rateChartHeight: 117,
-    useSuperExpo: false,
-    deadband: 0,
-    yawDeadband: 0,
     analyticsChanges: {},
     needReboot: false,
 };
 
-TABS.receiver.initialize = function (callback) {
+receiver.initialize = function (callback) {
     const tab = this;
 
-    if (GUI.active_tab != 'receiver') {
+    if (GUI.active_tab !== 'receiver') {
         GUI.active_tab = 'receiver';
     }
 
@@ -76,13 +73,6 @@ TABS.receiver.initialize = function (callback) {
             $('.deadband input[name="yaw_deadband"]').val(FC.RC_DEADBAND_CONFIG.yaw_deadband);
             $('.deadband input[name="deadband"]').val(FC.RC_DEADBAND_CONFIG.deadband);
             $('.deadband input[name="3ddeadbandthrottle"]').val(FC.RC_DEADBAND_CONFIG.deadband3d_throttle);
-
-            $('.deadband input[name="deadband"]').change(function () {
-                tab.deadband = parseInt($(this).val());
-            }).change();
-            $('.deadband input[name="yaw_deadband"]').change(function () {
-                tab.yawDeadband = parseInt($(this).val());
-            }).change();
         }
 
         if (semver.lt(FC.CONFIG.apiVersion, "1.15.0")) {
@@ -109,7 +99,7 @@ TABS.receiver.initialize = function (callback) {
             i18n.getMessage('controlAxisRoll'),
             i18n.getMessage('controlAxisPitch'),
             i18n.getMessage('controlAxisYaw'),
-            i18n.getMessage('controlAxisThrottle')
+            i18n.getMessage('controlAxisThrottle'),
         ];
 
         const barContainer = $('.tab-receiver .bars');
@@ -122,28 +112,28 @@ TABS.receiver.initialize = function (callback) {
             if (i < bar_names.length) {
                 name = bar_names[i];
             } else {
-                name = i18n.getMessage("controlAxisAux" + (auxIndex++));
+                name = i18n.getMessage(`controlAxisAux${auxIndex++}`);
             }
 
-            barContainer.append('\
+            barContainer.append(`\
                 <ul>\
-                    <li class="name">' + name + '</li>\
+                    <li class="name">${name}</li>\
                     <li class="meter">\
                         <div class="meter-bar">\
                             <div class="label"></div>\
-                            <div class="fill' + (FC.RC.active_channels == 0 ? 'disabled' : '') + '">\
+                            <div class="fill${FC.RC.active_channels === 0 ? 'disabled' : ''}">\
                                 <div class="label"></div>\
                             </div>\
                         </div>\
                     </li>\
                 </ul>\
-            ');
+            `);
         }
 
         // we could probably use min and max throttle for the range, will see
         const meterScale = {
             'min': 800,
-            'max': 2200
+            'max': 2200,
         };
 
         const meterFillArray = [];
@@ -201,7 +191,7 @@ TABS.receiver.initialize = function (callback) {
             strBuffer = val.split('');
             const duplicityBuffer = [];
 
-            if (val.length != 8) {
+            if (val.length !== 8) {
                 $(this).val(lastValid);
                 return false;
             }
@@ -233,7 +223,8 @@ TABS.receiver.initialize = function (callback) {
         rssi_channel_e.append(`<option value="0">${i18n.getMessage("receiverRssiChannelDisabledOption")}</option>`);
         //1-4 reserved for Roll Pitch Yaw & Throttle, starting at 5
         for (let i = 5; i < FC.RC.active_channels + 1; i++) {
-            rssi_channel_e.append(`<option value="${i}">${i18n.getMessage("controlAxisAux" + (i-4))}</option>`);
+            const messageKey = `controlAxisAux${i-4}`;
+            rssi_channel_e.append(`<option value="${i}">${i18n.getMessage(messageKey)}</option>`);
         }
 
         $('select[name="rssi_channel"]').val(FC.RSSI_CONFIG.channel);
@@ -259,6 +250,17 @@ TABS.receiver.initialize = function (callback) {
         // select current serial RX type
         serialRxSelectElement.val(FC.RX_CONFIG.serialrx_provider);
 
+        // Convert to select2 and order alphabetic
+        if (!GUI.isCordova()) {
+            serialRxSelectElement.select2({
+                sorter(data) {
+                    return data.sort(function(a, b) {
+                        return a.text.localeCompare(b.text);
+                    });
+                },
+            });
+        }
+
         if (semver.gte(FC.CONFIG.apiVersion, API_VERSION_1_31)) {
             const spiRxTypes = [
                 'NRF24_V202_250K',
@@ -277,7 +279,7 @@ TABS.receiver.initialize = function (callback) {
                     'FRSKY_X',
                     'A7105_FLYSKY',
                     'A7105_FLYSKY_2A',
-                    'NRF24_KN'
+                    'NRF24_KN',
                 );
             }
 
@@ -285,20 +287,21 @@ TABS.receiver.initialize = function (callback) {
                 spiRxTypes.push(
                     'SFHSS',
                     'SPEKTRUM',
-                    'FRSKY_X_LBT'
+                    'FRSKY_X_LBT',
                 );
             }
 
             if (semver.gte(FC.CONFIG.apiVersion, API_VERSION_1_43)) {
                 spiRxTypes.push(
-                    'REDPINE'
+                    'REDPINE',
                 );
             }
 
             if (semver.gte(FC.CONFIG.apiVersion, API_VERSION_1_44)) {
                 spiRxTypes.push(
                     'FRSKY_X_V2',
-                    'FRSKY_X_LBT_V2'
+                    'FRSKY_X_LBT_V2',
+                    'EXPRESSLRS',
                 );
             }
 
@@ -322,6 +325,17 @@ TABS.receiver.initialize = function (callback) {
 
             // select current serial RX type
             spiRxElement.val(FC.RX_CONFIG.rxSpiProtocol);
+
+            if (!GUI.isCordova()) {
+                // Convert to select2 and order alphabetic
+                spiRxElement.select2({
+                    sorter(data) {
+                        return data.sort(function(a, b) {
+                            return a.text.localeCompare(b.text);
+                        });
+                    },
+                });
+            }
         }
 
 
@@ -346,7 +360,7 @@ TABS.receiver.initialize = function (callback) {
             FC.FEATURE_CONFIG.features.updateData(element);
             updateTabList(FC.FEATURE_CONFIG.features);
 
-            if (element.attr('name') === "RSSI_ADC") {
+            if (element.attr('name') === "RSSI_ADC" || element.attr('name') === "TELEMETRY") {
                 updateSaveButton(true);
             }
         });
@@ -462,8 +476,7 @@ TABS.receiver.initialize = function (callback) {
                 GUI.log(i18n.getMessage('configurationEepromSaved'));
                 if (boot) {
                     GUI.tab_switch_cleanup(function() {
-                        MSP.send_message(MSPCodes.MSP_SET_REBOOT, false, false);
-                        reinitialiseConnection(tab);
+                        MSP.send_message(MSPCodes.MSP_SET_REBOOT, false, false, reinitializeConnection);
                     });
                 }
             }
@@ -492,13 +505,13 @@ TABS.receiver.initialize = function (callback) {
                 innerBounds: {
                     minWidth: windowWidth, minHeight: windowHeight,
                     width: windowWidth, height: windowHeight,
-                    maxWidth: windowWidth, maxHeight: windowHeight
+                    maxWidth: windowWidth, maxHeight: windowHeight,
                 },
-                alwaysOnTop: true
+                alwaysOnTop: true,
             }, function(createdWindow) {
                 // Give the window a callback it can use to send the channels (otherwise it can't see those objects)
                 createdWindow.contentWindow.setRawRx = function(channels) {
-                    if (CONFIGURATOR.connectionValid && GUI.active_tab != 'cli') {
+                    if (CONFIGURATOR.connectionValid && GUI.active_tab !== 'cli') {
                         mspHelper.setRawRx(channels);
                         return true;
                     } else {
@@ -608,6 +621,10 @@ TABS.receiver.initialize = function (callback) {
                 $('.tab-receiver .rcSmoothing-auto-factor').hide();
             }
 
+            if (semver.gte(FC.CONFIG.apiVersion, API_VERSION_1_44)) {
+                $('.receiverRcSmoothingAutoFactorHelp').attr('title', i18n.getMessage("receiverRcSmoothingAutoFactorHelp2"));
+            }
+
             updateInterpolationView();
         } else {
             $('.tab-receiver .rcInterpolation').show();
@@ -688,7 +705,7 @@ TABS.receiver.initialize = function (callback) {
 
                     // update bars with latest data
                     for (let i = 0; i < FC.RC.active_channels; i++) {
-                        meterFillArray[i].css('width', ((FC.RC.channels[i] - meterScale.min) / (meterScale.max - meterScale.min) * 100).clamp(0, 100) + '%');
+                        meterFillArray[i].css('width', `${((FC.RC.channels[i] - meterScale.min) / (meterScale.max - meterScale.min) * 100).clamp(0, 100)}%`);
                         meterLabelArray[i].text(FC.RC.channels[i]);
                     }
 
@@ -766,13 +783,12 @@ TABS.receiver.initialize = function (callback) {
             GUI.interval_add('receiver_pull', get_rc_refresh_data, plotUpdateRate, true);
         });
 
-        ConfigStorage.get('rx_refresh_rate', function (result) {
-            if (result.rxRefreshRate) {
-                rxRefreshRate.val(result.rxRefreshRate).change();
-            } else {
-                rxRefreshRate.change(); // start with default value
-            }
-        });
+        const result = ConfigStorage.get('rx_refresh_rate');
+        if (result.rxRefreshRate) {
+            rxRefreshRate.val(result.rxRefreshRate).change();
+        } else {
+            rxRefreshRate.change(); // start with default value
+        }
 
         // Setup model for preview
         tab.initModelPreview();
@@ -790,33 +806,29 @@ TABS.receiver.initialize = function (callback) {
     }
 };
 
-TABS.receiver.getReceiverData = function () {
+receiver.getReceiverData = function () {
     MSP.send_message(MSPCodes.MSP_RC, false, false);
 };
 
-TABS.receiver.initModelPreview = function () {
+receiver.initModelPreview = function () {
     this.keepRendering = true;
     this.model = new Model($('.model_preview'), $('.model_preview canvas'));
 
-    this.useSuperExpo = false;
-    if (semver.gte(FC.CONFIG.apiVersion, "1.20.0") || (semver.gte(FC.CONFIG.apiVersion, "1.16.0") && FC.FEATURE_CONFIG.features.isEnabled('SUPEREXPO_RATES'))) {
-        this.useSuperExpo = true;
-    }
-
     let useOldRateCurve = false;
-    if (FC.CONFIG.flightControllerIdentifier == 'CLFL' && semver.lt(FC.CONFIG.apiVersion, '2.0.0')) {
-        useOldRateCurve = true;
-    }
-    if (FC.CONFIG.flightControllerIdentifier == 'BTFL' && semver.lt(FC.CONFIG.flightControllerVersion, '2.8.0')) {
+    const cleanFlight = FC.CONFIG.flightControllerIdentifier === 'CLFL' && semver.lt(FC.CONFIG.apiVersion, '2.0.0');
+    const betaFlight = FC.CONFIG.flightControllerIdentifier === 'BTFL' && semver.lt(FC.CONFIG.flightControllerVersion, '2.8.0');
+
+    if (cleanFlight || betaFlight) {
         useOldRateCurve = true;
     }
 
     this.rateCurve = new RateCurve(useOldRateCurve);
+    this.currentRates = this.rateCurve.getCurrentRates();
 
-    $(window).on('resize', $.proxy(this.model.resize, this.model));
+    $(window).on('resize', $.bind(this.model.resize, this.model));
 };
 
-TABS.receiver.renderModel = function () {
+receiver.renderModel = function () {
     if (this.keepRendering) { requestAnimationFrame(this.renderModel.bind(this)); }
 
     if (!this.clock) { this.clock = new THREE.Clock(); }
@@ -824,16 +836,18 @@ TABS.receiver.renderModel = function () {
     if (FC.RC.channels[0] && FC.RC.channels[1] && FC.RC.channels[2]) {
         const delta = this.clock.getDelta();
 
-        const roll  = delta * this.rateCurve.rcCommandRawToDegreesPerSecond(FC.RC.channels[0], FC.RC_TUNING.roll_rate, FC.RC_TUNING.RC_RATE, FC.RC_TUNING.RC_EXPO, this.useSuperExpo, this.deadband, FC.RC_TUNING.roll_rate_limit),
-            pitch = delta * this.rateCurve.rcCommandRawToDegreesPerSecond(FC.RC.channels[1], FC.RC_TUNING.pitch_rate, FC.RC_TUNING.rcPitchRate, FC.RC_TUNING.RC_PITCH_EXPO, this.useSuperExpo, this.deadband, FC.RC_TUNING.pitch_rate_limit),
-            yaw   = delta * this.rateCurve.rcCommandRawToDegreesPerSecond(FC.RC.channels[2], FC.RC_TUNING.yaw_rate, FC.RC_TUNING.rcYawRate, FC.RC_TUNING.RC_YAW_EXPO, this.useSuperExpo, this.yawDeadband, FC.RC_TUNING.yaw_rate_limit);
+        const roll = delta * this.rateCurve.rcCommandRawToDegreesPerSecond(FC.RC.channels[0], this.currentRates.roll_rate, this.currentRates.rc_rate, this.currentRates.rc_expo,
+            this.currentRates.superexpo, this.currentRates.deadband, this.currentRates.roll_rate_limit);
+        const pitch = delta * this.rateCurve.rcCommandRawToDegreesPerSecond(FC.RC.channels[1], this.currentRates.pitch_rate, this.currentRates.rc_rate_pitch,
+            this.currentRates.rc_pitch_expo, this.currentRates.superexpo, this.currentRates.deadband, this.currentRates.pitch_rate_limit);
+        const yaw = delta * this.rateCurve.rcCommandRawToDegreesPerSecond(FC.RC.channels[2], this.currentRates.yaw_rate, this.currentRates.rc_rate_yaw,
+            this.currentRates.rc_yaw_expo, this.currentRates.superexpo, this.currentRates.yawDeadband, this.currentRates.yaw_rate_limit);
 
         this.model.rotateBy(-degToRad(pitch), -degToRad(yaw), -degToRad(roll));
     }
 };
 
-
-TABS.receiver.cleanup = function (callback) {
+receiver.cleanup = function (callback) {
     $(window).off('resize', this.resize);
     if (this.model) {
         $(window).off('resize', $.proxy(this.model.resize, this.model));
@@ -845,7 +859,7 @@ TABS.receiver.cleanup = function (callback) {
     if (callback) callback();
 };
 
-TABS.receiver.refresh = function (callback) {
+receiver.refresh = function (callback) {
     const self = this;
 
     GUI.tab_switch_cleanup(function () {
@@ -857,7 +871,7 @@ TABS.receiver.refresh = function (callback) {
     });
 };
 
-TABS.receiver.updateRcInterpolationParameters = function () {
+receiver.updateRcInterpolationParameters = function () {
     if (semver.gte(FC.CONFIG.apiVersion, "1.20.0")) {
         if ($('select[name="rcInterpolation-select"]').val() === '3') {
             $('.tab-receiver .rc-interpolation-manual').show();
@@ -921,3 +935,8 @@ function updateInterpolationView() {
         $('.tab-receiver .rcSmoothing-setpoint-cutoff').hide();
     }
 }
+
+window.TABS.receiver = receiver;
+export {
+    receiver,
+};

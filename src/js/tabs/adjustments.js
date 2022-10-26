@@ -1,8 +1,8 @@
-'use strict';
+import { i18n } from '../localization';
 
-TABS.adjustments = {};
+const adjustments = {};
 
-TABS.adjustments.initialize = function (callback) {
+adjustments.initialize = function (callback) {
     const self = this;
     GUI.active_tab_ref = this;
     GUI.active_tab = 'adjustments';
@@ -30,7 +30,7 @@ TABS.adjustments.initialize = function (callback) {
         const template = $('#tab-adjustments-templates .adjustments .adjustment');
         const newAdjustment = template.clone();
 
-        $(newAdjustment).attr('id', 'adjustment-' + adjustmentIndex);
+        $(newAdjustment).attr('id', `adjustment-${adjustmentIndex}`);
         $(newAdjustment).data('index', adjustmentIndex);
 
         //
@@ -51,7 +51,7 @@ TABS.adjustments.initialize = function (callback) {
         channelOptionTemplate.remove();
         for (let channelIndex = 0; channelIndex < auxChannelCount; channelIndex++) {
             const channelOption = channelOptionTemplate.clone();
-            channelOption.text('AUX ' + (channelIndex + 1));
+            channelOption.text(`AUX ${channelIndex + 1}`);
             channelOption.val(channelIndex);
             channelList.append(channelOption);
         }
@@ -76,7 +76,7 @@ TABS.adjustments.initialize = function (callback) {
         let switchOption;
         for (let switchIndex = 0; switchIndex < auxChannelCount; switchIndex++) {
             switchOption = switchOptionTemplate.clone();
-            switchOption.text('AUX ' + (switchIndex + 1));
+            switchOption.text(`AUX ${switchIndex + 1}`);
             switchOption.val(switchIndex);
             switchList.append(switchOption);
         }
@@ -88,7 +88,7 @@ TABS.adjustments.initialize = function (callback) {
 
         const channel_range = {
                 'min': [  900 ],
-                'max': [ 2100 ]
+                'max': [ 2100 ],
             };
 
         let rangeValues = [1300, 1700];
@@ -106,8 +106,8 @@ TABS.adjustments.initialize = function (callback) {
             connect: true,
             range: channel_range,
             format: wNumb({
-                decimals: 0
-            })
+                decimals: 0,
+            }),
         });
 
         $(newAdjustment).find('.channel-slider').Link('lower').to($(newAdjustment).find('.lowerLimitValue'));
@@ -117,7 +117,7 @@ TABS.adjustments.initialize = function (callback) {
             mode: 'values',
             values: [900, 1000, 1200, 1400, 1500, 1600, 1800, 2000, 2100],
             density: 4,
-            stepped: true
+            stepped: true,
         });
 
         //
@@ -187,10 +187,10 @@ TABS.adjustments.initialize = function (callback) {
                 auxChannelIndex: 0,
                 range: {
                     start: 900,
-                    end: 900
+                    end: 900,
                 },
                 adjustmentFunction: 0,
-                auxSwitchChannelIndex: 0
+                auxSwitchChannelIndex: 0,
             };
 
             $('.tab-adjustments .adjustments .adjustment').each(function () {
@@ -208,10 +208,10 @@ TABS.adjustments.initialize = function (callback) {
                         auxChannelIndex: parseInt($(this).find('.channelInfo .channel').val()),
                         range: {
                             start: rangeValues[0],
-                            end: rangeValues[1]
+                            end: rangeValues[1],
                         },
                         adjustmentFunction: parseInt($(this).find('.functionSelection .function').val()),
-                        auxSwitchChannelIndex: parseInt($(this).find('.functionSwitchChannel .channel').val())
+                        auxSwitchChannelIndex: parseInt($(this).find('.functionSwitchChannel .channel').val()),
                     };
                     FC.ADJUSTMENT_RANGES.push(adjustmentRange);
                 } else {
@@ -250,7 +250,7 @@ TABS.adjustments.initialize = function (callback) {
                     return;
                 }
 
-                $(this).find('.range .marker').css('left', percentage + '%');
+                $(this).find('.range .marker').css('left', `${percentage}%`);
             });
         }
 
@@ -282,11 +282,11 @@ TABS.adjustments.initialize = function (callback) {
     }
 };
 
-TABS.adjustments.cleanup = function (callback) {
+adjustments.cleanup = function (callback) {
     if (callback) callback();
 };
 
-TABS.adjustments.adjust_template = function () {
+adjustments.adjust_template = function () {
 
     const selectFunction = $('#functionSelectionSelect');
     let elementsNumber;
@@ -304,7 +304,7 @@ TABS.adjustments.adjust_template = function () {
     }
 
     for (let i = 0; i < elementsNumber; i++) {
-        selectFunction.append(new Option(i18n.getMessage('adjustmentsFunction' + i), i));
+        selectFunction.append(new Option(i18n.getMessage(`adjustmentsFunction${i}`), i));
     }
 
     // For 1.40, the D Setpoint has been replaced, so we replace it with the correct values
@@ -321,4 +321,9 @@ TABS.adjustments.adjust_template = function () {
         element22.insertAfter(selectFunction.find("option[value='25']"));
         element23.insertAfter(selectFunction.find("option[value='28']"));
     }
+};
+
+window.TABS.adjustments = adjustments;
+export {
+    adjustments,
 };

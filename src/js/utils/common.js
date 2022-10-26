@@ -26,6 +26,10 @@ export function bytesToSize(bytes) {
     return outputBytes;
 }
 
+export function isInt(n) {
+    return n % 1 === 0;
+}
+
 /*
  *  checkChromeRuntimeError() has to be called after each chrome API call
  */
@@ -47,7 +51,7 @@ const majorFirmwareVersions = {
     "1.39": "3.4.*",
     "1.37": "3.3.0",
     "1.36": "3.2.*",
-    "1.31": "3.1.0"
+    "1.31": "3.1.0",
 };
 
 export function generateVirtualApiVersions() {
@@ -107,6 +111,7 @@ export function sortElement(element, keepDown = "DISABLED") {
 // TODO: these are temp binding while transition to module happens
 window.degToRad = degToRad;
 window.bytesToSize = bytesToSize;
+window.isInt = isInt;
 window.checkChromeRuntimeError = checkChromeRuntimeError;
 window.generateVirtualApiVersions = generateVirtualApiVersions;
 window.getMixerImageSrc = getMixerImageSrc;

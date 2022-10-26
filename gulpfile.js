@@ -28,6 +28,8 @@ const git = require('simple-git')();
 const source = require('vinyl-source-stream');
 const stream = require('stream');
 const prompt = require('gulp-prompt');
+const less = require('gulp-less');
+const sourcemaps = require('gulp-sourcemaps');
 
 const cordova = require("cordova-lib").cordova;
 
@@ -48,7 +50,7 @@ const NODE_ENV = process.env.NODE_ENV || 'production';
 const NAME_REGEX = /-/g;
 
 const nwBuilderOptions = {
-    version: '0.54.1',
+    version: '0.67.1',
     files: `${DIST_DIR}**/*`,
     macIcns: './src/images/bf_icon.icns',
     macPlist: { 'CFBundleDisplayName': 'Betaflight Configurator'},
@@ -56,7 +58,7 @@ const nwBuilderOptions = {
     zip: false,
 };
 
-const nwArmVersion = '0.27.6';
+const nwArmVersion = 'nw60-arm64_2022-01-08';
 
 let metadata = {};
 
@@ -101,12 +103,13 @@ function process_package_debug(done) {
     getGitRevision(done, processPackage, false);
 }
 
-
 // dist_yarn MUST be done after dist_src
 
-const distBuild = gulp.series(process_package_release, dist_src, dist_changelog, dist_yarn, dist_locale, dist_libraries, dist_resources, dist_rollup, gulp.series(cordova_dist()));
+const distCommon = gulp.series(dist_src, dist_less, dist_changelog, dist_yarn, dist_locale, dist_libraries, dist_resources, dist_rollup, gulp.series(cordova_dist()));
 
-const debugDistBuild = gulp.series(process_package_debug, dist_src, dist_changelog, dist_yarn, dist_locale, dist_libraries, dist_resources, dist_rollup, gulp.series(cordova_dist()));
+const distBuild = gulp.series(process_package_release, distCommon);
+
+const debugDistBuild = gulp.series(process_package_debug, distCommon);
 
 const distRebuild = gulp.series(clean_dist, distBuild);
 gulp.task('dist', distRebuild);
@@ -116,8 +119,10 @@ gulp.task('apps', appsBuild);
 
 const debugAppsBuild = gulp.series(gulp.parallel(clean_debug, gulp.series(clean_dist, debugDistBuild)), debug, gulp.series(cordova_apps(false)), gulp.parallel(listPostBuildTasks(DEBUG_DIR)));
 
-const debugBuild = gulp.series(debugDistBuild, debug, gulp.parallel(listPostBuildTasks(DEBUG_DIR)), start_debug);
+const debugBuildNoStart = gulp.series(debugDistBuild, debug, gulp.parallel(listPostBuildTasks(DEBUG_DIR)));
+const debugBuild = gulp.series(debugBuildNoStart, start_debug);
 gulp.task('debug', debugBuild);
+gulp.task('debug-no-start', debugBuildNoStart);
 
 const releaseBuild = gulp.series(gulp.parallel(clean_release, appsBuild), gulp.parallel(listReleaseTasks(true, APPS_DIR)));
 gulp.task('release', releaseBuild);
@@ -134,10 +139,10 @@ gulp.task('default', debugBuild);
 
 // Get platform from commandline args
 // #
-// # gulp <task> [<platform>]+        Run only for platform(s) (with <platform> one of --linux64, --linux32, --armv7, --osx64, --win32, --win64, or --android)
+// # gulp <task> [<platform>]+        Run only for platform(s) (with <platform> one of --linux64, --linux32, --armv8, --osx64, --win32, --win64, or --android)
 // #
 function getInputPlatforms() {
-    const supportedPlatforms = ['linux64', 'linux32', 'armv7', 'osx64', 'win32', 'win64', 'android'];
+    const supportedPlatforms = ['linux64', 'linux32', 'armv8', 'osx64', 'win32', 'win64', 'android'];
     const platforms = [];
     const regEx = /--(\w+)/;
 
@@ -227,7 +232,7 @@ function getRunDebugAppCommand(arch) {
 
     case 'linux64':
     case 'linux32':
-    case 'armv7':
+    case 'armv8':
         command = path.join(DEBUG_DIR, metadata.name, arch, metadata.name);
 
         break;
@@ -247,8 +252,8 @@ function getRunDebugAppCommand(arch) {
     return command;
 }
 
-function getReleaseFilename(platform, ext) {
-    return `${metadata.name}_${metadata.version}_${platform}.${ext}`;
+function getReleaseFilename(platform, ext, portable = false) {
+    return `${metadata.name}_${metadata.version}_${platform}${portable ? "-portable" : ""}.${ext}`;
 }
 
 function clean_dist() {
@@ -342,11 +347,20 @@ function dist_src() {
         './src/**/*',
         '!./src/css/dropdown-lists/LICENSE',
         '!./src/support/**',
+        '!./src/**/*.less',
     ];
 
     return gulp.src(distSources, { base: 'src' })
         .pipe(gulp.src('yarn.lock'))
         .pipe(gulp.dest(DIST_DIR));
+}
+
+function dist_less() {
+    return gulp.src('./src/**/*.less')
+    .pipe(sourcemaps.init())
+    .pipe(less())
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest(`${DIST_DIR}`));
 }
 
 function dist_changelog() {
@@ -393,10 +407,8 @@ function dist_rollup() {
                 // If all the things used by other files are importing
                 // it with `import/export` file doesn't have to be here.
                 // I will be picked up by rollup and bundled accordingly.
-                'components/init': 'src/components/init.js',
                 'js/main_cordova': 'src/js/main_cordova.js',
                 'js/utils/common': 'src/js/utils/common.js',
-                'js/tabs/logging': 'src/js/tabs/logging.js',
                 'js/main': 'src/js/main.js',
             },
             plugins: [
@@ -422,7 +434,7 @@ function dist_rollup() {
                 // accordingly inside of `dist`
                 entryFileNames: '[name].js',
                 dir: DIST_DIR,
-            })
+            }),
         );
 }
 
@@ -452,9 +464,9 @@ function listPostBuildTasks(folder) {
         });
     }
 
-    if (platforms.indexOf('armv7') !== -1) {
-        postBuildTasks.push(function post_build_armv7(done) {
-            return post_build('armv7', folder, done);
+    if (platforms.indexOf('armv8') !== -1) {
+        postBuildTasks.push(function post_build_armv8(done) {
+            return post_build('armv8', folder, done);
         });
     }
 
@@ -477,9 +489,9 @@ function post_build(arch, folder, done) {
                    .pipe(gulp.dest(launcherDir));
     }
 
-    if (arch === 'armv7') {
-        console.log('Moving ARMv7 build from "linux32" to "armv7" directory...');
-        fse.moveSync(path.join(folder, metadata.name, 'linux32'), path.join(folder, metadata.name, 'armv7'));
+    if (arch === 'armv8') {
+        console.log('Moving armv8 build from "linux32" to "armv8" directory...');
+        fse.moveSync(path.join(folder, metadata.name, 'linux32'), path.join(folder, metadata.name, 'armv8'));
     }
 
     return done();
@@ -500,7 +512,7 @@ function injectARMCache(flavor, done) {
         if (!fs.existsSync('./cache')) {
             fs.mkdirSync('./cache');
         }
-        fs.closeSync(fs.openSync('./cache/_ARMv7_IS_CACHED', 'w'));
+        fs.closeSync(fs.openSync('./cache/_ARMv8_IS_CACHED', 'w'));
         const versionFolder = `./cache/${nwBuilderOptions.version}${flavorPostfix}`;
         if (!fs.existsSync(versionFolder)) {
             fs.mkdirSync(versionFolder);
@@ -510,12 +522,12 @@ function injectARMCache(flavor, done) {
             fs.mkdirSync(linux32Folder);
         }
         const downloadedArchivePath = `${versionFolder}/nwjs${flavorPostfix}-v${nwArmVersion}-linux-arm.tar.gz`;
-        const downloadUrl = `https://github.com/LeonardLaszlo/nw.js-armv7-binaries/releases/download/v${nwArmVersion}/nwjs${flavorDownloadPostfix}-v${nwArmVersion}-linux-arm.tar.gz`;
+        const downloadUrl = `https://github.com/LeonardLaszlo/nw.js-armv7-binaries/releases/download/${nwArmVersion}/${nwArmVersion}.tar.gz`;
         if (fs.existsSync(downloadedArchivePath)) {
-            console.log('Prebuilt ARMv7 binaries found in /tmp');
+            console.log('Prebuilt ARMv8 binaries found in /tmp');
             downloadDone(flavorDownloadPostfix, downloadedArchivePath, versionFolder);
         } else {
-            console.log(`Downloading prebuilt ARMv7 binaries from "${downloadUrl}"...`);
+            console.log(`Downloading prebuilt ARMv8 binaries from "${downloadUrl}"...`);
             process.stdout.write('> Starting download...\r');
             const armBuildBinary = fs.createWriteStream(downloadedArchivePath);
             https.get(downloadUrl, function(res) {
@@ -537,7 +549,7 @@ function injectARMCache(flavor, done) {
     });
 
     function downloadDone(flavorDownload, downloadedArchivePath, versionFolder) {
-        console.log('Injecting prebuilt ARMv7 binaries into Linux32 cache...');
+        console.log('Injecting prebuilt ARMv8 binaries into Linux32 cache...');
         targz.decompress({
             src: downloadedArchivePath,
             dest: versionFolder,
@@ -557,7 +569,7 @@ function injectARMCache(flavor, done) {
                             process.exit(1);
                         }
                         done();
-                    }
+                    },
                 );
             }
         });
@@ -569,16 +581,16 @@ function buildNWAppsWrapper(platforms, flavor, dir, done) {
         buildNWApps(platforms, flavor, dir, done);
     }
 
-    if (platforms.indexOf('armv7') !== -1) {
+    if (platforms.indexOf('armv8') !== -1) {
         if (platforms.indexOf('linux32') !== -1) {
-            console.log('Cannot build ARMv7 and Linux32 versions at the same time!');
+            console.log('Cannot build ARMv8 and Linux32 versions at the same time!');
             clean_debug();
             process.exit(1);
         }
-        removeItem(platforms, 'armv7');
+        removeItem(platforms, 'armv8');
         platforms.push('linux32');
 
-        if (!fs.existsSync('./cache/_ARMv7_IS_CACHED', 'w')) {
+        if (!fs.existsSync('./cache/_ARMv8_IS_CACHED', 'w')) {
             console.log('Purging cache because it needs to be overwritten...');
             clean_cache().then(() => {
                 injectARMCache(flavor, buildNWAppsCallback);
@@ -587,7 +599,7 @@ function buildNWAppsWrapper(platforms, flavor, dir, done) {
             buildNWAppsCallback();
         }
     } else {
-        if (platforms.indexOf('linux32') !== -1 && fs.existsSync('./cache/_ARMv7_IS_CACHED')) {
+        if (platforms.indexOf('linux32') !== -1 && fs.existsSync('./cache/_ARMv8_IS_CACHED')) {
             console.log('Purging cache because it was previously overwritten...');
             clean_cache().then(buildNWAppsCallback);
         } else {
@@ -686,7 +698,7 @@ function release_win(arch, appDirectory, done) {
 // Create distribution package (zip) for windows and linux platforms
 function release_zip(arch, appDirectory) {
     const src = path.join(appDirectory, metadata.name, arch, '**');
-    const output = getReleaseFilename(arch, 'zip');
+    const output = getReleaseFilename(arch, 'zip', true);
     const base = path.join(appDirectory, metadata.name, arch);
 
     return compressFiles(src, base, output, 'CleanRobotTest Desktop');
@@ -708,6 +720,7 @@ function release_deb(arch, appDirectory, done) {
     if (!commandExistsSync('dpkg-deb')) {
         console.warn(`dpkg-deb command not found, not generating deb package for ${arch}`);
         done();
+        return null;
     }
 
     return gulp.src([path.join(appDirectory, metadata.name, arch, '*')])
@@ -724,9 +737,12 @@ function release_deb(arch, appDirectory, done) {
                 `chown root:root ${LINUX_INSTALL_DIR}`,
                 `chown -R root:root ${LINUX_INSTALL_DIR}/${metadata.name}`,
                 `xdg-desktop-menu install ${LINUX_INSTALL_DIR}/${metadata.name}/${metadata.name}.desktop`,
+                `chmod +xr ${LINUX_INSTALL_DIR}/${metadata.name}/chrome_crashpad_handler`,
+                `chmod +xr ${LINUX_INSTALL_DIR}/${metadata.name}/${metadata.name}`,
+                `chmod -R +Xr ${LINUX_INSTALL_DIR}/${metadata.name}/`,
             ],
             prerm: [`xdg-desktop-menu uninstall ${metadata.name}.desktop`],
-            depends: 'libgconf-2-4',
+            depends: ['libgconf-2-4', 'libatomic1'],
             changelog: [],
             _target: `${LINUX_INSTALL_DIR}/${metadata.name}`,
             _out: RELEASE_DIR,
@@ -737,10 +753,11 @@ function release_deb(arch, appDirectory, done) {
 
 function release_rpm(arch, appDirectory, done) {
 
-    // Check if dpkg-deb exists
+    // Check if rpmbuild exists
     if (!commandExistsSync('rpmbuild')) {
         console.warn(`rpmbuild command not found, not generating rpm package for ${arch}`);
         done();
+        return;
     }
 
     // The buildRpm does not generate the folder correctly, manually
@@ -753,7 +770,7 @@ function release_rpm(arch, appDirectory, done) {
             vendor: metadata.author,
             summary: metadata.description,
             license: 'GNU General Public License v3.0',
-            requires: 'libgconf-2-4',
+            requires: ['GConf2', 'libatomic'],
             prefix: '/opt',
             files: [{
                 cwd: path.join(appDirectory, metadata.name, arch),
@@ -801,7 +818,7 @@ function getLinuxPackageArch(type, arch) {
 }
 // Create distribution package for macOS platform
 function release_osx64(appDirectory) {
-    const appdmg = require('gulp-appdmg');
+    const appdmg = require('./gulp-appdmg');
 
     // The appdmg does not generate the folder correctly, manually
     createDirIfNotExists(RELEASE_DIR);
@@ -826,7 +843,7 @@ function release_osx64(appDirectory) {
                     },
                 },
             },
-        })
+        }),
     );
 }
 
@@ -870,9 +887,9 @@ function listReleaseTasks(isReleaseBuild, appDirectory) {
         });
     }
 
-    if (platforms.indexOf('armv7') !== -1) {
-        releaseTasks.push(function release_armv7_zip() {
-            return release_zip('armv7', appDirectory);
+    if (platforms.indexOf('armv8') !== -1) {
+        releaseTasks.push(function release_armv8_zip() {
+            return release_zip('armv8', appDirectory);
         });
     }
 
@@ -883,12 +900,18 @@ function listReleaseTasks(isReleaseBuild, appDirectory) {
     }
 
     if (platforms.indexOf('win32') !== -1) {
+        releaseTasks.push(function release_win32_zip() {
+            return release_zip('win32', appDirectory);
+        });
         releaseTasks.push(function release_win32(done) {
             return release_win('win32', appDirectory, done);
         });
     }
 
     if (platforms.indexOf('win64') !== -1) {
+        releaseTasks.push(function release_win64_zip() {
+            return release_zip('win64', appDirectory);
+        });
         releaseTasks.push(function release_win64(done) {
             return release_win('win64', appDirectory, done);
         });

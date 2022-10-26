@@ -1,4 +1,5 @@
-import { i18n } from './localization';
+import '../components/init.js';
+import { i18n } from './localization.js';
 
 $(document).ready(function () {
 
@@ -28,8 +29,30 @@ function readConfiguratorVersionMetadata() {
     CONFIGURATOR.gitRevision = manifest.gitRevision;
 }
 
+function cleanupLocalStorage() {
+
+    const cleanupLocalStorageList = [
+        'cache',
+        'firmware',
+        'https',
+        'selected_board',
+        'unifiedConfigLast',
+        'unifiedSourceCache',
+    ];
+
+    for (const key in localStorage) {
+        for (const item of cleanupLocalStorageList) {
+            if (key.includes(item)) {
+                localStorage.removeItem(key);
+            }
+        }
+    }
+}
+
 function appReady() {
     readConfiguratorVersionMetadata();
+
+    cleanupLocalStorage();
 
     i18n.init(function() {
         startProcess();
@@ -45,13 +68,12 @@ function appReady() {
 function checkSetupAnalytics(callback) {
     if (!analytics) {
         setTimeout(function () {
-            ConfigStorage.get(['userId', 'analyticsOptOut', 'checkForConfiguratorUnstableVersions', ], function (result) {
-                if (!analytics) {
-                    setupAnalytics(result);
-                }
+            const result = ConfigStorage.get(['userId', 'analyticsOptOut', 'checkForConfiguratorUnstableVersions' ]);
+            if (!analytics) {
+                setupAnalytics(result);
+            }
 
-                callback(analytics);
-            });
+            callback(analytics);
         });
     } else if (callback) {
         callback(analytics);
@@ -173,7 +195,7 @@ function startProcess() {
     GUI.log(i18n.getMessage('infoVersionConfigurator', { configuratorVersion: CONFIGURATOR.getDisplayVersion() }));
 
     if (GUI.isNWJS()) {
-        let nwWindow = GUI.nwGui.Window.get();
+        const nwWindow = GUI.nwGui.Window.get();
         nwWindow.on('new-win-policy', function(frame, url, policy) {
             // do not open the window
             policy.ignore();
@@ -181,13 +203,6 @@ function startProcess() {
             GUI.nwGui.Shell.openExternal(url);
         });
         nwWindow.on('close', closeHandler);
-        // TODO: Remove visibilitychange Listener when upgrading to NW2
-        // capture Command H on MacOS and change it to minimize
-        document.addEventListener("visibilitychange", function() {
-            if (GUI.operating_system === "MacOS" && document.visibilityState === "hidden") {
-                nwWindow.minimize();
-            }
-        }, false);
     } else if (GUI.isCordova()) {
         window.addEventListener('beforeunload', closeHandler);
         document.addEventListener('backbutton', function(e) {
@@ -200,7 +215,7 @@ function startProcess() {
                     }
                 },
                 i18n.getMessage('cordovaExitAppTitle'),
-                [i18n.getMessage('yes'),i18n.getMessage('no')]
+                [i18n.getMessage('yes'),i18n.getMessage('no')],
             );
         });
     }
@@ -261,11 +276,11 @@ function startProcess() {
                 return;
             }
 
-            if (GUI.allowedTabs.indexOf(tab) < 0 && tabName === "Firmware Flasher") {
+            if (GUI.allowedTabs.indexOf(tab) < 0 && tab === "firmware_flasher") {
                 if (GUI.connected_to || GUI.connecting_to) {
                     $('a.connect').click();
                 } else {
-                    self.disconnect();
+                    serial.disconnect();
                 }
                 $('div.open_firmware_flasher a.flash').click();
             } else if (GUI.allowedTabs.indexOf(tab) < 0) {
@@ -305,95 +320,143 @@ function startProcess() {
                 switch (tab) {
                     case 'landing':
                         import("./tabs/landing").then(({ landing }) =>
-                            landing.initialize(content_ready)
+                            landing.initialize(content_ready),
                         );
                         break;
                     case 'changelog':
                         import("./tabs/static_tab").then(({ staticTab }) =>
-                            staticTab.initialize("changelog", content_ready)
+                            staticTab.initialize("changelog", content_ready),
                         );
                         break;
                     case 'privacy_policy':
                         import("./tabs/static_tab").then(({ staticTab }) =>
-                            staticTab.initialize("privacy_policy", content_ready)
+                            staticTab.initialize("privacy_policy", content_ready),
                         );
                         break;
                     case 'options':
                         import("./tabs/options").then(({ options }) =>
-                            options.initialize(content_ready)
+                            options.initialize(content_ready),
                         );
                         break;
                     case 'firmware_flasher':
                         import("./tabs/firmware_flasher").then(({ firmware_flasher }) =>
-                            firmware_flasher.initialize(content_ready)
+                            firmware_flasher.initialize(content_ready),
                         );
                         break;
                     case 'help':
-                        import('./tabs/help').then(({ help }) => help.initialize(content_ready));
+                        import("./tabs/help").then(({ help }) =>
+                            help.initialize(content_ready),
+                        );
                         break;
                     case 'auxiliary':
-                        TABS.auxiliary.initialize(content_ready);
+                        import("./tabs/auxiliary").then(({ auxiliary }) =>
+                            auxiliary.initialize(content_ready),
+                        );
                         break;
                     case 'adjustments':
-                        TABS.adjustments.initialize(content_ready);
+                        import("./tabs/adjustments").then(({ adjustments }) =>
+                            adjustments.initialize(content_ready),
+                        );
                         break;
                     case 'ports':
-                        TABS.ports.initialize(content_ready);
+                        import("./tabs/ports").then(({ ports }) =>
+                            ports.initialize(content_ready),
+                        );
                         break;
                     case 'led_strip':
-                        TABS.led_strip.initialize(content_ready);
+                        import("./tabs/led_strip").then(({ led_strip }) =>
+                            led_strip.initialize(content_ready),
+                        );
                         break;
                     case 'failsafe':
-                        TABS.failsafe.initialize(content_ready);
+                        import("./tabs/failsafe").then(({ failsafe }) =>
+                            failsafe.initialize(content_ready),
+                        );
                         break;
                     case 'transponder':
-                        TABS.transponder.initialize(content_ready);
+                        import("./tabs/transponder").then(({ transponder }) =>
+                            transponder.initialize(content_ready),
+                        );
                         break;
                     case 'osd':
-                        TABS.osd.initialize(content_ready);
+                        import("./tabs/osd").then(({ osd }) =>
+                            osd.initialize(content_ready),
+                        );
                         break;
                     case 'vtx':
-                        TABS.vtx.initialize(content_ready);
+                        import("./tabs/vtx").then(({ vtx }) =>
+                            vtx.initialize(content_ready),
+                        );
                         break;
                     case 'power':
-                        TABS.power.initialize(content_ready);
+                        import("./tabs/power").then(({ power }) =>
+                            power.initialize(content_ready),
+                        );
                         break;
                     case 'setup':
-                        TABS.setup.initialize(content_ready);
+                        import("./tabs/setup").then(({ setup }) =>
+                            setup.initialize(content_ready),
+                        );
                         break;
                     case 'setup_osd':
-                        TABS.setup_osd.initialize(content_ready);
+                        import("./tabs/setup_osd").then(({ setup_osd }) =>
+                            setup_osd.initialize(content_ready),
+                        );
                         break;
-
                     case 'configuration':
-                        TABS.configuration.initialize(content_ready);
+                        import("./tabs/configuration").then(({ configuration }) =>
+                            configuration.initialize(content_ready),
+                        );
                         break;
                     case 'pid_tuning':
-                        TABS.pid_tuning.initialize(content_ready);
+                        import("./tabs/pid_tuning").then(({ pid_tuning }) =>
+                            pid_tuning.initialize(content_ready),
+                        );
                         break;
                     case 'receiver':
-                        TABS.receiver.initialize(content_ready);
+                        import("./tabs/receiver").then(({ receiver }) =>
+                            receiver.initialize(content_ready),
+                        );
                         break;
                     case 'servos':
-                        TABS.servos.initialize(content_ready);
+                        import("./tabs/servos").then(({ servos }) =>
+                            servos.initialize(content_ready),
+                        );
                         break;
                     case 'gps':
-                        TABS.gps.initialize(content_ready);
+                        import("./tabs/gps").then(({ gps }) =>
+                            gps.initialize(content_ready),
+                        );
                         break;
                     case 'motors':
-                        TABS.motors.initialize(content_ready);
+                        import("./tabs/motors").then(({ motors }) =>
+                            motors.initialize(content_ready),
+                        );
                         break;
                     case 'sensors':
-                        TABS.sensors.initialize(content_ready);
+                        import("./tabs/sensors").then(({ sensors }) =>
+                            sensors.initialize(content_ready),
+                        );
                         break;
                     case 'logging':
-                        TABS.logging.initialize(content_ready);
+                        import("./tabs/logging").then(({ logging }) =>
+                            logging.initialize(content_ready),
+                        );
                         break;
                     case 'onboard_logging':
-                        TABS.onboard_logging.initialize(content_ready);
+                        import("./tabs/onboard_logging").then(({ onboard_logging }) =>
+                            onboard_logging.initialize(content_ready),
+                        );
                         break;
                     case 'cli':
-                        TABS.cli.initialize(content_ready, GUI.nwGui);
+                        import("./tabs/cli").then(({ cli }) =>
+                            cli.initialize(content_ready),
+                        );
+                        break;
+                    case 'presets':
+                        import("../tabs/presets/presets").then(({ presets }) =>
+                            presets.initialize(content_ready),
+                        );
                         break;
 
                     default:
@@ -497,44 +560,45 @@ function startProcess() {
         $(this).data('state', state);
     });
 
-    ConfigStorage.get('logopen', function (result) {
-        if (result.logopen) {
-            $("#showlog").trigger('click');
+    let result = ConfigStorage.get('logopen');
+    if (result.logopen) {
+        $("#showlog").trigger('click');
+    }
+
+    result = ConfigStorage.get('permanentExpertMode');
+    const expertModeCheckbox = 'input[name="expertModeCheckbox"]';
+    if (result.permanentExpertMode) {
+        $(expertModeCheckbox).prop('checked', true);
+    }
+
+    $(expertModeCheckbox).on("change", () => {
+        const checked = $(expertModeCheckbox).is(':checked');
+        checkSetupAnalytics(function (analyticsService) {
+            analyticsService.setDimension(analyticsService.DIMENSIONS.CONFIGURATOR_EXPERT_MODE, checked ? 'On' : 'Off');
+        });
+
+        if (FC.FEATURE_CONFIG && FC.FEATURE_CONFIG.features !== 0) {
+            updateTabList(FC.FEATURE_CONFIG.features);
+        }
+
+        if (GUI.active_tab) {
+            TABS[GUI.active_tab]?.expertModeChanged?.(checked);
         }
     });
 
-    ConfigStorage.get('permanentExpertMode', function (result) {
-        const expertModeCheckbox = 'input[name="expertModeCheckbox"]';
-        if (result.permanentExpertMode) {
-            $(expertModeCheckbox).prop('checked', true);
-        }
+    $(expertModeCheckbox).trigger("change");
 
-        $(expertModeCheckbox).change(function () {
-            const checked = $(this).is(':checked');
-            checkSetupAnalytics(function (analyticsService) {
-                analyticsService.setDimension(analyticsService.DIMENSIONS.CONFIGURATOR_EXPERT_MODE, checked ? 'On' : 'Off');
-            });
+    result = ConfigStorage.get('cliAutoComplete');
+    CliAutoComplete.setEnabled(typeof result.cliAutoComplete === "undefined" || result.cliAutoComplete); // On by default
 
-            if (FC.FEATURE_CONFIG && FC.FEATURE_CONFIG.features !== 0) {
-                updateTabList(FC.FEATURE_CONFIG.features);
-            }
+    result = ConfigStorage.get('darkTheme');
+    if (result.darkTheme === undefined || typeof result.darkTheme !== "number") {
+        // sets dark theme to auto if not manually changed
+        setDarkTheme(2);
+    } else {
+        setDarkTheme(result.darkTheme);
+    }
 
-            TuningSliders.setExpertMode(checked);
-        }).change();
-    });
-
-    ConfigStorage.get('cliAutoComplete', function (result) {
-        CliAutoComplete.setEnabled(typeof result.cliAutoComplete == 'undefined' || result.cliAutoComplete); // On by default
-    });
-
-    ConfigStorage.get('darkTheme', function (result) {
-        if (result.darkTheme === undefined || typeof result.darkTheme !== "number") {
-            // sets dark theme to auto if not manually changed
-            setDarkTheme(2);
-        } else {
-            setDarkTheme(result.darkTheme);
-        }
-    });
     if (GUI.isCordova()) {
         let darkMode = false;
         const checkDarkMode = function() {
@@ -569,52 +633,51 @@ function checkForConfiguratorUpdates() {
 }
 
 function notifyOutdatedVersion(releaseData) {
-    ConfigStorage.get('checkForConfiguratorUnstableVersions', function (result) {
-        let showUnstableReleases = false;
-        if (result.checkForConfiguratorUnstableVersions) {
-            showUnstableReleases = true;
+    const result = ConfigStorage.get('checkForConfiguratorUnstableVersions');
+    let showUnstableReleases = false;
+    if (result.checkForConfiguratorUnstableVersions) {
+        showUnstableReleases = true;
+    }
+    const versions = releaseData.filter(function (version) {
+        const semVerVersion = semver.parse(version.tag_name);
+        if (semVerVersion && (showUnstableReleases || semVerVersion.prerelease.length === 0)) {
+            return version;
+        } else {
+            return null;
         }
-        const versions = releaseData.filter(function (version) {
-            const semVerVersion = semver.parse(version.tag_name);
-            if (semVerVersion && (showUnstableReleases || semVerVersion.prerelease.length === 0)) {
-                return version;
-            } else {
-                return null;
-            }
-         }).sort(function (v1, v2) {
-            try {
-                return semver.compare(v2.tag_name, v1.tag_name);
-            } catch (e) {
-                return false;
-            }
-        });
-
-        if (versions.length > 0) {
-            CONFIGURATOR.latestVersion = versions[0].tag_name;
-            CONFIGURATOR.latestVersionReleaseUrl = versions[0].html_url;
-        }
-
-        if (semver.lt(CONFIGURATOR.version, CONFIGURATOR.latestVersion)) {
-            const message = i18n.getMessage('configuratorUpdateNotice', [CONFIGURATOR.latestVersion, CONFIGURATOR.latestVersionReleaseUrl]);
-            GUI.log(message);
-
-            const dialog = $('.dialogConfiguratorUpdate')[0];
-
-            $('.dialogConfiguratorUpdate-content').html(message);
-
-            $('.dialogConfiguratorUpdate-closebtn').click(function() {
-                dialog.close();
-            });
-
-            $('.dialogConfiguratorUpdate-websitebtn').click(function() {
-                dialog.close();
-
-                window.open(CONFIGURATOR.latestVersionReleaseUrl, '_blank');
-            });
-
-            dialog.showModal();
+        }).sort(function (v1, v2) {
+        try {
+            return semver.compare(v2.tag_name, v1.tag_name);
+        } catch (e) {
+            return false;
         }
     });
+
+    if (versions.length > 0) {
+        CONFIGURATOR.latestVersion = versions[0].tag_name;
+        CONFIGURATOR.latestVersionReleaseUrl = versions[0].html_url;
+    }
+
+    if (semver.lt(CONFIGURATOR.version, CONFIGURATOR.latestVersion)) {
+        const message = i18n.getMessage('configuratorUpdateNotice', [CONFIGURATOR.latestVersion, CONFIGURATOR.latestVersionReleaseUrl]);
+        GUI.log(message);
+
+        const dialog = $('.dialogConfiguratorUpdate')[0];
+
+        $('.dialogConfiguratorUpdate-content').html(message);
+
+        $('.dialogConfiguratorUpdate-closebtn').click(function() {
+            dialog.close();
+        });
+
+        $('.dialogConfiguratorUpdate-websitebtn').click(function() {
+            dialog.close();
+
+            window.open(CONFIGURATOR.latestVersionReleaseUrl, '_blank');
+        });
+
+        dialog.showModal();
+    }
 }
 
 function isExpertModeEnabled() {
@@ -718,21 +781,8 @@ function showErrorDialog(message) {
     dialog.showModal();
 }
 
-function showDialogDynFiltersChange() {
-    const dialogDynFiltersChange = $('.dialogDynFiltersChange')[0];
-
-    if (!dialogDynFiltersChange.hasAttribute('open')) {
-        dialogDynFiltersChange.showModal();
-
-        $('.dialogDynFiltersChange-confirmbtn').click(function() {
-            dialogDynFiltersChange.close();
-        });
-    }
-}
-
 // TODO: all of these are used as globals in other parts.
 // once moved to modules extract to own module.
-window.showDialogDynFiltersChange = showDialogDynFiltersChange;
 window.googleAnalytics = analytics;
 window.analytics = null;
 window.showErrorDialog = showErrorDialog;

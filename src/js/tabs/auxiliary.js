@@ -1,8 +1,8 @@
-'use strict';
+import { i18n } from '../localization';
 
-TABS.auxiliary = {};
+const auxiliary = {};
 
-TABS.auxiliary.initialize = function (callback) {
+auxiliary.initialize = function (callback) {
     GUI.active_tab_ref = this;
     GUI.active_tab = 'auxiliary';
     let prevChannelsValues = null;
@@ -46,7 +46,7 @@ TABS.auxiliary.initialize = function (callback) {
         // Adjust the name of the box if a peripheral is selected
         modeName = adjustBoxNameIfPeripheralWithModeID(modeId, modeName);
 
-        $(newMode).attr('id', 'mode-' + modeIndex);
+        $(newMode).attr('id', `mode-${modeIndex}`);
         $(newMode).find('.name').text(modeName);
 
         $(newMode).data('index', modeIndex);
@@ -99,7 +99,7 @@ TABS.auxiliary.initialize = function (callback) {
 
         for (let channelIndex = 0; channelIndex < auxChannelCount; channelIndex++) {
             channelOption = channelOptionTemplate.clone();
-            channelOption.text('AUX ' + (channelIndex + 1));
+            channelOption.text(`AUX ${channelIndex + 1}`);
             channelOption.val(channelIndex);
             channelList.append(channelOption);
         }
@@ -140,7 +140,7 @@ TABS.auxiliary.initialize = function (callback) {
 
         const channel_range = {
                 'min': [  900 ],
-                'max': [ 2100 ]
+                'max': [ 2100 ],
             };
 
         let rangeValues = [1300, 1700]; // matches MultiWii default values for the old checkbox MID range.
@@ -151,7 +151,7 @@ TABS.auxiliary.initialize = function (callback) {
         const rangeIndex = modeRanges.children().length;
 
         let rangeElement = $('#tab-auxiliary-templates .range').clone();
-        rangeElement.attr('id', 'mode-' + modeIndex + '-range-' + rangeIndex);
+        rangeElement.attr('id', `mode-${modeIndex}-range-${rangeIndex}`);
         modeRanges.append(rangeElement);
 
         if (rangeIndex == 0) {
@@ -169,12 +169,12 @@ TABS.auxiliary.initialize = function (callback) {
             range: channel_range,
             format: wNumb({
                 decimals: 0,
-            })
+            }),
         });
 
-        const elementName =  '#mode-' + modeIndex + '-range-' + rangeIndex;
-        $(elementName + ' .channel-slider').Link('lower').to($(elementName + ' .lowerLimitValue'));
-        $(elementName + ' .channel-slider').Link('upper').to($(elementName + ' .upperLimitValue'));
+        const elementName =  `#mode-${modeIndex}-range-${rangeIndex}`;
+        $(`${elementName} .channel-slider`).Link('lower').to($(`${elementName} .lowerLimitValue`));
+        $(`${elementName} .channel-slider`).Link('upper').to($(`${elementName} .upperLimitValue`));
 
         let sliderValues = [900, 1000, 1200, 1400, 1500, 1600, 1800, 2000, 2100];
         if ($(window).width() < 575) {
@@ -184,7 +184,7 @@ TABS.auxiliary.initialize = function (callback) {
             mode: 'values',
             values: sliderValues,
             density: 4,
-            stepped: true
+            stepped: true,
         });
 
         $(rangeElement).find('.deleteRange').data('rangeElement', rangeElement);
@@ -215,7 +215,7 @@ TABS.auxiliary.initialize = function (callback) {
         const linkIndex = modeRanges.children().length;
 
         let linkElement = $('#tab-auxiliary-templates .link').clone();
-        linkElement.attr('id', 'mode-' + modeIndex + '-link-' + linkIndex);
+        linkElement.attr('id', `mode-${modeIndex}-link-${linkIndex}`);
         modeRanges.append(linkElement);
 
         if (linkIndex == 0) {
@@ -226,7 +226,7 @@ TABS.auxiliary.initialize = function (callback) {
 
         // disable the option associated with this mode
         const linkSelect = $(linkElement).find('.linkedTo');
-        $(linkSelect).find('option[value="' + modeId + '"]').prop('disabled',true);
+        $(linkSelect).find(`option[value="${modeId}"]`).prop('disabled',true);
 
         $(linkElement).find('.deleteLink').data('linkElement', linkElement);
         $(linkElement).find('.deleteLink').data('modeElement', modeElement);
@@ -269,7 +269,7 @@ TABS.auxiliary.initialize = function (callback) {
                 let modeRangeExtra = {
                     id: modeRange.id,
                     modeLogic: 0,
-                    linkedTo: 0
+                    linkedTo: 0,
                 };
                 if (semver.gte(FC.CONFIG.apiVersion, API_VERSION_1_41)) {
                     modeRangeExtra = FC.MODE_RANGES_EXTRA[modeRangeIndex];
@@ -333,15 +333,15 @@ TABS.auxiliary.initialize = function (callback) {
                         auxChannelIndex: parseInt($(this).find('.channel').val()),
                         range: {
                             start: rangeValues[0],
-                            end: rangeValues[1]
-                        }
+                            end: rangeValues[1],
+                        },
                     };
                     FC.MODE_RANGES.push(modeRange);
 
                     const modeRangeExtra = {
                         id: modeId,
                         modeLogic: parseInt($(this).find('.logic').val()),
-                        linkedTo: 0
+                        linkedTo: 0,
                     };
                     FC.MODE_RANGES_EXTRA.push(modeRangeExtra);
                 });
@@ -357,15 +357,15 @@ TABS.auxiliary.initialize = function (callback) {
                             auxChannelIndex: 0,
                             range: {
                                 start: 900,
-                                end: 900
-                            }
+                                end: 900,
+                            },
                         };
                         FC.MODE_RANGES.push(modeRange);
 
                         const modeRangeExtra = {
                             id: modeId,
                             modeLogic: parseInt($(this).find('.logic').val()),
-                            linkedTo: linkedToSelection
+                            linkedTo: linkedToSelection,
                         };
                         FC.MODE_RANGES_EXTRA.push(modeRangeExtra);
                     }
@@ -378,15 +378,15 @@ TABS.auxiliary.initialize = function (callback) {
                     auxChannelIndex: 0,
                     range: {
                         start: 900,
-                        end: 900
-                    }
+                        end: 900,
+                    },
                 };
                 FC.MODE_RANGES.push(defaultModeRange);
 
                 const defaultModeRangeExtra = {
                     id: 0,
                     modeLogic: 0,
-                    linkedTo: 0
+                    linkedTo: 0,
                 };
                 FC.MODE_RANGES_EXTRA.push(defaultModeRangeExtra);
             }
@@ -422,7 +422,7 @@ TABS.auxiliary.initialize = function (callback) {
                     return;
                 }
 
-                $(this).find('.marker').css('left', percentage + '%');
+                $(this).find('.marker').css('left', `${percentage}%`);
             });
         }
 
@@ -434,7 +434,7 @@ TABS.auxiliary.initialize = function (callback) {
         function update_ui() {
             let hasUsedMode = false;
             for (let i = 0; i < FC.AUX_CONFIG.length; i++) {
-                let modeElement = $('#mode-' + i);
+                let modeElement = $(`#mode-${i}`);
                 if (modeElement.find(' .range').length == 0 && modeElement.find(' .link').length == 0) {
                     // if the mode is unused, skip it
                     modeElement.removeClass('off').removeClass('on').removeClass('disabled');
@@ -469,7 +469,7 @@ TABS.auxiliary.initialize = function (callback) {
                         // that arming is disabled.
                         if (armSwitchActive) {
                             $('.mode .name').eq(i).data('modeElement').removeClass('on').removeClass('off').addClass('disabled');
-                            $('.mode .name').eq(i).html(FC.AUX_CONFIG[i] + '<br>' + i18n.getMessage('auxiliaryDisabled'));
+                            $('.mode .name').eq(i).html(`${FC.AUX_CONFIG[i]}<br>${i18n.getMessage('auxiliaryDisabled')}`);
                         } else {
                             $('.mode .name').eq(i).data('modeElement').removeClass('on').removeClass('disabled').addClass('off');
                             $('.mode .name').eq(i).html(FC.AUX_CONFIG[i]);
@@ -483,7 +483,7 @@ TABS.auxiliary.initialize = function (callback) {
 
             let hideUnused = hideUnusedModes && hasUsedMode;
             for (let i = 0; i < FC.AUX_CONFIG.length; i++) {
-                let modeElement = $('#mode-' + i);
+                let modeElement = $(`#mode-${i}`);
                 if (modeElement.find(' .range').length == 0 && modeElement.find(' .link').length == 0) {
                     modeElement.toggle(!hideUnused);
                 }
@@ -540,16 +540,15 @@ TABS.auxiliary.initialize = function (callback) {
         }
 
         let hideUnusedModes = false;
-        ConfigStorage.get('hideUnusedModes', function (result) {
-            $("input#switch-toggle-unused")
-                .change(function() {
-                    hideUnusedModes = $(this).prop("checked");
-                    ConfigStorage.set({ hideUnusedModes: hideUnusedModes });
-                    update_ui();
-                })
-                .prop("checked", !!result.hideUnusedModes)
-                .change();
-        });
+        const result = ConfigStorage.get('hideUnusedModes');
+        $("input#switch-toggle-unused")
+            .change(function() {
+                hideUnusedModes = $(this).prop("checked");
+                ConfigStorage.set({ hideUnusedModes: hideUnusedModes });
+                update_ui();
+            })
+            .prop("checked", !!result.hideUnusedModes)
+            .change();
 
         // update ui instantly on first load
         update_ui();
@@ -566,6 +565,11 @@ TABS.auxiliary.initialize = function (callback) {
     }
 };
 
-TABS.auxiliary.cleanup = function (callback) {
+auxiliary.cleanup = function (callback) {
     if (callback) callback();
+};
+
+window.TABS.auxiliary = auxiliary;
+export {
+    auxiliary,
 };

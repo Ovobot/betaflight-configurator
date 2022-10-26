@@ -1,7 +1,7 @@
 'use strict';
 
-var ReleaseChecker = function (releaseName, releaseUrl) {
-    var self = this;
+const ReleaseChecker = function (releaseName, releaseUrl) {
+    const self = this;
 
     self._releaseName = releaseName;
     self._releaseDataTag = `${self._releaseName}ReleaseData`;
@@ -11,37 +11,37 @@ var ReleaseChecker = function (releaseName, releaseUrl) {
 
 ReleaseChecker.prototype.loadReleaseData = function (processFunction) {
     const self = this;
-    chrome.storage.local.get([self._releaseLastUpdateTag, self._releaseDataTag], function (result) {
-        const releaseDataTimestamp = $.now();
-        const cacheReleaseData = result[self._releaseDataTag];
-        const cachedReleaseLastUpdate = result[self._releaseLastUpdateTag];
-        if (!cacheReleaseData || !cachedReleaseLastUpdate || releaseDataTimestamp - cachedReleaseLastUpdate > 3600 * 1000) {
-            $.get(self._releaseUrl, function (releaseData) {
-                GUI.log(i18n.getMessage('releaseCheckLoaded',[self._releaseName]));
+    const result = SessionStorage.get([self._releaseLastUpdateTag, self._releaseDataTag]);
+    const releaseDataTimestamp = $.now();
+    const cacheReleaseData = result[self._releaseDataTag];
+    const cachedReleaseLastUpdate = result[self._releaseLastUpdateTag];
 
-                const data = {};
-                data[self._releaseDataTag] = releaseData;
-                data[self._releaseLastUpdateTag] = releaseDataTimestamp;
-                chrome.storage.local.set(data, function () {});
+    if (!cacheReleaseData || !cachedReleaseLastUpdate || releaseDataTimestamp - cachedReleaseLastUpdate > 3600 * 1000) {
+        $.get(self._releaseUrl, function (releaseData) {
+            GUI.log(i18n.getMessage('releaseCheckLoaded',[self._releaseName]));
 
-                self._processReleaseData(releaseData, processFunction);
-            }).fail(function (data) {
-                let message = '';
-                if (data['responseJSON']) {
-                    message = data['responseJSON'].message;
-                }
-                GUI.log(i18n.getMessage('releaseCheckFailed',[self._releaseName,message]));
+            const data = {};
+            data[self._releaseDataTag] = releaseData;
+            data[self._releaseLastUpdateTag] = releaseDataTimestamp;
+            SessionStorage.set(data);
 
-                self._processReleaseData(cacheReleaseData, processFunction);
-            });
-        } else {
-            if (cacheReleaseData) {
-                GUI.log(i18n.getMessage('releaseCheckCached',[self._releaseName]));
+            self._processReleaseData(releaseData, processFunction);
+        }).fail(function (data) {
+            let message = '';
+            if (data['responseJSON']) {
+                message = data['responseJSON'].message;
             }
+            GUI.log(i18n.getMessage('releaseCheckFailed',[self._releaseName,message]));
 
             self._processReleaseData(cacheReleaseData, processFunction);
+        });
+    } else {
+        if (cacheReleaseData) {
+            GUI.log(i18n.getMessage('releaseCheckCached',[self._releaseName]));
         }
-    });
+
+        self._processReleaseData(cacheReleaseData, processFunction);
+    }
 };
 
 

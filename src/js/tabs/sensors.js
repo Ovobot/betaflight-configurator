@@ -1,7 +1,7 @@
-'use strict';
+import { i18n } from "../localization";
 
-TABS.sensors = {};
-TABS.sensors.initialize = function (callback) {
+const sensors = {};
+sensors.initialize = function (callback) {
 
     if (GUI.active_tab != 'sensors') {
         GUI.active_tab = 'sensors';
@@ -265,7 +265,7 @@ TABS.sensors.initialize = function (callback) {
             initDataArray(1),
             initDataArray(1),
             initDataArray(1),
-            initDataArray(1)
+            initDataArray(1),
         ];
 
         let gyroHelpers = initGraphHelpers('#gyro', samples_gyro_i, [-2000, 2000]);
@@ -277,13 +277,13 @@ TABS.sensors.initialize = function (callback) {
             initGraphHelpers('#debug1', samples_debug_i),
             initGraphHelpers('#debug2', samples_debug_i),
             initGraphHelpers('#debug3', samples_debug_i),
-            initGraphHelpers('#debug4', samples_debug_i)
+            initGraphHelpers('#debug4', samples_debug_i),
         ];
 
         const raw_data_text_ements = {
             x: [],
             y: [],
-            z: []
+            z: [],
         };
         $('.plot_control .x, .plot_control .y, .plot_control .z').each(function () {
             const el = $(this);
@@ -305,13 +305,13 @@ TABS.sensors.initialize = function (callback) {
                 'mag':    parseInt($('.tab-sensors select[name="mag_refresh_rate"]').val(), 10),
                 'altitude':   parseInt($('.tab-sensors select[name="altitude_refresh_rate"]').val(), 10),
                 'sonar':  parseInt($('.tab-sensors select[name="sonar_refresh_rate"]').val(), 10),
-                'debug':  parseInt($('.tab-sensors select[name="debug_refresh_rate"]').val(), 10)
+                'debug':  parseInt($('.tab-sensors select[name="debug_refresh_rate"]').val(), 10),
             };
 
             const scales = {
                 'gyro':  parseFloat($('.tab-sensors select[name="gyro_scale"]').val()),
                 'accel': parseFloat($('.tab-sensors select[name="accel_scale"]').val()),
-                'mag':   parseFloat($('.tab-sensors select[name="mag_scale"]').val())
+                'mag':   parseFloat($('.tab-sensors select[name="mag_scale"]').val()),
             };
 
             // handling of "data pulling" is a little bit funky here, as MSP_RAW_IMU contains values for gyro/accel/mag but not altitude
@@ -428,40 +428,39 @@ TABS.sensors.initialize = function (callback) {
             }
         });
 
-        ConfigStorage.get('sensor_settings', function (result) {
-            // set refresh speeds according to configuration saved in storage
-            if (result.sensor_settings) {
-                $('.tab-sensors select[name="gyro_refresh_rate"]').val(result.sensor_settings.rates.gyro);
-                $('.tab-sensors select[name="gyro_scale"]').val(result.sensor_settings.scales.gyro);
+        const result = ConfigStorage.get('sensor_settings');
+        // set refresh speeds according to configuration saved in storage
+        if (result.sensor_settings) {
+            $('.tab-sensors select[name="gyro_refresh_rate"]').val(result.sensor_settings.rates.gyro);
+            $('.tab-sensors select[name="gyro_scale"]').val(result.sensor_settings.scales.gyro);
 
-                $('.tab-sensors select[name="accel_refresh_rate"]').val(result.sensor_settings.rates.accel);
-                $('.tab-sensors select[name="accel_scale"]').val(result.sensor_settings.scales.accel);
+            $('.tab-sensors select[name="accel_refresh_rate"]').val(result.sensor_settings.rates.accel);
+            $('.tab-sensors select[name="accel_scale"]').val(result.sensor_settings.scales.accel);
 
-                $('.tab-sensors select[name="mag_refresh_rate"]').val(result.sensor_settings.rates.mag);
-                $('.tab-sensors select[name="mag_scale"]').val(result.sensor_settings.scales.mag);
+            $('.tab-sensors select[name="mag_refresh_rate"]').val(result.sensor_settings.rates.mag);
+            $('.tab-sensors select[name="mag_scale"]').val(result.sensor_settings.scales.mag);
 
-                $('.tab-sensors select[name="altitude_refresh_rate"]').val(result.sensor_settings.rates.altitude);
-                $('.tab-sensors select[name="sonar_refresh_rate"]').val(result.sensor_settings.rates.sonar);
+            $('.tab-sensors select[name="altitude_refresh_rate"]').val(result.sensor_settings.rates.altitude);
+            $('.tab-sensors select[name="sonar_refresh_rate"]').val(result.sensor_settings.rates.sonar);
 
-                $('.tab-sensors select[name="debug_refresh_rate"]').val(result.sensor_settings.rates.debug);
+            $('.tab-sensors select[name="debug_refresh_rate"]').val(result.sensor_settings.rates.debug);
 
-                // start polling data by triggering refresh rate change event
-                $('.tab-sensors .rate select:first').change();
-            } else {
-                // start polling immediatly (as there is no configuration saved in the storage)
-                $('.tab-sensors .rate select:first').change();
+            // start polling data by triggering refresh rate change event
+            $('.tab-sensors .rate select:first').change();
+        } else {
+            // start polling immediatly (as there is no configuration saved in the storage)
+            $('.tab-sensors .rate select:first').change();
+        }
+
+        const resultGraphs = ConfigStorage.get('graphs_enabled');
+        if (resultGraphs.graphs_enabled) {
+            const _checkboxes = $('.tab-sensors .info .checkboxes input');
+            for (let i = 0; i < resultGraphs.graphs_enabled.length; i++) {
+                _checkboxes.eq(i).not(':disabled').prop('checked', resultGraphs.graphs_enabled[i]).change();
             }
-            ConfigStorage.get('graphs_enabled', function (resultGraphs) {
-                if (resultGraphs.graphs_enabled) {
-                    const _checkboxes = $('.tab-sensors .info .checkboxes input');
-                    for (let i = 0; i < resultGraphs.graphs_enabled.length; i++) {
-                        _checkboxes.eq(i).not(':disabled').prop('checked', resultGraphs.graphs_enabled[i]).change();
-                    }
-                } else {
-                    $('.tab-sensors .info input:lt(4):not(:disabled)').prop('checked', true).change();
-                }
-            });
-        });
+        } else {
+            $('.tab-sensors .info input:lt(4):not(:disabled)').prop('checked', true).change();
+        }
 
         // status data pulled via separate timer with static speed
         GUI.interval_add('status_pull', function status_pull() {
@@ -472,8 +471,13 @@ TABS.sensors.initialize = function (callback) {
     });
 };
 
-TABS.sensors.cleanup = function (callback) {
+sensors.cleanup = function (callback) {
     serial.emptyOutputBuffer();
 
     if (callback) callback();
+};
+
+window.TABS.sensors = sensors;
+export {
+    sensors,
 };

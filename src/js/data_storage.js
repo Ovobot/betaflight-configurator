@@ -14,6 +14,7 @@ const API_VERSION_1_41 = '1.41.0';
 const API_VERSION_1_42 = '1.42.0';
 const API_VERSION_1_43 = '1.43.0';
 const API_VERSION_1_44 = '1.44.0';
+const API_VERSION_1_45 = '1.45.0';
 
 const CONFIGURATOR = {
     // all versions are specified and compared using semantic versioning http://semver.org/
@@ -21,7 +22,7 @@ const CONFIGURATOR = {
     API_VERSION_MIN_SUPPORTED_BACKUP_RESTORE: '1.5.0',
     API_VERSION_MIN_SUPPORTED_PID_CONTROLLER_CHANGE: '1.5.0',
     BACKUP_FILE_VERSION_MIN_SUPPORTED: '0.55.0', // chrome.runtime.getManifest().version is stored as string, so does this one
-    API_VERSION_MAX_SUPPORTED: API_VERSION_1_44,
+    API_VERSION_MAX_SUPPORTED: API_VERSION_1_45,
 
     connectionValid: false,
     connectionValidCliOnly: false,
@@ -30,6 +31,9 @@ const CONFIGURATOR = {
     cliActive: false,
     cliValid: false,
     productName: '擦窗机生产测试软件V1.0',
+    cliEngineActive: false,
+    cliEngineValid: false,
+    gitChangesetId: 'unknown',
     version: '0.0.1',
     gitRevision: 'norevision',
     latestVersion: '0.0.1',

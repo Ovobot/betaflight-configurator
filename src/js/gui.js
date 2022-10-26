@@ -19,6 +19,7 @@ const GuiControl = function () {
     this.operating_system = null;
     this.interval_array = [];
     this.timeout_array = [];
+    this.buttonDisabledClass = "disabled";
 
     this.defaultAllowedTabsWhenDisconnected = [
         'landing',
@@ -30,6 +31,27 @@ const GuiControl = function () {
     ];
     this.defaultAllowedFCTabsWhenConnected = [
         'setup',
+        'failsafe',
+        'transponder',
+        'osd',
+        'power',
+        'adjustments',
+        'auxiliary',
+        'presets',
+        'cli',
+        'configuration',
+        'gps',
+        'led_strip',
+        'logging',
+        'onboard_logging',
+        'modes',
+        'motors',
+        'pid_tuning',
+        'ports',
+        'receiver',
+        'sensors',
+        'servos',
+        'vtx',
     ];
 
     this.allowedTabs = this.defaultAllowedTabsWhenDisconnected;
@@ -52,19 +74,7 @@ const GuiControl = function () {
 };
 
 function GUI_checkOperatingSystem() {
-    if (navigator.appVersion.indexOf("Win") !== -1) {
-        return "Windows";
-    } else if (navigator.appVersion.indexOf("Mac") !== -1) {
-        return "MacOS";
-    } else if (navigator.appVersion.indexOf("Android") !== -1) {
-        return "Android";
-    } else if (navigator.appVersion.indexOf("Linux") !== -1) {
-        return "Linux";
-    } else if (navigator.appVersion.indexOf("X11") !== -1) {
-        return "UNIX";
-    } else {
-        return "Unknown";
-    }
+    return navigator?.userAgentData?.platform || 'Android';
 }
 
 // Timer managing methods
@@ -374,6 +384,10 @@ GuiControl.prototype.selectDefaultTabWhenConnected = function() {
             $('#tabs ul.mode-connected .tab_setup a').click();
     //     }
     // });
+    // const result = ConfigStorage.get(['rememberLastTab', 'lastTab']);
+    // const tab = result.rememberLastTab && result.lastTab ? result.lastTab : 'tab_setup';
+
+    // $(`#tabs ul.mode-connected .${tab} a`).trigger('click');
 };
 
 GuiControl.prototype.isNWJS = function () {
@@ -385,6 +399,170 @@ GuiControl.prototype.isCordova = function () {
   };
 GuiControl.prototype.isOther = function () {
   return this.Mode === GUI_MODES.Other;
+};
+
+
+GuiControl.prototype.showYesNoDialog = function(yesNoDialogSettings) {
+    // yesNoDialogSettings:
+    // title, text, buttonYesText, buttonNoText, buttonYesCallback, buttonNoCallback
+    const dialog = $(".dialogYesNo");
+    const title = dialog.find(".dialogYesNoTitle");
+    const content = dialog.find(".dialogYesNoContent");
+    const buttonYes = dialog.find(".dialogYesNo-yesButton");
+    const buttonNo = dialog.find(".dialogYesNo-noButton");
+
+    title.html(yesNoDialogSettings.title);
+    content.html(yesNoDialogSettings.text);
+    buttonYes.html(yesNoDialogSettings.buttonYesText);
+    buttonNo.html(yesNoDialogSettings.buttonNoText);
+
+    buttonYes.off("click");
+    buttonNo.off("click");
+
+    buttonYes.on("click", () => {
+        dialog[0].close();
+        yesNoDialogSettings.buttonYesCallback?.();
+    });
+
+    buttonNo.on("click", () => {
+        dialog[0].close();
+        yesNoDialogSettings.buttonNoCallback?.();
+    });
+
+    dialog[0].showModal();
+};
+
+GuiControl.prototype.showWaitDialog = function(waitDialogSettings) {
+    // waitDialogSettings:
+    // title, buttonCancelCallback
+    const dialog = $(".dialogWait")[0];
+    const title = $(".dialogWaitTitle");
+    const buttonCancel = $(".dialogWait-cancelButton");
+
+    title.html(waitDialogSettings.title);
+    buttonCancel.toggle(!!waitDialogSettings.buttonCancelCallback);
+
+    buttonCancel.off("click");
+
+    buttonCancel.on("click", () => {
+        dialog.close();
+        waitDialogSettings.buttonCancelCallback?.();
+    });
+
+    dialog.showModal();
+    return dialog;
+};
+
+GuiControl.prototype.showInformationDialog = function(informationDialogSettings) {
+    // informationDialogSettings:
+    // title, text, buttonConfirmText
+    return new Promise(resolve => {
+        const dialog = $(".dialogInformation");
+        const title = dialog.find(".dialogInformationTitle");
+        const content = dialog.find(".dialogInformationContent");
+        const buttonConfirm = dialog.find(".dialogInformation-confirmButton");
+
+        title.html(informationDialogSettings.title);
+        content.html(informationDialogSettings.text);
+        buttonConfirm.html(informationDialogSettings.buttonConfirmText);
+
+        buttonConfirm.off("click");
+
+        buttonConfirm.on("click", () => {
+            dialog[0].close();
+            resolve();
+        });
+
+        dialog[0].showModal();
+    });
+};
+
+GuiControl.prototype.saveToTextFileDialog = function(textToSave, suggestedFileName, extension) {
+    return new Promise((resolve, reject) => {
+        const accepts = [{ description: `${extension.toUpperCase()} files`, extensions: [extension] }];
+
+        chrome.fileSystem.chooseEntry(
+            {
+                type: 'saveFile',
+                suggestedName: suggestedFileName,
+                accepts: accepts,
+            },
+            entry => this._saveToTextFileDialogFileSelected(entry, textToSave, resolve, reject),
+        );
+    });
+};
+
+GuiControl.prototype._saveToTextFileDialogFileSelected = function(entry, textToSave, resolve, reject) {
+    checkChromeRuntimeError();
+
+    if (!entry) {
+        console.log('No file selected for saving');
+        resolve(false);
+        return;
+    }
+
+    entry.createWriter(writer => {
+        writer.onerror = () => {
+            reject();
+            console.error('Failed to write file');
+        };
+
+        writer.onwriteend = () => {
+            if (textToSave.length > 0 && writer.length === 0) {
+                writer.write(new Blob([textToSave], {type: 'text/plain'}));
+            } else {
+                resolve(true);
+                console.log('File write complete');
+            }
+        };
+
+        writer.truncate(0);
+    },
+    () => {
+        reject();
+        console.error('Failed to get file writer');
+    });
+};
+
+GuiControl.prototype.readTextFileDialog = function(extension) {
+    const accepts = [{ description: `${extension.toUpperCase()} files`, extensions: [extension] }];
+
+    return new Promise(resolve => {
+        chrome.fileSystem.chooseEntry({type: 'openFile', accepts: accepts}, function(entry) {
+            checkChromeRuntimeError();
+
+            if (!entry) {
+                console.log('No file selected for loading');
+                resolve(false);
+                return;
+            }
+
+            entry.file((file) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => {
+                    console.error(reader.error);
+                    reject();
+                };
+                reader.readAsText(file);
+            });
+        });
+    });
+};
+
+GuiControl.prototype.escapeHtml = function(unsafe) {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+};
+
+GuiControl.prototype.addLinksTargetBlank = function(element) {
+    element.find('a').each(function() {
+        $(this).attr('target', '_blank');
+    });
 };
 
 // initialize object into GUI variable

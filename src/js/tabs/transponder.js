@@ -1,11 +1,10 @@
-'use strict';
+import { i18n } from "../localization";
 
-
-TABS.transponder = {
-    available: false
+const transponder = {
+    available: false,
 };
 
-TABS.transponder.initialize = function(callback, scrollPosition) {
+transponder.initialize = function(callback) {
 
     let _persistentInputValues = {};
 
@@ -18,10 +17,10 @@ TABS.transponder.initialize = function(callback, scrollPosition) {
     // CONFIGURATION HERE FOR ADD NEW TRANSPONDER
     let transponderConfigurations = {
         0: {
-            dataType: dataTypes.NONE // empty
+            dataType: dataTypes.NONE, // empty
         }, //NONE
         1: {
-            dataType: dataTypes.TEXT //<input type="text">
+            dataType: dataTypes.TEXT, //<input type="text">
         }, //ilap
         2: {
             dataType: dataTypes.LIST, // <select>...</select>
@@ -35,7 +34,7 @@ TABS.transponder.initialize = function(callback, scrollPosition) {
                 'ID 7': 'E003F03F00FF03F0C1',
                 'ID 8': '00FC0FFE071F3E00FE',
                 'ID 9': 'E083BFF00F9E38C0FF',
-            }
+            },
         }, //arcitimer
         3: {
             dataType: dataTypes.LIST, // <select>...</select>
@@ -104,7 +103,7 @@ TABS.transponder.initialize = function(callback, scrollPosition) {
                 '61':'3D',
                 '62':'3E',
                 '63':'3F',
-            }
+            },
         }, //ERLT
     };
     /////////////////////////////////////////////
@@ -140,7 +139,7 @@ TABS.transponder.initialize = function(callback, scrollPosition) {
     }
 
     function pad(n, width) {
-        n = n + '';
+        n = `${n}`;
         return n.length >= width ? n : new Array(width - n.length + 1).join('0') + n;
     }
 
@@ -164,7 +163,7 @@ TABS.transponder.initialize = function(callback, scrollPosition) {
         //build radio buttons
         if (transponderProviders.length > 1) {
             transponderTypeSelect.append(
-                $('<option>').attr('value', 0).html(i18n.getMessage("transponderType0")) // NONE
+                $('<option>').attr('value', 0).html(i18n.getMessage("transponderType0")), // NONE
             );
         }
 
@@ -173,7 +172,7 @@ TABS.transponder.initialize = function(callback, scrollPosition) {
 
             if ( transponderProvider.hasOwnProperty('id') ) {
                 transponderTypeSelect.append(
-                    $('<option>').attr('value', transponderProvider.id).html(i18n.getMessage("transponderType" + transponderProvider.id))
+                    $('<option>').attr('value', transponderProvider.id).html(i18n.getMessage(`transponderType${transponderProvider.id}`)),
                 );
             }
         }
@@ -192,12 +191,12 @@ TABS.transponder.initialize = function(callback, scrollPosition) {
 
         let template = $('#transponder-configuration-template').clone();
 
-        template.find('.spacer_box_title').html(i18n.getMessage("transponderData" + transponderProvider.id));
-        template.find('.dataHelp').html(i18n.getMessage("transponderDataHelp" + transponderProvider.id));
+        template.find('.spacer_box_title').html(i18n.getMessage(`transponderData${transponderProvider.id}`));
+        template.find('.dataHelp').html(i18n.getMessage(`transponderDataHelp${transponderProvider.id}`));
 
 
-        if ( i18n.getMessage("transponderHelp" + transponderProvider.id).length ) {
-            $('#transponderHelp').html(i18n.getMessage("transponderHelp" + transponderProvider.id));
+        if ( i18n.getMessage(`transponderHelp${transponderProvider.id}`).length ) {
+            $('#transponderHelp').html(i18n.getMessage(`transponderHelp${transponderProvider.id}`));
             $('#transponderHelpBox').show();
         }
 
@@ -222,7 +221,7 @@ TABS.transponder.initialize = function(callback, scrollPosition) {
                     dataInput.append($('<option>').val(dataOptions).html(dataOptionsKey));
                 }
 
-                if ( dataInput.find("option[value='" + data + "']").length > 0 && !clearValue ) {
+                if ( dataInput.find(`option[value='${data}']`).length > 0 && !clearValue ) {
                     dataInput.val(data);
                 } else {
                     dataInput.val(_persistentInputValues[transponderProvider.id] || '');
@@ -239,7 +238,7 @@ TABS.transponder.initialize = function(callback, scrollPosition) {
 
         let changedInputValue = function() {
             let dataString = $(this).val();
-            let hexRegExp = new RegExp('[0-9a-fA-F]{' + (transponderProvider.dataLength * 2) + '}', 'gi');
+            let hexRegExp = new RegExp(`[0-9a-fA-F]{${transponderProvider.dataLength * 2}}`, 'gi');
 
             if ( !dataString.match(hexRegExp) ) {
                 FC.TRANSPONDER.data = [];
@@ -303,8 +302,7 @@ TABS.transponder.initialize = function(callback, scrollPosition) {
                         GUI.log(i18n.getMessage('transponderEepromSaved'));
                         if ( $(_this).hasClass('reboot') ) {
                             GUI.tab_switch_cleanup(function() {
-                                MSP.send_message(MSPCodes.MSP_SET_REBOOT, false, false);
-                                reinitialiseConnection(self);
+                                MSP.send_message(MSPCodes.MSP_SET_REBOOT, false, false, reinitializeConnection);
                             });
                         }
                     });
@@ -324,6 +322,11 @@ TABS.transponder.initialize = function(callback, scrollPosition) {
     }
 };
 
-TABS.transponder.cleanup = function(callback) {
+transponder.cleanup = function(callback) {
     if ( callback ) callback();
+};
+
+window.TABS.transponder = transponder;
+export {
+    transponder,
 };

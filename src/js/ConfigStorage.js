@@ -4,38 +4,45 @@
 // localStorage deals with strings, not objects, so the objects have been serialized.
 const ConfigStorage = {
     // key can be one string, or array of strings
-    get: function(key, callback) {
+    get: function(key) {
+        let result = {};
         if (Array.isArray(key)) {
-            let obj = {};
             key.forEach(function (element) {
                 try {
-                    obj = {...obj, ...JSON.parse(window.localStorage.getItem(element))};
+                    result = {...result, ...JSON.parse(localStorage.getItem(element))};
                 } catch (e) {
-                    // is okay
+                    console.error(e);
                 }
             });
-            callback(obj);
         } else {
-            const keyValue = window.localStorage.getItem(key);
+            const keyValue = localStorage.getItem(key);
             if (keyValue) {
-                let obj = {};
                 try {
-                    obj = JSON.parse(keyValue);
+                    result = JSON.parse(keyValue);
                 } catch (e) {
-                    // It's fine if we fail that parse
+                    console.error(e);
                 }
-                callback(obj);
-            } else {
-                callback({});
             }
         }
+
+        return result;
     },
     // set takes an object like {'userLanguageSelect':'DEFAULT'}
     set: function(input) {
         Object.keys(input).forEach(function (element) {
             const tmpObj = {};
             tmpObj[element] = input[element];
-            window.localStorage.setItem(element, JSON.stringify(tmpObj));
+            try {
+                localStorage.setItem(element, JSON.stringify(tmpObj));
+            } catch (e) {
+                console.error(e);
+            }
         });
-    }
+    },
+    remove: function(item) {
+        localStorage.removeItem(item);
+    },
+    clear: function() {
+        localStorage.clear();
+    },
 };

@@ -1,6 +1,6 @@
-'use strict';
+import { i18n } from "../localization";
 
-TABS.cli = {
+const cli = {
     lineDelayMs: 15,
     profileSwitchDelayMs: 100,
     outputHistory: "",
@@ -37,7 +37,7 @@ function commandWithBackSpaces(command, buffer, noOfCharsToDelete) {
 
 function getCliCommand(command, cliBuffer) {
     const buffer = removePromptHash(cliBuffer);
-    const bufferRegex = new RegExp('^' + buffer, 'g');
+    const bufferRegex = new RegExp(`^${buffer}`, 'g');
     if (command.match(bufferRegex)) {
         return command.replace(bufferRegex, '');
     }
@@ -75,7 +75,7 @@ function copyToClipboard(text) {
     Clipboard.writeText(text, onCopySuccessful, onCopyFailed);
 }
 
-TABS.cli.initialize = function (callback) {
+cli.initialize = function (callback) {
     const self = this;
 
     if (GUI.active_tab !== 'cli') {
@@ -146,7 +146,7 @@ TABS.cli.initialize = function (callback) {
             const filename = generateFilename(prefix, suffix);
 
             const accepts = [{
-                description: suffix.toUpperCase() + ' files', extensions: [suffix],
+                description: `${suffix.toUpperCase()} files`, extensions: [suffix],
             }];
 
             chrome.fileSystem.chooseEntry({type: 'saveFile', suggestedName: filename, accepts: accepts}, function(entry) {
@@ -323,7 +323,7 @@ TABS.cli.initialize = function (callback) {
     });
 };
 
-TABS.cli.adaptPhones = function() {
+cli.adaptPhones = function() {
     if ($(window).width() < 575) {
         const backdropHeight = $('.note').height() + 22 + 38;
         $('.backdrop').css('height', `calc(100% - ${backdropHeight}px)`);
@@ -334,24 +334,24 @@ TABS.cli.adaptPhones = function() {
     }
 };
 
-TABS.cli.history = {
+cli.history = {
     history: [],
     index:  0,
 };
 
-TABS.cli.history.add = function (str) {
+cli.history.add = function (str) {
     this.history.push(str);
     this.index = this.history.length;
 };
 
-TABS.cli.history.prev = function () {
+cli.history.prev = function () {
     if (this.index > 0) {
         this.index -= 1;
     }
     return this.history[this.index];
 };
 
-TABS.cli.history.next = function () {
+cli.history.next = function () {
     if (this.index < this.history.length) {
         this.index += 1;
     }
@@ -363,9 +363,9 @@ const lineFeedCode = 10;
 const carriageReturnCode = 13;
 
 function writeToOutput(text) {
-    const windowWrapper = TABS.cli.GUI.windowWrapper;
-    windowWrapper.append(text);
-    $('.tab-cli .window').scrollTop(windowWrapper.height());
+    TABS.cli.GUI.windowWrapper.append(text);
+    const cliWindow = $('.tab-cli .window');
+    cliWindow.scrollTop(cliWindow.prop("scrollHeight"));
 }
 
 function writeLineToOutput(text) {
@@ -377,7 +377,7 @@ function writeLineToOutput(text) {
     if (text.startsWith("###ERROR")) {
         writeToOutput(`<span class="error_message">${text}</span><br>`);
     } else {
-        writeToOutput(text + "<br>");
+        writeToOutput(`${text}<br>`);
     }
 }
 
@@ -385,7 +385,7 @@ function setPrompt(text) {
     $('.tab-cli textarea').val(text);
 }
 
-TABS.cli.read = function (readInfo) {
+cli.read = function (readInfo) {
     /*  Some info about handling line feeds and carriage return
 
         line feed = LF = \n = 0x0A = 10
@@ -462,7 +462,7 @@ TABS.cli.read = function (readInfo) {
             CONFIGURATOR.cliActive = false;
             CONFIGURATOR.cliValid = false;
             GUI.log(i18n.getMessage('cliReboot'));
-            reinitialiseConnection(self);
+            reinitializeConnection();
         }
 
     }
@@ -487,15 +487,15 @@ TABS.cli.read = function (readInfo) {
     }
 };
 
-TABS.cli.sendLine = function (line, callback) {
-    this.send(line + '\n', callback);
+cli.sendLine = function (line, callback) {
+    this.send(`${line}\n`, callback);
 };
 
-TABS.cli.sendNativeAutoComplete = function (line, callback) {
-    this.send(line + '\t', callback);
+cli.sendNativeAutoComplete = function (line, callback) {
+    this.send(`${line}\t`, callback);
 };
 
-TABS.cli.send = function (line, callback) {
+cli.send = function (line, callback) {
     const bufferOut = new ArrayBuffer(line.length);
     const bufView = new Uint8Array(bufferOut);
 
@@ -506,7 +506,7 @@ TABS.cli.send = function (line, callback) {
     serial.send(bufferOut, callback);
 };
 
-TABS.cli.cleanup = function (callback) {
+cli.cleanup = function (callback) {
     if (TABS.cli.GUI.snippetPreviewWindow) {
         TABS.cli.GUI.snippetPreviewWindow.destroy();
         TABS.cli.GUI.snippetPreviewWindow = null;
@@ -533,4 +533,9 @@ TABS.cli.cleanup = function (callback) {
 
     CliAutoComplete.cleanup();
     $(CliAutoComplete).off();
+};
+
+window.TABS.cli = cli;
+export {
+    cli,
 };

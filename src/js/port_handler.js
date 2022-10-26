@@ -1,10 +1,13 @@
 'use strict';
 
 const TIMEOUT_CHECK = 500 ; // With 250 it seems that it produces a memory leak and slowdown in some versions, reason unknown
+const MDNS_INTERVAL = 10000;
+const TCP_CHECK_INTERVAL = 5000;
+const TCP_TIMEOUT = 2000;
 
 const usbDevices = { filters: [
-    {'vendorId': 1155, 'productId': 57105},
-    {'vendorId': 10473, 'productId': 393},
+    {'vendorId': 1155, 'productId': 57105}, // STM Device in DFU Mode || Digital Radio in USB mode
+    {'vendorId': 10473, 'productId': 393},  // GD32 DFU Bootloader
 ] };
 
 const PortHandler = new function () {
@@ -13,6 +16,8 @@ const PortHandler = new function () {
     this.port_removed_callbacks = [];
     this.dfu_available = false;
     this.port_available = false;
+    this.showAllSerialDevices = false;
+    this.showVirtualMode = false;
 };
 
 PortHandler.initialize = function () {
@@ -24,19 +29,119 @@ PortHandler.initialize = function () {
     // fill dropdown with version numbers
     generateVirtualApiVersions();
 
-    // start listening, check after TIMEOUT_CHECK ms
-    this.check();
+    const self = this;
+
+    self.mdnsBrowser = {
+        services: [],
+        browser: null,
+        init: false,
+    };
+
+    let bonjour = {};
+
+    if (!self.mdnsBrowser.init) {
+        if (GUI.isCordova()) {
+            const zeroconf = cordova.plugins.zeroconf;
+            zeroconf.registerAddressFamily = 'ipv4'; // or 'ipv6' ('any' by default)
+            zeroconf.watchAddressFamily = 'ipv4'; // or 'ipv6' ('any' by default)
+            zeroconf.watch("_http._tcp.", "local.", (result) => {
+                const action = result.action;
+                const service = result.service;
+                if (['added', 'resolved'].includes(action)) {
+                    console.log("Zeroconf Service Changed", service);
+                    self.mdnsBrowser.services.push({
+                        addresses: service.ipv4Addresses,
+                        txt: service.txtRecord,
+                        fqdn: service.hostname,
+                    });
+                } else {
+                    console.log("Zeroconf Service Removed", service);
+                    self.mdnsBrowser.services = mdnsBrowser.services.filter(s => s.fqdn !== service.hostname);
+                }
+            });
+        } else {
+            bonjour = require('bonjour')();
+            self.mdnsBrowser.browser = bonjour.find({ type: 'http' }, function(service) {
+                console.log("Found HTTP service", service);
+                self.mdnsBrowser.services.push({
+                    addresses: service.addresses,
+                    txt: service.txt,
+                    fqdn: service.host,
+                });
+            });
+        }
+
+        self.mdnsBrowser.init = true;
+    }
+
+    const tcpCheck = function() {
+        if (!self.tcpCheckLock) {
+            self.tcpCheckLock = true;
+            if (self.initialPorts?.length > 0) {
+                const tcpPorts = self.initialPorts.filter(p => p.path.startsWith('tcp://'));
+                tcpPorts.forEach(function (port) {
+                    const removePort = () => {
+                        self.mdnsBrowser.services = self.mdnsBrowser.services.filter(s => s.fqdn !== port.fqdn);
+                    };
+                    $.get({
+                        host: port.path.split('//').pop(),
+                        port: 80,
+                        timeout: TCP_TIMEOUT,
+                    }, (res) => res.destroy())
+                        .fail(removePort);
+                });
+
+                //timeout is 2000ms for every found port, so wait that time before checking again
+                setTimeout(() => {
+                    self.tcpCheckLock = false;
+                }, Math.min(tcpPorts.length, 1) * (TCP_TIMEOUT + 1));
+            } else {
+                self.tcpCheckLock = false;
+            }
+        }
+
+        setTimeout(() => {
+            tcpCheck();
+        }, TCP_CHECK_INTERVAL);
+    };
+
+    tcpCheck();
+
+    if (self.mdns_timer) {
+        clearInterval(self.mdns_timer);
+    }
+
+    self.mdns_timer = setInterval(() => {
+        if (!GUI.connected_to && !GUI.isCordova() && self.mdnsBrowser.browser) {
+            self.mdnsBrowser.browser.update();
+        }
+    }, MDNS_INTERVAL);
+
+    this.reinitialize();    // just to prevent code redundancy
+};
+
+PortHandler.reinitialize = function () {
+    this.initialPorts = false;
+    if (this.usbCheckLoop) {
+        clearTimeout(this.usbCheckLoop);
+    }
+    this.showVirtualMode = ConfigStorage.get('showVirtualMode').showVirtualMode;
+    this.showAllSerialDevices = ConfigStorage.get('showAllSerialDevices').showAllSerialDevices;
+    this.check();   // start listening, check after TIMEOUT_CHECK ms
 };
 
 PortHandler.check = function () {
     const self = this;
 
-    self.check_usb_devices();
-    self.check_serial_devices();
+    if (!self.port_available) {
+        self.check_usb_devices();
+    }
 
-    GUI.updateManualPortVisibility();
+    if (!self.dfu_available) {
+        self.check_serial_devices();
+    }
 
-    setTimeout(function () {
+    self.usbCheckLoop = setTimeout(function () {
         self.check();
     }, TIMEOUT_CHECK);
 };
@@ -44,13 +149,26 @@ PortHandler.check = function () {
 PortHandler.check_serial_devices = function () {
     const self = this;
 
-    serial.getDevices(function(currentPorts) {
+    serial.getDevices(function(cp) {
+
+        let currentPorts = [
+            ...cp,
+            ...(self.mdnsBrowser?.services?.filter(s => s.txt.vendor === 'elrs' && s.txt.type === 'rx')
+                .map(s => s.addresses.map(a => ({
+                    path: `tcp://${a}`,
+                    displayName: `${s.txt.target} - ${s.txt.version}`,
+                    fqdn: s.fqdn,
+                    vendorId: 0,
+                    productId: 0,
+                }))).flat() ?? []),
+        ].filter(Boolean);
 
         // auto-select port (only during initialization)
         if (!self.initialPorts) {
             currentPorts = self.updatePortSelect(currentPorts);
             self.selectPort(currentPorts);
             self.initialPorts = currentPorts;
+            GUI.updateManualPortVisibility();
         } else {
             self.removePort(currentPorts);
             self.detectPort(currentPorts);
@@ -80,17 +198,12 @@ PortHandler.check_usb_devices = function (callback) {
                 }));
 
                 self.portPickerElement.append($('<option/>', {
-                    value: 'virtual',
-                    text: i18n.getMessage('portsSelectVirtual'),
-                    data: {isVirtual: true},
-                }));
-
-                self.portPickerElement.append($('<option/>', {
                     value: 'manual',
                     text: i18n.getMessage('portsSelectManual'),
                     data: {isManual: true},
                 }));
-                self.portPickerElement.val('DFU').change();
+
+                self.portPickerElement.val('DFU').trigger('change');
                 self.setPortsInputWidth();
             }
             self.dfu_available = true;
@@ -101,14 +214,16 @@ PortHandler.check_usb_devices = function (callback) {
             }
             self.dfu_available = false;
         }
-        if(callback) {
+        if (callback) {
             callback(self.dfu_available);
         }
         if (!$('option:selected', self.portPickerElement).data().isDFU) {
             if (!(GUI.connected_to || GUI.connect_lock)) {
                 FC.resetState();
             }
-            self.portPickerElement.trigger('change');
+            if (self.dfu_available) {
+                self.portPickerElement.trigger('change');
+            }
         }
     });
 };
@@ -123,7 +238,7 @@ PortHandler.removePort = function(currentPorts) {
         // disconnect "UI" - routine can't fire during atmega32u4 reboot procedure !!!
         if (GUI.connected_to) {
             for (let i = 0; i < removePorts.length; i++) {
-                if (removePorts[i] === GUI.connected_to) {
+                if (removePorts[i].path === GUI.connected_to) {
                     $('div#header_btns a.connect').click();
                 }
             }
@@ -148,6 +263,7 @@ PortHandler.removePort = function(currentPorts) {
             self.initialPorts.splice(self.initialPorts.indexOf(removePorts[i]), 1);
         }
         self.updatePortSelect(self.initialPorts);
+        self.portPickerElement.trigger('change');
     }
 };
 
@@ -156,21 +272,14 @@ PortHandler.detectPort = function(currentPorts) {
     const newPorts = self.array_difference(currentPorts, self.initialPorts);
 
     if (newPorts.length) {
-        // pick last_used_port for manual tcp auto-connect or detect and select new port for serial
         currentPorts = self.updatePortSelect(currentPorts);
         console.log(`PortHandler - Found: ${JSON.stringify(newPorts)}`);
 
-        ConfigStorage.get('last_used_port', function (result) {
-            if (result.last_used_port) {
-                if (result.last_used_port.includes('tcp')) {
-                    self.portPickerElement.val('manual');
-                } else if (newPorts.length === 1) {
-                    self.portPickerElement.val(newPorts[0].path);
-                } else if (newPorts.length > 1) {
-                    self.selectPort(currentPorts);
-                }
-            }
-        });
+        if (newPorts.length === 1) {
+            self.portPickerElement.val(newPorts[0].path);
+        } else if (newPorts.length > 1) {
+            self.selectPort(currentPorts);
+        }
 
         self.port_available = true;
         // Signal board verification
@@ -178,19 +287,13 @@ PortHandler.detectPort = function(currentPorts) {
             TABS.firmware_flasher.boardNeedsVerification = true;
         }
 
+        self.portPickerElement.trigger('change');
+
         // auto-connect if enabled
         if (GUI.auto_connect && !GUI.connecting_to && !GUI.connected_to) {
             // start connect procedure. We need firmware flasher protection over here
             if (GUI.active_tab !== 'firmware_flasher') {
-                let connectionTimeout = 100;
-                ConfigStorage.get('connectionTimeout', function (result) {
-                    if (result.connectionTimeout) {
-                        connectionTimeout = result.connectionTimeout;
-                    }
-                    GUI.timeout_add('auto-connect_timeout', function () {
-                        $('div#header_btns a.connect').click();
-                    }, connectionTimeout); // timeout so bus have time to initialize after being detected by the system
-                });
+                $('div#header_btns a.connect').click();
             }
         }
         // trigger callbacks
@@ -241,11 +344,13 @@ PortHandler.updatePortSelect = function (ports) {
         }));
     }
 
-    this.portPickerElement.append($("<option/>", {
-        value: 'virtual',
-        text: i18n.getMessage('portsSelectVirtual'),
-        data: {isVirtual: true},
-    }));
+    if (this.showVirtualMode) {
+        this.portPickerElement.append($("<option/>", {
+            value: 'virtual',
+            text: i18n.getMessage('portsSelectVirtual'),
+            data: {isVirtual: true},
+        }));
+    }
 
     this.portPickerElement.append($("<option/>", {
         value: 'manual',
@@ -265,7 +370,7 @@ PortHandler.selectPort = function(ports) {
             const pathSelect = ports[i].path;
             const isWindows = (OS === 'Windows');
             const isTty = pathSelect.includes('tty');
-            const deviceRecognized = portName.includes('STM') || portName.includes('CP210');
+            const deviceRecognized = portName.includes('STM') || portName.includes('CP210') || portName.startsWith('SPR');
             const legacyDeviceRecognized = portName.includes('usb');
             if (isWindows && deviceRecognized || isTty && (deviceRecognized || legacyDeviceRecognized)) {
                 this.portPickerElement.val(pathSelect);
@@ -291,7 +396,7 @@ PortHandler.setPortsInputWidth = function() {
         return max;
     }
 
-    const correction = 24; // account for up/down button and spacing
+    const correction = 32; // account for up/down button and spacing
     let width = findMaxLengthOption(this.selectList) + correction;
 
     width = (width > this.initialWidth) ? width : this.initialWidth;
