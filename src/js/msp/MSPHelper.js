@@ -79,9 +79,18 @@ MspHelper.prototype.process_data = function(dataHandler) {
                 case MSPCodes.MSP_ATTITUDE:
                     FC.SENSOR_DATA.kinematics[0] = data.read16();
                     break;
-                case MSPCodes.MSP_ALTITUDE:
-                    FC.SENSOR_DATA.altitude = parseFloat((data.read32() / 100.0).toFixed(2)); // correct scale factor
+                case MSPCodes.MSP_BATTERY:
+                    FC.ANALOG.batt = data.readU8();//parseFloat((data.read32() / 100.0).toFixed(2)); // correct scale factor
                     break;
+                case MSPCodes.MSP_ADAPTER:
+                    FC.ANALOG.adapter = data.readU8();//parseFloat((data.read32() / 100.0).toFixed(2)); // correct scale factor
+                    break;    
+                case MSPCodes.MSP_FOURCORNER:
+                    FC.ANALOG.corner = data.readU8();//parseFloat((data.read32() / 100.0).toFixed(2)); // correct scale factor
+                    break;
+                case MSPCodes.MSP_BARO:
+                    FC.SENSOR_DATA.baro = data.read32();
+                    break;    
                 case MSPCodes.MSP_ANALOG:
                     FC.ANALOG.leftMotorAdc = data.readU16();
                     FC.ANALOG.rightMotorAdc = data.readU16();
@@ -102,7 +111,7 @@ MspHelper.prototype.process_data = function(dataHandler) {
 
                 case MSPCodes.MSP_API_VERSION:
                     FC.CONFIG.hw = data.readU8();
-                    FC.CONFIG.firmwareVersion = data.readU8()+ '.' + data.readU8();
+                    FC.CONFIG.firmwareVersion = data.readU8()+ '.' + data.readU8() + '.' + data.readU8();
                     FC.CONFIG.apiVersion = data.readU8() + '.' + data.readU8() + '.0';
                     FC.CONFIG.build = data.readU8();
                     break;

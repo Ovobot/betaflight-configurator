@@ -31,27 +31,6 @@ const GuiControl = function () {
     ];
     this.defaultAllowedFCTabsWhenConnected = [
         'setup',
-        'failsafe',
-        'transponder',
-        'osd',
-        'power',
-        'adjustments',
-        'auxiliary',
-        'presets',
-        'cli',
-        'configuration',
-        'gps',
-        'led_strip',
-        'logging',
-        'onboard_logging',
-        'modes',
-        'motors',
-        'pid_tuning',
-        'ports',
-        'receiver',
-        'sensors',
-        'servos',
-        'vtx',
     ];
 
     this.allowedTabs = this.defaultAllowedTabsWhenDisconnected;

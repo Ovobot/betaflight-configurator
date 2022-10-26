@@ -214,7 +214,7 @@ function setConnectionTimeout() {
 
             $('div.connect_controls a.connect').click(); // disconnect
         }
-    }, 10000);
+    }, 3000);
 }
 
 function onOpen(openInfo) {
@@ -266,7 +266,7 @@ function onOpen(openInfo) {
 
                             MSP.send_message(MSPCodes.MSP_BUILD_INFO, false, false, function () {
 
-                                GUI.log(i18n.getMessage('buildInfoReceived', [FC.CONFIG.buildInfo]));
+                                //GUI.log(i18n.getMessage('buildInfoReceived', [FC.CONFIG.buildInfo]));
                                 processBoardInfo();
                             });
                         //});
@@ -287,7 +287,7 @@ function onOpen(openInfo) {
                     }
                 // });
             } else {
-                analytics.sendEvent(analytics.EVENT_CATEGORIES.FLIGHT_CONTROLLER, 'ConnectionRefusedFirmwareVersion', FC.CONFIG.apiVersion);
+                // analytics.sendEvent(analytics.EVENT_CATEGORIES.FLIGHT_CONTROLLER, 'ConnectionRefusedFirmwareVersion', FC.CONFIG.apiVersion);
 
                 const dialog = $('.dialogConnectWarning')[0];
 
@@ -297,9 +297,9 @@ function onOpen(openInfo) {
                     dialog.close();
                 });
 
-                dialog.showModal();
+                // dialog.showModal();
 
-                connectCli();
+                // connectCli();
             }
         });
     } else {

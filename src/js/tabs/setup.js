@@ -1,6 +1,6 @@
 'use strict';
 
-TABS.setup = {
+const setup = {
     yaw_fix: 0.0,
     sampleCnt:0,
     sampleAccCnt:0,
@@ -8,7 +8,7 @@ TABS.setup = {
 
 };
 
-TABS.setup.initialize = function (callback) {
+setup.initialize = function (callback) {
     const self = this;
 
     if (GUI.active_tab != 'setup') {
@@ -29,6 +29,10 @@ TABS.setup.initialize = function (callback) {
         } else {
             $('#content').load("./tabs/setup.html", process_html);
         }
+    }
+
+    function bitIsZero(x, bitIndex) {
+        return (((x >> bitIndex) & 1) == 1) ? false : true
     }
 
     //MSP.send_message(MSPCodes.MSP_ACC_TRIM, false, false, load_status);
@@ -279,7 +283,14 @@ TABS.setup.initialize = function (callback) {
         const left_adc_e = $('.leftAdc'),
             right_adc_e = $('.rightAdc'),
             fan_adc_e = $('.fanAdc'),
+            batt_adc_e = $('.battAdc'),
+            adapter_adc_e = $('.adapterAdc'),
             atti_yaw_e = $('.attiYaw'),
+            baro_val_e = $('.baroVal'),
+            corner_ul_e = $('.cornerULVal'),
+            corner_ur_e = $('.cornerURVal'),
+            corner_bl_e = $('.cornerBLVal'),
+            corner_br_e = $('.cornerBRVal'),
             gyro_x_e = $('.gyroXData'),
             gyro_y_e = $('.gyroYData'),
             gyro_z_e = $('.gyroZData'),
@@ -379,7 +390,59 @@ TABS.setup.initialize = function (callback) {
         prepareDisarmFlags();
 
         function get_slow_data() {
+            const tb = $('.cf_table tbody');
+            const rows = tb.find("tr");
+            MSP.send_message(MSPCodes.MSP_BATTERY, false, false, function () {
+                
+                batt_adc_e.text(i18n.getMessage('battAdcValue', [FC.ANALOG.batt]));
+                if (FC.ANALOG.batt >= 12 && FC.ANALOG.batt <= 18) {
+                    rows[3].style.background = "green";
+                } else {
+                    rows[3].style.background = "red";
+                }  
+            });
+            MSP.send_message(MSPCodes.MSP_ADAPTER, false, false, function () {
+                
+                adapter_adc_e.text(i18n.getMessage('adapterValue', [FC.ANALOG.adapter]));
+                if (FC.ANALOG.adapter >= 22 && FC.ANALOG.adapter <= 26) {
+                    rows[4].style.background = "green";
+                } else {
+                    rows[4].style.background = "red";
+                }    
+            });
 
+            MSP.send_message(MSPCodes.MSP_FOURCORNER, false, false, function () {
+                const ul_data = bitIsZero(FC.ANALOG.corner,3) ? 0 : 1 
+                const ur_data = bitIsZero(FC.ANALOG.corner,2) ? 0 : 1 
+                const bl_data = bitIsZero(FC.ANALOG.corner,1) ? 0 : 1 
+                const br_data = bitIsZero(FC.ANALOG.corner,0) ? 0 : 1 
+
+                corner_ul_e.text(i18n.getMessage('cornerValue', [ul_data]));
+                corner_ur_e.text(i18n.getMessage('cornerValue', [ur_data]));
+                corner_bl_e.text(i18n.getMessage('cornerValue', [bl_data]));
+                corner_br_e.text(i18n.getMessage('cornerValue', [br_data]));
+
+                if(ul_data ==  0) {
+                    rows[7].style.background = "red";
+                } else {
+                    rows[7].style.background = "green";
+                }
+                if(ur_data ==  0) {
+                    rows[8].style.background = "red";
+                } else {
+                    rows[8].style.background = "green";
+                }
+                if(bl_data ==  0) {
+                    rows[9].style.background = "red";
+                } else {
+                    rows[9].style.background = "green";
+                }
+                if(br_data ==  0) {
+                    rows[10].style.background = "red";
+                } else {
+                    rows[10].style.background = "green";
+                }
+            });
         }
 
         function get_fast_data() {
@@ -389,18 +452,18 @@ TABS.setup.initialize = function (callback) {
             const rows = tb.find("tr");
 
             MSP.send_message(MSPCodes.MSP_ANALOG, false, false, function () {
-                if(FC.ANALOG.leftMotorAdc < 2000) {
-                    rows[0].style.background = "red";
-                } else {
+                if(FC.ANALOG.leftMotorAdc < 3100 && FC.ANALOG.leftMotorAdc > 2500) {
                     rows[0].style.background = "green";
+                } else {
+                    rows[0].style.background = "red";
                 }
 
 
                 left_adc_e.text(i18n.getMessage('leftMotorCurrentValue', [FC.ANALOG.leftMotorAdc]));
-                if(FC.ANALOG.rightMotorAdc < 2000) {
-                    rows[1].style.background = "red";
-                } else {
+                if(FC.ANALOG.rightMotorAdc < 3100 && FC.ANALOG.rightMotorAdc > 2500) {
                     rows[1].style.background = "green";
+                } else {
+                    rows[1].style.background = "red";
                 }
 
                 right_adc_e.text(i18n.getMessage('rightMotorCurrentValue', [FC.ANALOG.rightMotorAdc]));
@@ -420,7 +483,11 @@ TABS.setup.initialize = function (callback) {
                         }
                     }
                 } else {
-                    rows[2].style.background = "green";
+                    if(FC.ANALOG.fanAdc < 3100 && FC.ANALOG.fanAdc > 2500) {
+                        rows[2].style.background = "green";
+                    } else {
+                        rows[2].style.background = "red";
+                    }
                 }
 
 
@@ -429,8 +496,18 @@ TABS.setup.initialize = function (callback) {
             });
 
             MSP.send_message(MSPCodes.MSP_ATTITUDE, false, false, function () {
-                rows[3].style.background = "green";
+                rows[5].style.background = "green";
                 atti_yaw_e.text(i18n.getMessage('attiYawValue', [FC.SENSOR_DATA.kinematics[0]]));
+            });
+
+            MSP.send_message(MSPCodes.MSP_BARO, false, false, function () {
+                if (FC.SENSOR_DATA.baro >= 30000 && FC.SENSOR_DATA.baro <= 120000) {
+                    rows[6].style.background = "green";
+                } else {
+                    rows[6].style.background = "red";
+                }
+                
+                baro_val_e.text(i18n.getMessage('baroValue', [FC.SENSOR_DATA.baro]));
             });
 
             MSP.send_message(MSPCodes.MSP_RAW_IMU, false, false, function () {
@@ -440,21 +517,21 @@ TABS.setup.initialize = function (callback) {
                     let fcgy = calcFc(gyroY);
                     let fcgz = calcFc(gyroZ);
 
-                    if(fcgx == 0 || FC.SENSOR_DATA.gyroscope[0] > 20) {
-                        rows[4].style.background = "red";
+                    if(fcgx == 0 || FC.SENSOR_DATA.gyroscope[0] > 20 || FC.SENSOR_DATA.gyroscope[0] < -20) {
+                        rows[11].style.background = "red";
                     } else {
-                        rows[4].style.background = "green";
+                        rows[11].style.background = "green";
                     }
 
-                    if(fcgy == 0 || FC.SENSOR_DATA.gyroscope[1] > 20) {
-                        rows[5].style.background = "red";
+                    if(fcgy == 0 || FC.SENSOR_DATA.gyroscope[1] > 20 || FC.SENSOR_DATA.gyroscope[1] < -20) {
+                        rows[12].style.background = "red";
                     } else {
-                        rows[5].style.background = "green";
+                        rows[12].style.background = "green";
                     }
-                    if(fcgz == 0 || FC.SENSOR_DATA.gyroscope[2] > 20) {
-                        rows[6].style.background = "red";
+                    if(fcgz == 0 || FC.SENSOR_DATA.gyroscope[2] > 20 || FC.SENSOR_DATA.gyroscope[2] < -20) {
+                        rows[13].style.background = "red";
                     } else {
-                        rows[6].style.background = "green";
+                        rows[13].style.background = "green";
                     }
                 }
 
@@ -463,21 +540,21 @@ TABS.setup.initialize = function (callback) {
                     let fcay = calcFc(accY);
                     let fcaz = calcFc(accZ);
 
-                    if(fcax == 0 || FC.SENSOR_DATA.accelerometer[0] > 300) {
-                        rows[7].style.background = "red";
+                    if(fcax == 0 || FC.SENSOR_DATA.accelerometer[0] > 300 || FC.SENSOR_DATA.accelerometer[0] < -300) {
+                        rows[14].style.background = "red";
                     } else {
-                        rows[7].style.background = "green";
+                        rows[14].style.background = "green";
                     }
 
-                    if(fcay == 0 || FC.SENSOR_DATA.accelerometer[1] > 300) {
-                        rows[8].style.background = "red";
+                    if(fcay == 0 || FC.SENSOR_DATA.accelerometer[1] > 300 || FC.SENSOR_DATA.accelerometer[1] < -300) {
+                        rows[15].style.background = "red";
                     } else {
-                        rows[8].style.background = "green";
+                        rows[15].style.background = "green";
                     }
-                    if(fcaz == 0 || FC.SENSOR_DATA.accelerometer[2] <  300) {
-                        rows[9].style.background = "red";
+                    if(fcaz == 0 || FC.SENSOR_DATA.accelerometer[2] < 3797 || FC.SENSOR_DATA.accelerometer[2] > 4396)  {
+                        rows[16].style.background = "red";
                     } else {
-                        rows[9].style.background = "green";
+                        rows[16].style.background = "green";
                     }
                 }
 
@@ -493,13 +570,13 @@ TABS.setup.initialize = function (callback) {
         }
 
         GUI.interval_add('setup_data_pull_fast', get_fast_data, 33, true); // 30 fps
-        //GUI.interval_add('setup_data_pull_slow', get_slow_data, 250, true); // 4 fps
+        GUI.interval_add('setup_data_pull_slow', get_slow_data, 250, true); // 4 fps
 
         GUI.content_ready(callback);
     }
 };
 
-TABS.setup.initializeInstruments = function() {
+setup.initializeInstruments = function() {
     const options = {size:90, showBox : false, img_directory: 'images/flightindicators/'};
     const attitude = $.flightIndicator('#attitude', 'attitude', options);
     const heading = $.flightIndicator('#heading', 'heading', options);
@@ -511,13 +588,13 @@ TABS.setup.initializeInstruments = function() {
     };
 };
 
-TABS.setup.initModel = function () {
+setup.initModel = function () {
     this.model = new Model($('.model-and-info #canvas_wrapper'), $('.model-and-info #canvas'));
 
     $(window).on('resize', $.proxy(this.model.resize, this.model));
 };
 
-TABS.setup.renderModel = function () {
+setup.renderModel = function () {
     const x = (FC.SENSOR_DATA.kinematics[1] * -1.0) * 0.017453292519943295,
         y = ((FC.SENSOR_DATA.kinematics[2] * -1.0) - this.yaw_fix) * 0.017453292519943295,
         z = (FC.SENSOR_DATA.kinematics[0] * -1.0) * 0.017453292519943295;
@@ -525,7 +602,7 @@ TABS.setup.renderModel = function () {
     this.model.rotateTo(x, y, z);
 };
 
-TABS.setup.cleanup = function (callback) {
+setup.cleanup = function (callback) {
     if (this.model) {
         $(window).off('resize', $.proxy(this.model.resize, this.model));
         this.model.dispose();
@@ -533,3 +610,7 @@ TABS.setup.cleanup = function (callback) {
 
     if (callback) callback();
 };
+
+window.TABS.setup = setup;
+
+export { setup };

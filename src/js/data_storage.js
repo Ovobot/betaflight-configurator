@@ -30,7 +30,7 @@ const CONFIGURATOR = {
     virtualApiVersion: '0.0.1',
     cliActive: false,
     cliValid: false,
-    productName: '擦窗机生产测试软件V1.0',
+    productName: '擦窗机生产测试软件V1.1',
     cliEngineActive: false,
     cliEngineValid: false,
     gitChangesetId: 'unknown',

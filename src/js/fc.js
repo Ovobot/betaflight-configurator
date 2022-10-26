@@ -44,6 +44,9 @@ const INITIAL_ANALOG = {
     leftMotorAdc:               0,
     rightMotorAdc:              0,
     fanAdc:                     0,
+    batt:                       0,
+    adapter:                    0,
+    corner:                     0,
     rssi:                       0,
     amperage:                   0,
     last_received_timestamp:    Date.now(), // FIXME this code lies, it's never been received at this point
@@ -230,10 +233,10 @@ const FC = {
             roll_rate:                  0,
             pitch_rate:                 0,
             yaw_rate:                   0,
-            dynamic_THR_PID:            0, // moved in 1.45 to ADVANCED_TUNING
+            dynamic_THR_PID:            0,
             throttle_MID:               0,
             throttle_EXPO:              0,
-            dynamic_THR_breakpoint:     0, // moved in 1.45 to ADVANCED_TUNING
+            dynamic_THR_breakpoint:     0,
             RC_YAW_EXPO:                0,
             rcYawRate:                  0,
             rcPitchRate:                0,
@@ -241,7 +244,6 @@ const FC = {
             roll_rate_limit:            1998,
             pitch_rate_limit:           1998,
             yaw_rate_limit:             1998,
-            rates_type:                 0,
         };
 
         this.AUX_CONFIG =               [];
@@ -272,6 +274,7 @@ const FC = {
             sonar:                      0,
             kinematics:                 [0.0, 0.0, 0.0],
             debug:                      [0, 0, 0, 0],
+            baro:                       0,
         };
 
         this.MOTOR_DATA =               Array.from({length: 8});
@@ -487,8 +490,7 @@ const FC = {
             levelAngleLimit:            0,
             levelSensitivity:           0,
             itermThrottleThreshold:     0,
-            itermAcceleratorGain:       0, // depecrated in API 1.45
-            antiGravityGain:            0, // was itermAccelatorGain till API 1.45
+            itermAcceleratorGain:       0,
             itermRotation:              0,
             smartFeedforward:           0,
             itermRelax:                 0,
@@ -515,12 +517,8 @@ const FC = {
             feedforward_averaging:      0,
             feedforward_smooth_factor:  0,
             feedforward_boost:          0,
-            feedforward_max_rate_limit: 0,
-            feedforward_jitter_factor:  0,
             vbat_sag_compensation:      0,
             thrustLinearization:        0,
-            tpaRate:                    0,
-            tpaBreakpoint:              0,
         };
         this.ADVANCED_TUNING_ACTIVE = { ...this.ADVANCED_TUNING };
 
@@ -647,7 +645,8 @@ const FC = {
             dyn_notch_q:                    120,
             dyn_notch_width_percent:          8,
             dyn_notch_count:                  3,
-            dyn_notch_q_rpm:                500, // default with rpm filtering
+            dyn_notch_q_rpm:                250, // default with rpm filtering
+            dyn_notch_width_percent_rpm:      0,
             dyn_notch_count_rpm:              1,
             dyn_notch_min_hz:               150,
             dyn_notch_max_hz:               600,
@@ -662,47 +661,18 @@ const FC = {
         this.VTX_DEVICE_STATUS = null;
 
         this.TUNING_SLIDERS = {
+            slider_pids_mode:                   0,
+            slider_master_multiplier:           0,
+            slider_roll_pitch_ratio:            0,
+            slider_i_gain:                      0,
             slider_pd_ratio:                    0,
             slider_pd_gain:                     0,
+            slider_dmin_ratio:                  0,
             slider_feedforward_gain:            0,
-            slider_master_multiplier:           0,
             slider_dterm_filter:                0,
             slider_dterm_filter_multiplier:     0,
             slider_gyro_filter:                 0,
             slider_gyro_filter_multiplier:      0,
-            // introduced in 4.3
-            slider_pids_mode:                   0,
-            slider_d_gain:                      0,
-            slider_pi_gain:                     0,
-            slider_dmax_gain:                   0,
-            slider_i_gain:                      0,
-            slider_roll_pitch_ratio:            0,
-            slider_pitch_pi_gain:               0,
-
-            slider_pids_valid:                  0,
-            slider_gyro_valid:                  0,
-            slider_dterm_valid:                 0,
-        };
-
-        this.DEFAULT_TUNING_SLIDERS = {
-            slider_pids_mode:                   2,
-            slider_d_gain:                      100,
-            slider_pi_gain:                     100,
-            slider_feedforward_gain:            100,
-            slider_dmax_gain:                   100,
-            slider_i_gain:                      100,
-            slider_roll_pitch_ratio:            100,
-            slider_pitch_pi_gain:               100,
-            slider_master_multiplier:           100,
-
-            slider_dterm_filter:                1,
-            slider_dterm_filter_multiplier:     100,
-            slider_gyro_filter:                 1,
-            slider_gyro_filter_multiplier:      100,
-
-            slider_pids_valid:                  1,
-            slider_gyro_valid:                  1,
-            slider_dterm_valid:                 1,
         };
     },
 
@@ -828,15 +798,6 @@ const FC = {
         return hasVcp;
     },
 
-    boardHasFlashBootloader() {
-        let hasFlashBootloader = false;
-        if (semver.gte(this.CONFIG.apiVersion, API_VERSION_1_42)) {
-            hasFlashBootloader = bit_check(this.CONFIG.targetCapabilities, this.TARGET_CAPABILITIES_FLAGS.HAS_FLASH_BOOTLOADER);
-        }
-
-        return hasFlashBootloader;
-    },
-
     FILTER_TYPE_FLAGS: {
         PT1: 0,
         BIQUAD: 1,
@@ -844,7 +805,7 @@ const FC = {
 
     getFilterDefaults() {
         const versionFilterDefaults = this.DEFAULT;
-        // Change filter defaults depending on API version here
+
         if (semver.eq(this.CONFIG.apiVersion, API_VERSION_1_40)) {
             versionFilterDefaults.dterm_lowpass2_hz = 200;
         } else if (semver.gte(this.CONFIG.apiVersion, API_VERSION_1_41)) {
@@ -871,16 +832,8 @@ const FC = {
                 versionFilterDefaults.dterm_lowpass2_type = this.FILTER_TYPE_FLAGS.PT1;
             }
             if (semver.gte(this.CONFIG.apiVersion, API_VERSION_1_44)) {
+                versionFilterDefaults.dyn_notch_q_rpm = 500;
                 versionFilterDefaults.dyn_notch_q = 300;
-                versionFilterDefaults.gyro_lowpass_hz = 250;
-                versionFilterDefaults.gyro_lowpass_dyn_min_hz = 250;
-                versionFilterDefaults.gyro_lowpass2_hz = 500;
-                versionFilterDefaults.dterm_lowpass_hz = 75;
-                versionFilterDefaults.dterm_lowpass_dyn_min_hz = 75;
-                versionFilterDefaults.dterm_lowpass_dyn_max_hz = 150;
-            }
-            if (semver.gte(this.CONFIG.apiVersion, API_VERSION_1_45)) {
-                versionFilterDefaults.dyn_notch_min_hz = 100;
             }
         }
         return versionFilterDefaults;
@@ -889,32 +842,13 @@ const FC = {
     getPidDefaults() {
         let versionPidDefaults = this.DEFAULT_PIDS;
         // if defaults change they should go here
-        if (semver.eq(this.CONFIG.apiVersion, API_VERSION_1_43)) {
+        if (semver.gte(this.CONFIG.apiVersion, API_VERSION_1_43)) {
             versionPidDefaults = [
                 42, 85, 35, 23, 90,
                 46, 90, 38, 25, 95,
                 45, 90,  0,  0, 90,
             ];
         }
-        if (semver.gte(this.CONFIG.apiVersion, API_VERSION_1_44)) {
-            versionPidDefaults = [
-                45, 80, 40, 30, 120,
-                47, 84, 46, 34, 125,
-                45, 80,  0,  0, 120,
-            ];
-        }
         return versionPidDefaults;
-    },
-
-    getSliderDefaults() {
-        return this.DEFAULT_TUNING_SLIDERS;
-    },
-
-    RATES_TYPE: {
-        BETAFLIGHT: 0,
-        RACEFLIGHT: 1,
-        KISS: 2,
-        ACTUAL: 3,
-        QUICKRATES: 4,
     },
 };

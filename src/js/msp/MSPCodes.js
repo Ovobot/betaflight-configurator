@@ -88,11 +88,11 @@ const MSPCodes = {
     MSP_RAW_GPS:                    106,
     MSP_COMP_GPS:                   107,
     MSP_ATTITUDE:                   108,
-    MSP_ALTITUDE:                   109,
+    MSP_BATTERY:                    109,
     MSP_ANALOG:                     110,
-    MSP_RC_TUNING:                  111,
-    MSP_PID:                        112,
-    //MSP_BOX:                        113, // DEPRECATED
+    MSP_ADAPTER:                    111,
+    MSP_FOURCORNER:                 112,
+    MSP_BARO:                       113,
     MSP_MISC:                       114, // DEPRECATED
     MSP_BOXNAMES:                   116,
     MSP_PIDNAMES:                   117,
