@@ -6232,10 +6232,10 @@
         "message": "确认"
     },
     "dialogConfirmResetNote": {
-        "message": "警告：确定要将所有设置重置到默认设置？"
+        "message": "警告：确定已经将风机，马达摆放到安全位置？"
     },
     "dialogConfirmResetConfirm": {
-        "message": "重置"
+        "message": "确定"
     },
     "dialogConfirmResetClose": {
         "message": "取消"
@@ -6635,5 +6635,68 @@
     },
     "cornerValue": {
         "message": "$1"
+    },
+    "initialAutoTestButton": {
+        "message": "开启自动化测试"
+    },
+    "initialAutoTestText": {
+        "message": "自动化测试需注意<strong>风机 马达</strong>是否具备自动化测试条件"
+    },
+    "dialogAutoTestTitle": {
+        "message": "自动检测中......"
+    },
+    "dialogAutoTestSuccessTitle": {
+        "message": "<span class=\"message-positive-more\">自检结束，板子正常</span>"
+    },
+    "dialogTestFourCornerOpenTitle": {
+        "message": "请解除遮挡悬空开关"
+    },
+    "dialogTestFourCornerCloseTitle": {
+        "message": "请遮挡悬空开关"
+    },
+    "gyroError":{
+        "message":"<span class=\"message-negative\">陀螺仪检测异常</span>"
+    },
+    "leftWheelError":{
+        "message":"<span class=\"message-negative\">左轮检测异常</span>"
+    },
+    "rightWheelError":{
+        "message":"<span class=\"message-negative\">右轮检测异常</span>"
+    },
+    "fanError":{
+        "message":"<span class=\"message-negative\">风机检测异常</span>"
+    },
+    "battError":{
+        "message":"<span class=\"message-negative\">电池检测异常</span>"
+    },
+    "adapterError":{
+        "message":"<span class=\"message-negative\">电源适配器检测异常</span>"
+    },
+    "baroError":{
+        "message":"<span class=\"message-negative\">气压传感器检测异常</span>"
+    },
+    "fourCornerError":{
+        "message":"<span class=\"message-negative\">悬空开关检测异常</span>"
+    },
+    "startSprayButton": {
+        "message": "开始喷水"
+    },
+    "dialogTestSprayTitle": {
+        "message": "开始喷水测试"
+    },
+    "dialogTestSprayNotice": {
+        "message": "点击按键，观察是否有水喷出。"
+    },
+    "dialogSprayConfirmTitle": {
+        "message": "喷水验证"
+    },
+    "dialogSprayConfirmNote": {
+        "message": "是否两侧均有水喷出"
+    },
+    "dialogSprayConfirmSpray": {
+        "message" : "正常喷出"
+    },
+    "dialogSprayConfirmNotWork": {
+        "message" : "未喷出"
     }
 }

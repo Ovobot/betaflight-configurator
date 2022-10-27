@@ -355,6 +355,12 @@ const MSP = {
             bufView[4] = 0; // size
             //checksum = bufView[2] ^ bufView[3];
             bufView[5] = bufView[2] ^ bufView[3]; // checksum
+            // let num = "";
+            // for(var i = 0; i < 6; i++) {
+            //     num += bufView[i];
+            //     num += ",";
+            // }
+            // console.log(num);
         }
         return bufferOut;
     },

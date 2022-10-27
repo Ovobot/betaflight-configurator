@@ -4,8 +4,10 @@ const setup = {
     yaw_fix: 0.0,
     sampleCnt:0,
     sampleAccCnt:0,
-    bufLen:10,
-
+    bufLen:50,
+    sampleWheel:0,
+    sampleFan:0,
+    adcBufLen:30,
 };
 
 setup.initialize = function (callback) {
@@ -24,8 +26,11 @@ setup.initialize = function (callback) {
     }
 
     function load_html() {
-        if(FC.CONFIG.hw == 2) {
-            $('#content').load("./tabs/esl_setup.html", process_html);
+        if(FC.CONFIG.hw == 3) {
+            $('#content').load("./tabs/ecs_setup.html", process_html);
+        } else if(FC.CONFIG.hw == 2) {
+            $('#content').load("./tabs/ecs_setup.html", process_html);
+            //$('#content').load("./tabs/esl_setup.html", process_html);
         } else {
             $('#content').load("./tabs/setup.html", process_html);
         }
@@ -38,15 +43,51 @@ setup.initialize = function (callback) {
     //MSP.send_message(MSPCodes.MSP_ACC_TRIM, false, false, load_status);
     load_html();
 
-    let gyroX = [0,0,0,0,0,0,0,0,0,0];
-    let gyroY = [0,0,0,0,0,0,0,0,0,0];
-    let gyroZ = [0,0,0,0,0,0,0,0,0,0];
+    let gyroX = Array.from({length: self.bufLen});
+    let gyroY = Array.from({length: self.bufLen});
+    let gyroZ = Array.from({length: self.bufLen});
 
-    let accX = [0,0,0,0,0,0,0,0,0,0];
-    let accY = [0,0,0,0,0,0,0,0,0,0];
-    let accZ = [0,0,0,0,0,0,0,0,0,0];
+    let accX = Array.from({length: self.bufLen});
+    let accY = Array.from({length: self.bufLen});
+    let accZ = Array.from({length: self.bufLen});
+
+    let leftWheelAdcBuf = Array.from({length: self.adcBufLen});
+    let rightWheelAdcBuf = Array.from({length: self.adcBufLen});
+    let fanAdcBuf = Array.from({length: self.adcBufLen});
+
+
+    let testZ = [1,1,1,1,1,1,1,0,1,1,1,1,1,1,1];
 
     let fanOpened = false;
+    let fanCheckEnd = false;
+    let selfCheckFinished = false;
+    let gyrovalideCnt = 0;
+    let selfCheckState = 0;
+    let wheelState = -1;//
+    let wheelfront = true;
+    let leftWheelError = false;
+    let rightWheelError = false;
+    let wheelChangeDelay = 0;//发送命令到执行有时间间隔
+    const WHEELCHECKDELAY = 5;
+    let fanError = false;
+    let fanChangeDelay = 0;
+    const FANCHECKDELAY = 50;
+    let battError = false;
+    let adapterError = false;
+    let baroError = false;
+    let waitFourCornerClose = false;
+    let leftIdleAdc = 0;
+    let rightIdleAdc = 0;
+    let fanIdleAdc = 0;
+    let gyroErrorHappend = false;
+
+    function selfCheckTask() {
+        if (selfCheckState == 0) {
+            //检测陀螺仪
+            gyrovalideCnt = 0;
+            selfCheckState = 1;
+        }
+    }
 
     function updateGyroData(val1,val2,val3) {
 
@@ -82,6 +123,92 @@ setup.initialize = function (callback) {
             self.sampleAccCnt++;
             return 0;
         }
+    }
+
+    function updateWheelData(val1,val2) {
+        for (let i = 0; i < self.adcBufLen - 1; i++) {
+            leftWheelAdcBuf[i] = leftWheelAdcBuf[i + 1];
+            rightWheelAdcBuf[i] = rightWheelAdcBuf[i + 1];
+        }
+        leftWheelAdcBuf[self.adcBufLen - 1] = val1;
+        rightWheelAdcBuf[self.adcBufLen - 1] = val2;
+        if(self.sampleWheel > self.adcBufLen) {
+            return 1;
+        } else {
+            self.sampleWheel++;
+            return 0;
+        }
+    }
+
+    function updateFanData(val) {
+        for (let i = 0; i < self.adcBufLen - 1; i++) {
+            fanAdcBuf[i] = fanAdcBuf[i + 1];
+        }
+        fanAdcBuf[self.adcBufLen - 1] = val;
+        if(self.sampleFan > self.adcBufLen) {
+            return 1;
+        } else {
+            self.sampleFan++;
+            return 0;
+        }
+    }
+
+    function showErrorDialog(message) {
+        const dialog = $('.dialogError')[0];
+     
+         $('.dialogError-content').html(message);
+     
+         $('.dialogError-closebtn').click(function() {
+             dialog.close();
+         });
+     
+         dialog.showModal();
+    }
+
+
+    function showSprayResultDialog() {
+        const dialog = $('.dialogSprayConfirm')[0];
+         
+        $('.dialogSprayConfirm-confirmbtn').click(function() {
+           dialog.close();
+        });
+        $('.dialogSprayConfirm-cancelbtn').click(function() {
+            dialog.close();
+         });
+        dialog.showModal();       
+    }
+
+    function showSprayTestDialog(message) {
+        const dialog = $('.dialogTestSpray')[0];
+     
+         $('.dialogTestSpray-content').html(message);
+     
+         $('.dialogTestSpray-spraybtn').click(function() {
+            MSP.send_message(MSPCodes.MSP_SET_SPRAY, [1], false, false);
+            dialog.close();
+            showSprayResultDialog();
+         });
+     
+         dialog.showModal();
+    }
+
+
+
+    function showFourCornerDialog(message) {
+        const dialog = $('.dialogTestFourCorner')[0];
+        $('.dialogTestFourCornerTitle').html(message);
+        $('.dialogTestFourCorner-closebtn').click(function() {
+            selfCheckState = 0;
+            self.sampleCnt = 0;
+            self.sampleAccCnt = 0;
+            dialog.close();
+        });
+        dialog.showModal();
+    }
+
+    function dismissFourCornerDialog() {
+        const dialog = $('.dialogTestFourCorner')[0];
+        dialog.close();
     }
 
     function process_html() {
@@ -184,8 +311,16 @@ setup.initialize = function (callback) {
         });
 
         const dialogConfirmReset = $('.dialogConfirmReset')[0];
-
-        $('a.resetSettings').click(function () {
+        const dialogAutoTestWait = $('.dialogAutoTest')[0];    
+        $('.dialogAutoTest-closebtn').click(function() {
+            selfCheckState = 0;
+            self.sampleCnt = 0;
+            self.sampleAccCnt = 0;
+            dialogAutoTestWait.close();
+        });
+        const dialogTestFourCorner = $('.dialogTestFourCorner')[0];
+        
+        $('a.autoTestPCB').click(function () {
             dialogConfirmReset.showModal();
         });
 
@@ -233,17 +368,17 @@ setup.initialize = function (callback) {
         $('.dialogConfirmReset-cancelbtn').click(function() {
             dialogConfirmReset.close();
         });
-
+        //开始自动化测试    
         $('.dialogConfirmReset-confirmbtn').click(function() {
             dialogConfirmReset.close();
-            MSP.send_message(MSPCodes.MSP_RESET_CONF, false, false, function () {
-                GUI.log(i18n.getMessage('initialSetupSettingsRestored'));
-
-                GUI.tab_switch_cleanup(function () {
-                    TABS.setup.initialize();
-                });
-            });
+            selfCheckState = 0;
+            self.sampleCnt = 0;
+            self.sampleAccCnt = 0;
+            selfCheckTask();
+            dialogAutoTestWait.showModal();
         });
+
+        
 
         // display current yaw fix value (important during tab re-initialization)
         $('div#interactive_block > a.reset').text(i18n.getMessage('initialSetupButtonResetZaxisValue', [self.yaw_fix]));
@@ -303,20 +438,49 @@ setup.initialize = function (callback) {
             arming_disable_flags_e.hide();
         }
 
-        const calcFc = function(arr) {
+        const calcAverage = function(arr) {
             var sum=0;
             var s=0;
             for(var i=0;i<arr.length;i++){
                 sum+=arr[i];
             }
             let ave=sum/arr.length;
-            for(var j=0;j<arr.length;j++){
-                s+=Math.pow((ave-arr[j]),2);
-            }
-            return Math.sqrt((s/arr.length),2);
+            return ave;
+            // for(var j=0;j<arr.length;j++){
+            //     s+=Math.pow((ave-arr[j]),2);
+            // }
+            // return Math.sqrt((s/arr.length),2);
         };
 
+        const elementAllSame = function(arr) {
+            var sum=0;
+            var fl= arr[0];
+            for(var i=1;i<arr.length;i++){
+                if (fl == arr[i]) {
+                    sum += 1;
+                }
+                fl = arr[i];
+            }
+            if (sum == arr.length - 1) {
+                return true;
+            }
+            return false;
+        };
 
+        const gyrostring = function(arr) {
+            var gstr = ""
+            for(var i=0;i<arr.length;i++){
+                gstr += arr[i];
+                gstr += ","
+            }
+            return gstr;
+        }
+
+        // if (elementAllSame(testZ)) {
+        //     dialogAutoTestWait.showModal();
+        // } else {
+        //     showErrorDialog("元素不都一样");
+        // }
         // DISARM FLAGS
         // We add all the arming/disarming flags available, and show/hide them if needed.
         const prepareDisarmFlags = function() {
@@ -392,23 +556,58 @@ setup.initialize = function (callback) {
         function get_slow_data() {
             const tb = $('.cf_table tbody');
             const rows = tb.find("tr");
-            MSP.send_message(MSPCodes.MSP_BATTERY, false, false, function () {
-                
-                batt_adc_e.text(i18n.getMessage('battAdcValue', [FC.ANALOG.batt]));
-                if (FC.ANALOG.batt >= 12 && FC.ANALOG.batt <= 18) {
-                    rows[3].style.background = "green";
-                } else {
-                    rows[3].style.background = "red";
-                }  
-            });
+            if(FC.CONFIG.hw == 2) {
+                MSP.send_message(MSPCodes.MSP_BATTERY, false, false, function () {
+                    batt_adc_e.text(i18n.getMessage('battAdcValue', [FC.ANALOG.batt]));
+                    if (FC.ANALOG.batt >= 12 && FC.ANALOG.batt <= 18) {
+                        battError = false;
+                        rows[3].style.background = "green";
+                    } else {
+                        battError = true;
+                        rows[3].style.background = "red";
+                    }
+                    if (selfCheckState == 3) {
+                        if (battError) {
+                            selfCheckState = 0;
+                            dialogAutoTestWait.close();
+                            showErrorDialog(battError);
+                        } else {
+                            selfCheckState = 4;
+                        }
+                    }
+                });
+            }
+
             MSP.send_message(MSPCodes.MSP_ADAPTER, false, false, function () {
-                
                 adapter_adc_e.text(i18n.getMessage('adapterValue', [FC.ANALOG.adapter]));
                 if (FC.ANALOG.adapter >= 22 && FC.ANALOG.adapter <= 26) {
+                    adapterError = false;
                     rows[4].style.background = "green";
                 } else {
+                    adapterError = true;
                     rows[4].style.background = "red";
-                }    
+                }  
+                if (selfCheckState == 4) {
+                    if (adapterError) {
+                        selfCheckState = 0;
+                        dialogAutoTestWait.close();
+                        showErrorDialog(adapterError);
+                    } else {
+                        if(FC.CONFIG.hw == 3) {
+                            selfCheckState = 6;
+                            //检测马达
+                            wheelState = 0;
+                            wheelChangeDelay = WHEELCHECKDELAY;
+                            leftWheelError = false;
+                            rightWheelError = false;
+                            self.sampleWheel = 0;
+                        } else if(FC.CONFIG.hw == 2) {
+                            selfCheckState = 5;
+                        }
+                        
+                    }
+                }
+                  
             });
 
             MSP.send_message(MSPCodes.MSP_FOURCORNER, false, false, function () {
@@ -442,6 +641,25 @@ setup.initialize = function (callback) {
                 } else {
                     rows[10].style.background = "green";
                 }
+                if (selfCheckState == 8) {
+                    if (waitFourCornerClose) {
+                        if (FC.ANALOG.corner == 0x00) {
+                            selfCheckState = 9;
+                            dialogAutoTestWait.close();
+                            dismissFourCornerDialog();
+                            showSprayTestDialog(i18n.getMessage('dialogTestSprayNotice'));
+                            //showFourCornerDialog(i18n.getMessage('dialogAutoTestSuccessTitle'));
+                        }
+                    } else {
+                        if (FC.ANALOG.corner == 0x0f) {
+                            selfCheckState = 9;
+                            dialogAutoTestWait.close();
+                            dismissFourCornerDialog();
+                            showSprayTestDialog(i18n.getMessage('dialogTestSprayNotice'));
+                            //showFourCornerDialog(i18n.getMessage('dialogAutoTestSuccessTitle'));
+                        }
+                    }
+                }
             });
         }
 
@@ -452,21 +670,21 @@ setup.initialize = function (callback) {
             const rows = tb.find("tr");
 
             MSP.send_message(MSPCodes.MSP_ANALOG, false, false, function () {
+                left_adc_e.text(i18n.getMessage('leftMotorCurrentValue', [FC.ANALOG.leftMotorAdc]));
+                right_adc_e.text(i18n.getMessage('rightMotorCurrentValue', [FC.ANALOG.rightMotorAdc]));
+                fan_adc_e.text(i18n.getMessage('fanAdcValue', [FC.ANALOG.fanAdc]));
                 if(FC.ANALOG.leftMotorAdc < 3100 && FC.ANALOG.leftMotorAdc > 2500) {
                     rows[0].style.background = "green";
                 } else {
                     rows[0].style.background = "red";
                 }
 
-
-                left_adc_e.text(i18n.getMessage('leftMotorCurrentValue', [FC.ANALOG.leftMotorAdc]));
                 if(FC.ANALOG.rightMotorAdc < 3100 && FC.ANALOG.rightMotorAdc > 2500) {
                     rows[1].style.background = "green";
                 } else {
                     rows[1].style.background = "red";
                 }
 
-                right_adc_e.text(i18n.getMessage('rightMotorCurrentValue', [FC.ANALOG.rightMotorAdc]));
 
                 if(FC.CONFIG.hw == 1) {
                     if(!fanOpened) {
@@ -489,73 +707,332 @@ setup.initialize = function (callback) {
                         rows[2].style.background = "red";
                     }
                 }
+                if (selfCheckState == 6) {
+                    //马达静止
+                    if (wheelState == 0) {
+                        if (wheelChangeDelay >= WHEELCHECKDELAY) {
+                            if (updateWheelData(FC.ANALOG.leftMotorAdc,FC.ANALOG.rightMotorAdc)) {
+                                leftIdleAdc = calcAverage(leftWheelAdcBuf);
+                                rightIdleAdc = calcAverage(rightWheelAdcBuf);
 
+                                // if(leftAverageNum <= 3100 && leftAverageNum >= 3000) {
+                                //     leftWheelError = false;
+                                // } else {
+                                //     leftWheelError = true;
+                                // }
+                
+                                // if(rightAverageNum <= 3100 && rightAverageNum >= 3000) {
+                                //     rightWheelError = false;
+                                // } else {
+                                //     rightWheelError = true;
+                                // }
+                
+                
+                                if(FC.CONFIG.hw == 1) {
+                                    if(!fanOpened) {
+                                        if(FC.ANALOG.fanAdc < 100) {
+                                            rows[2].style.background = "green";
+                                        } else {
+                                            rows[2].style.background = "red";
+                                        }
+                                    } else {
+                                        if(FC.ANALOG.fanAdc > 500) {
+                                            rows[2].style.background = "green";
+                                        } else {
+                                            rows[2].style.background = "red";
+                                        }
+                                    }
+                                } 
+                                let errorWheelString = ''
+                                if (leftWheelError) {
+                                    errorWheelString += i18n.getMessage('leftWheelError');
+                                } 
+                                if (rightWheelError) {
+                                    errorWheelString += " "
+                                    errorWheelString += i18n.getMessage('rightWheelError');
+                                } 
+                                if (errorWheelString.length > 0) {
+                                    selfCheckState = 0;
+                                    wheelState = -1;
+                                    dialogAutoTestWait.close();
+                                    showErrorDialog(errorWheelString);
+                                } else {
+                                    //dialogAutoTestWait.close();
+                                    //showErrorDialog("一切正常");
+                                    wheelState = 1;
+                                    wheelChangeDelay = 0;
+                                    //正转马达
+                                    if (wheelfront) {
+                                        MSP.send_message(MSPCodes.MSP_SET_MOTOR, [1], false, function () {
+                                            wheelChangeDelay = 1;
+                                        });
+                                    } else {
+                                        MSP.send_message(MSPCodes.MSP_SET_MOTOR, [2], false, function () {
+                                            wheelChangeDelay = 1;
+                                        });
+                                    }    
+                                }
+                            }
+                        } else {
+                            self.sampleWheel = 0;
+                            wheelChangeDelay++;
+                        }
+                        
+                    } else if (wheelState == 1) {
+                        if (wheelChangeDelay >= WHEELCHECKDELAY) {
+                            if (updateWheelData(FC.ANALOG.leftMotorAdc,FC.ANALOG.rightMotorAdc)) {
+                                let leftAverageNum = calcAverage(leftWheelAdcBuf);
+                                let rightAverageNum = calcAverage(rightWheelAdcBuf);
+                                let diffLeft = leftIdleAdc - leftAverageNum;
+                                let diffRight = rightIdleAdc - rightAverageNum;
 
-                fan_adc_e.text(i18n.getMessage('fanAdcValue', [FC.ANALOG.fanAdc]));
+                                if (diffLeft >= 10 && diffLeft <= 40) {
+                                    leftWheelError = false;
+                                } else {
+                                    leftWheelError = true;
+                                }
+                                
+                                if(diffRight >= 10 && diffRight <= 40) {
+                                    rightWheelError = false;
+                                } else {
+                                    rightWheelError = true;
+                                }
+                
+                                if(FC.CONFIG.hw == 1) {
+                                    if(!fanOpened) {
+                                        if(FC.ANALOG.fanAdc < 100) {
+                                            rows[2].style.background = "green";
+                                        } else {
+                                            rows[2].style.background = "red";
+                                        }
+                                    } else {
+                                        if(FC.ANALOG.fanAdc > 500) {
+                                            rows[2].style.background = "green";
+                                        } else {
+                                            rows[2].style.background = "red";
+                                        }
+                                    }
+                                }
+                                let errorWheelString = ''
+                                if (leftWheelError) {
+                                    errorWheelString += (i18n.getMessage('leftWheelError') + FC.ANALOG.leftMotorAdc);
+                                } 
+                                if (rightWheelError) {
+                                    errorWheelString += " "
+                                    errorWheelString += (i18n.getMessage('rightWheelError') + FC.ANALOG.rightMotorAdc);
+                                } 
+                                if (errorWheelString.length > 0) {
+                                    selfCheckState = 0;
+                                    wheelState = -1;
+                                    dialogAutoTestWait.close();
+                                    showErrorDialog(errorWheelString);
+                                    MSP.send_message(MSPCodes.MSP_SET_MOTOR, [0], false, function () {
+                                        
+                                    });
+                                } else {
+                                    if (!wheelfront) {
+                                        wheelState = -1;
+                                        fanChangeDelay = FANCHECKDELAY;
+                                        self.sampleFan = 0;
+                                        selfCheckState = 7;//检测风机
+                                        fanCheckEnd = false;
+                                        // dialogAutoTestWait.close();
+                                        // showErrorDialog("一切正常");
+                                    } else {
+                                        wheelState = 0;
+                                    }
+                                    wheelfront = !wheelfront;
+                                    wheelChangeDelay = 0;
+                                    MSP.send_message(MSPCodes.MSP_SET_MOTOR, [0], false, function () {
+                                        
+                                    });
+                                }
+                            }
+                        } else {
+                            self.sampleWheel = 0;
+                            wheelChangeDelay += 1;
+                        }
+                        
+                    }
+                } else if (selfCheckState == 7) {
+                    if (fanChangeDelay >= FANCHECKDELAY) {
+                        if (updateFanData(FC.ANALOG.fanAdc)) {
+                            if (!fanOpened) {
+                                fanIdleAdc = calcAverage(fanAdcBuf);
 
+                                if (fanError) {
+                                    selfCheckState = 0;
+                                    dialogAutoTestWait.close();
+                                    showErrorDialog(i18n.getMessage('fanError'));
+                                    
+                                } else {
+                                    fanChangeDelay = 0;
+                                    if (fanCheckEnd) {
+                                        selfCheckState = 8;//
+                                        // dialogAutoTestWait.close();
+                                        // showErrorDialog("一切正常");
+                                        if (FC.ANALOG.corner == 0x0f) {
+                                            waitFourCornerClose = true;
+                                            showFourCornerDialog(i18n.getMessage('dialogTestFourCornerOpenTitle'));
+                                        } else if (FC.ANALOG.corner == 0x00) {
+                                            waitFourCornerClose = false;
+                                            showFourCornerDialog(i18n.getMessage('dialogTestFourCornerCloseTitle'));
+                                        } else {
+                                            selfCheckState = 0;
+                                            dialogAutoTestWait.close();
+                                            showErrorDialog(i18n.getMessage('fourCornerError'));
+                                        }
+                                        
+                                    } else {
+                                        MSP.send_message(MSPCodes.MSP_SET_FAN, [60], false, function () {
+                                            fanOpened = true;
+                                        });
+                                    }
+                                    
+                                }
+                            } else {
+                                let fanOpenAdc = calcAverage(fanAdcBuf);
+                                let diffFan = fanIdleAdc - fanOpenAdc;
+                                if(diffFan >= 80 && diffFan <= 200) {
+                                    fanError = false;
+                                } else {
+                                    fanError = true;
+                                }
+                
+                                if (fanError) {
+                                    selfCheckState = 0;
+                                    dialogAutoTestWait.close();
+                                    showErrorDialog(i18n.getMessage('fanError'));
+                                    MSP.send_message(MSPCodes.MSP_SET_FAN, [0], false, function () {
+                                        fanOpened = false;
+                                    });
+                                } else {
+                                    fanChangeDelay = 0;
+                                    fanCheckEnd = true;
+                                    MSP.send_message(MSPCodes.MSP_SET_FAN, [0], false, function () {
+                                        fanOpened = false;
+                                    });
+                                }
+                            }
+                        }
+                        
+                    } else {
+                        self.sampleFan = 0;
+                        fanChangeDelay++;
+                    }
+                }
             });
 
             MSP.send_message(MSPCodes.MSP_ATTITUDE, false, false, function () {
                 rows[5].style.background = "green";
                 atti_yaw_e.text(i18n.getMessage('attiYawValue', [FC.SENSOR_DATA.kinematics[0]]));
             });
+            
+            if(FC.CONFIG.hw == 2) {
+                MSP.send_message(MSPCodes.MSP_BARO, false, false, function () {
+                    baro_val_e.text(i18n.getMessage('baroValue', [FC.SENSOR_DATA.baro]));
+                    if (FC.SENSOR_DATA.baro >= 100000 && FC.SENSOR_DATA.baro <= 120000) {
+                        rows[6].style.background = "green";
+                        baroError = false;
+                    } else {
+                        rows[6].style.background = "red";
+                        baroError = true;
+                    }
+                    if (selfCheckState == 5) {
+                        if (baroError) {
+                            selfCheckState = 0;
+                            dialogAutoTestWait.close();
+                            showErrorDialog(i18n.getMessage('baroError'));
+                        } else {
+                            selfCheckState = 6;
+                            //检测马达
+                            wheelState = 0;
+                            wheelChangeDelay = 0;
+                        }
+    
+                    }   
+                    
+                });
+            }
 
-            MSP.send_message(MSPCodes.MSP_BARO, false, false, function () {
-                if (FC.SENSOR_DATA.baro >= 30000 && FC.SENSOR_DATA.baro <= 120000) {
-                    rows[6].style.background = "green";
-                } else {
-                    rows[6].style.background = "red";
-                }
-                
-                baro_val_e.text(i18n.getMessage('baroValue', [FC.SENSOR_DATA.baro]));
-            });
 
             MSP.send_message(MSPCodes.MSP_RAW_IMU, false, false, function () {
 
-                if(updateGyroData(FC.SENSOR_DATA.gyroscope[0],FC.SENSOR_DATA.gyroscope[1],FC.SENSOR_DATA.gyroscope[2])) {
-                    let fcgx = calcFc(gyroX);
-                    let fcgy = calcFc(gyroY);
-                    let fcgz = calcFc(gyroZ);
-
-                    if(fcgx == 0 || FC.SENSOR_DATA.gyroscope[0] > 20 || FC.SENSOR_DATA.gyroscope[0] < -20) {
+                if(updateGyroData(FC.SENSOR_DATA.gyroscope[0],FC.SENSOR_DATA.gyroscope[1],FC.SENSOR_DATA.gyroscope[2])) {                    
+                    if(elementAllSame(gyroX) || FC.SENSOR_DATA.gyroscope[0] > 20 || FC.SENSOR_DATA.gyroscope[0] < -20) {
                         rows[11].style.background = "red";
                     } else {
                         rows[11].style.background = "green";
+                        if (selfCheckState == 1) {
+                            gyrovalideCnt += 1;
+                        }
                     }
 
-                    if(fcgy == 0 || FC.SENSOR_DATA.gyroscope[1] > 20 || FC.SENSOR_DATA.gyroscope[1] < -20) {
+                    if(elementAllSame(gyroY) || FC.SENSOR_DATA.gyroscope[1] > 20 || FC.SENSOR_DATA.gyroscope[1] < -20) {
                         rows[12].style.background = "red";
                     } else {
                         rows[12].style.background = "green";
+                        if (selfCheckState == 1) {
+                            gyrovalideCnt += 1;
+                        }
                     }
-                    if(fcgz == 0 || FC.SENSOR_DATA.gyroscope[2] > 20 || FC.SENSOR_DATA.gyroscope[2] < -20) {
+                    if(elementAllSame(gyroZ) || FC.SENSOR_DATA.gyroscope[2] > 20 || FC.SENSOR_DATA.gyroscope[2] < -20) {
                         rows[13].style.background = "red";
                     } else {
                         rows[13].style.background = "green";
+                        if (selfCheckState == 1) {
+                            gyrovalideCnt += 1;
+                        }
                     }
+                    if (selfCheckState == 1) {
+                        selfCheckState = 2;
+                    }
+                    
                 }
 
                 if(updateAccData(FC.SENSOR_DATA.accelerometer[0],FC.SENSOR_DATA.accelerometer[1],FC.SENSOR_DATA.accelerometer[2])) {
-                    let fcax = calcFc(accX);
-                    let fcay = calcFc(accY);
-                    let fcaz = calcFc(accZ);
-
-                    if(fcax == 0 || FC.SENSOR_DATA.accelerometer[0] > 300 || FC.SENSOR_DATA.accelerometer[0] < -300) {
+                    
+                    if(elementAllSame(accX) || FC.SENSOR_DATA.accelerometer[0] > 300 || FC.SENSOR_DATA.accelerometer[0] < -300) {
                         rows[14].style.background = "red";
                     } else {
                         rows[14].style.background = "green";
+                        if (selfCheckState == 2) {
+                            gyrovalideCnt += 1;  
+                        }
                     }
 
-                    if(fcay == 0 || FC.SENSOR_DATA.accelerometer[1] > 300 || FC.SENSOR_DATA.accelerometer[1] < -300) {
+                    if(elementAllSame(accY) || FC.SENSOR_DATA.accelerometer[1] > 300 || FC.SENSOR_DATA.accelerometer[1] < -300) {
                         rows[15].style.background = "red";
                     } else {
                         rows[15].style.background = "green";
+                        if (selfCheckState == 2) {
+                            gyrovalideCnt += 1;  
+                        }
                     }
-                    if(fcaz == 0 || FC.SENSOR_DATA.accelerometer[2] < 3797 || FC.SENSOR_DATA.accelerometer[2] > 4396)  {
+                    if(elementAllSame(accZ) || FC.SENSOR_DATA.accelerometer[2] < 3797 || FC.SENSOR_DATA.accelerometer[2] > 4396)  {
                         rows[16].style.background = "red";
                     } else {
                         rows[16].style.background = "green";
+                        if (selfCheckState == 2) {
+                            gyrovalideCnt += 1;  
+                        }
                     }
+                    if (selfCheckState == 2) {
+                        if (gyrovalideCnt == 6) {
+                            if(FC.CONFIG.hw == 2) {
+                                selfCheckState = 3;
+                            } else if(FC.CONFIG.hw == 3) {
+                                selfCheckState = 4;
+                            }
+                            
+                            //dialogTestFourCorner.showModal();
+                        } else {
+                            selfCheckState = 0;
+                            dialogAutoTestWait.close();
+                            showErrorDialog(i18n.getMessage('gyroError'));
+                        } 
+                    }
+                    
                 }
 
                 gyro_x_e.text(i18n.getMessage('gyroXValue', [FC.SENSOR_DATA.gyroscope[0]]));
@@ -570,7 +1047,7 @@ setup.initialize = function (callback) {
         }
 
         GUI.interval_add('setup_data_pull_fast', get_fast_data, 33, true); // 30 fps
-        GUI.interval_add('setup_data_pull_slow', get_slow_data, 250, true); // 4 fps
+        GUI.interval_add('setup_data_pull_slow', get_slow_data, 50, true); // 4 fps
 
         GUI.content_ready(callback);
     }

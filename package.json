@@ -24,7 +24,7 @@
     "id": "main-window",
     "min_width": 1024,
     "min_height": 550,
-    "title": "擦窗机生产测试软件V1.1"
+    "title": "擦窗机生产测试软件V1.1.1"
   },
   "repository": {
     "type": "git",

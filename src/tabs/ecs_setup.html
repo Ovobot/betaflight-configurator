@@ -60,7 +60,7 @@
                                 <td i18n="fanCurrent"></td>
                                 <td class="fanAdc">0</td>
                             </tr>
-                            <tr>
+                            <tr style="display:none">
                                 <td i18n="battery"></td>
                                 <td class="battAdc">0</td>
                             </tr>
@@ -85,7 +85,7 @@
                                     <td i18n="attitudeYaw"></td>
                                     <td class="attiYaw"></td>
                                 </tr>
-                                <tr>
+                                <tr style="display:none">
                                     <td i18n="baroTitle"></td>
                                     <td class="baroVal"></td>
                                 </tr>
@@ -217,6 +217,29 @@
                             </div>
                     </div>
 
+                    <div class="grid-col col6 margin-bottom">
+                        <div class="grid-row">
+                            <div class="grid-col col2">
+                                <span i18n="initialSpraySetup"></span>
+                            </div>
+                            <div class="grid-col col2">
+                                <div class="default_btn">
+                                    <a class="spray" href="#" i18n="initialSprayButton"></a>
+                                </div>
+                            </div>
+                            <div class="grid-col col2">
+                                <div class="default_btn" style="display:none;">
+                                    <a class="anti_clockwise" href="#" i18n="initialMotorButtonAntiClockWiseRun"></a>
+                                </div>
+                            </div>
+
+                            <div class="grid-col col2">
+                                <div class="default_btn" style="display:none;">
+                                    <a class="stop" href="#" i18n="initialMotorButtonStop"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                                         
                     <div class="grid-col col6 margin-bottom">
                         <div class="grid-row">
@@ -253,6 +276,7 @@
                         
                     </div>
                     
+                    
             </div>
         </div>
 
@@ -269,6 +293,17 @@
         </div>
     </dialog>
 
+    <dialog class="dialogSprayConfirm">
+        <h3 i18n="dialogSprayConfirmTitle"></h3>
+        <div class="content">
+            <div i18n="dialogSprayConfirmNote" style="margin-top: 10px"></div>
+        </div>
+        <div class="buttons">
+            <a href="#" class="dialogSprayConfirm-confirmbtn regular-button" i18n="dialogSprayConfirmSpray"></a>
+            <a href="#" class="dialogSprayConfirm-cancelbtn regular-button" i18n="dialogSprayConfirmNotWork"></a>
+        </div>
+    </dialog>
+
     <dialog class="dialogAutoTest">
         <h3 i18n="dialogAutoTestTitle"></h3>
         <div class="buttons">
@@ -280,6 +315,16 @@
         <h3 class="dialogTestFourCornerTitle"></h3>
         <div class="buttons">
             <a href="#" class="dialogTestFourCorner-closebtn regular-button" i18n="close"></a>
+        </div>
+    </dialog>
+
+    <dialog class="dialogTestSpray">
+        <h3 i18n="dialogTestSprayTitle"></h3>
+        <div class="content">
+            <div class="dialogTestSpray-content" style="margin-top: 10px"></div>
+        </div>
+        <div class="buttons">
+            <a href="#" class="dialogTestSpray-spraybtn regular-button" i18n="startSprayButton"></a>
         </div>
     </dialog>
 
