@@ -4,10 +4,10 @@ const setup = {
     yaw_fix: 0.0,
     sampleCnt:0,
     sampleAccCnt:0,
-    bufLen:50,
+    bufLen:30,
     sampleWheel:0,
     sampleFan:0,
-    adcBufLen:30,
+    adcBufLen:20,
 };
 
 setup.initialize = function (callback) {
@@ -65,13 +65,14 @@ setup.initialize = function (callback) {
     let selfCheckState = 0;
     let wheelState = -1;//
     let wheelfront = true;
+    let wheelCheckEnd = false;
     let leftWheelError = false;
     let rightWheelError = false;
     let wheelChangeDelay = 0;//发送命令到执行有时间间隔
-    const WHEELCHECKDELAY = 5;
+    const WHEELCHECKDELAY = 2;
     let fanError = false;
     let fanChangeDelay = 0;
-    const FANCHECKDELAY = 50;
+    const FANCHECKDELAY = 20;
     let battError = false;
     let adapterError = false;
     let baroError = false;
@@ -80,7 +81,7 @@ setup.initialize = function (callback) {
     let rightIdleAdc = 0;
     let fanIdleAdc = 0;
     let gyroErrorHappend = false;
-
+    let autoTestReady = true;
     function selfCheckTask() {
         if (selfCheckState == 0) {
             //检测陀螺仪
@@ -170,9 +171,11 @@ setup.initialize = function (callback) {
         const dialog = $('.dialogSprayConfirm')[0];
          
         $('.dialogSprayConfirm-confirmbtn').click(function() {
+           autoTestReady = false; 
            dialog.close();
         });
         $('.dialogSprayConfirm-cancelbtn').click(function() {
+            autoTestReady = false;
             dialog.close();
          });
         dialog.showModal();       
@@ -188,16 +191,35 @@ setup.initialize = function (callback) {
             dialog.close();
             showSprayResultDialog();
          });
+
+         $('.dialogTestSpray-closebtn').click(function() {
+            dialog.close();
+         });
      
          dialog.showModal();
     }
 
+    function closeAutoTestDialog()
+    {
+        const dialog = $('.dialogAutoTest')[0];    
+        dialog.close();
+    }
 
+    function showAutoTestDialogTitle(title) {
+        const dialog = $('.dialogAutoTest')[0];  
+        $('.dialogAutoTestTitle').html(title);
+        dialog.showModal();
+    }
+
+    function changeAutoTestDialogTitle(title) {
+        $('.dialogAutoTestTitle').html(title);
+    }
 
     function showFourCornerDialog(message) {
         const dialog = $('.dialogTestFourCorner')[0];
         $('.dialogTestFourCornerTitle').html(message);
         $('.dialogTestFourCorner-closebtn').click(function() {
+            closeAutoTestDialog();
             selfCheckState = 0;
             self.sampleCnt = 0;
             self.sampleAccCnt = 0;
@@ -242,7 +264,6 @@ setup.initialize = function (callback) {
             $('default_btn').addClass('disabled');
         }
 
-        self.initializeInstruments();
 
         $('#arming-disable-flag').attr('title', i18n.getMessage('initialSetupArmingDisableFlagsTooltip'));
 
@@ -370,12 +391,15 @@ setup.initialize = function (callback) {
         });
         //开始自动化测试    
         $('.dialogConfirmReset-confirmbtn').click(function() {
+            autoTestReady = true;
             dialogConfirmReset.close();
             selfCheckState = 0;
             self.sampleCnt = 0;
             self.sampleAccCnt = 0;
+            fanOpened = false;
             selfCheckTask();
-            dialogAutoTestWait.showModal();
+            //dialogAutoTestWait.showModal();
+            showAutoTestDialogTitle(i18n.getMessage('dialogAutoTestGyroAccTitle'));
         });
 
         
@@ -578,6 +602,11 @@ setup.initialize = function (callback) {
                 });
             }
 
+            MSP.send_message(MSPCodes.MSP_ATTITUDE, false, false, function () {
+                rows[5].style.background = "green";
+                atti_yaw_e.text(i18n.getMessage('attiYawValue', [FC.SENSOR_DATA.kinematics[0]]));
+            });
+
             MSP.send_message(MSPCodes.MSP_ADAPTER, false, false, function () {
                 adapter_adc_e.text(i18n.getMessage('adapterValue', [FC.ANALOG.adapter]));
                 if (FC.ANALOG.adapter >= 22 && FC.ANALOG.adapter <= 26) {
@@ -601,6 +630,12 @@ setup.initialize = function (callback) {
                             leftWheelError = false;
                             rightWheelError = false;
                             self.sampleWheel = 0;
+                            wheelCheckEnd = false;
+
+                            fanChangeDelay = FANCHECKDELAY;
+                            self.sampleFan = 0;
+                            fanCheckEnd = false;
+                            fanError = false;
                         } else if(FC.CONFIG.hw == 2) {
                             selfCheckState = 5;
                         }
@@ -661,6 +696,7 @@ setup.initialize = function (callback) {
                     }
                 }
             });
+
         }
 
         function get_fast_data() {
@@ -668,7 +704,8 @@ setup.initialize = function (callback) {
 
             const tb = $('.cf_table tbody');
             const rows = tb.find("tr");
-
+            if (!autoTestReady) return;    
+            
             MSP.send_message(MSPCodes.MSP_ANALOG, false, false, function () {
                 left_adc_e.text(i18n.getMessage('leftMotorCurrentValue', [FC.ANALOG.leftMotorAdc]));
                 right_adc_e.text(i18n.getMessage('rightMotorCurrentValue', [FC.ANALOG.rightMotorAdc]));
@@ -715,19 +752,6 @@ setup.initialize = function (callback) {
                                 leftIdleAdc = calcAverage(leftWheelAdcBuf);
                                 rightIdleAdc = calcAverage(rightWheelAdcBuf);
 
-                                // if(leftAverageNum <= 3100 && leftAverageNum >= 3000) {
-                                //     leftWheelError = false;
-                                // } else {
-                                //     leftWheelError = true;
-                                // }
-                
-                                // if(rightAverageNum <= 3100 && rightAverageNum >= 3000) {
-                                //     rightWheelError = false;
-                                // } else {
-                                //     rightWheelError = true;
-                                // }
-                
-                
                                 if(FC.CONFIG.hw == 1) {
                                     if(!fanOpened) {
                                         if(FC.ANALOG.fanAdc < 100) {
@@ -832,12 +856,26 @@ setup.initialize = function (callback) {
                                 } else {
                                     if (!wheelfront) {
                                         wheelState = -1;
-                                        fanChangeDelay = FANCHECKDELAY;
-                                        self.sampleFan = 0;
-                                        selfCheckState = 7;//检测风机
-                                        fanCheckEnd = false;
-                                        // dialogAutoTestWait.close();
-                                        // showErrorDialog("一切正常");
+                                        wheelCheckEnd = true;
+                                        // fanChangeDelay = FANCHECKDELAY;
+                                        // self.sampleFan = 0;
+                                        // selfCheckState = 7;//检测风机
+                                        // fanCheckEnd = false;
+                                        // changeAutoTestDialogTitle(i18n.getMessage("dialogAutoTestFanTitle"));
+                                        if (fanCheckEnd) {
+                                            selfCheckState = 8;//
+                                            if (FC.ANALOG.corner == 0x0f) {
+                                                waitFourCornerClose = true;
+                                                showFourCornerDialog(i18n.getMessage('dialogTestFourCornerOpenTitle'));
+                                            } else if (FC.ANALOG.corner == 0x00) {
+                                                waitFourCornerClose = false;
+                                                showFourCornerDialog(i18n.getMessage('dialogTestFourCornerCloseTitle'));
+                                            } else {
+                                                selfCheckState = 0;
+                                                dialogAutoTestWait.close();
+                                                showErrorDialog(i18n.getMessage('fourCornerError'));
+                                            }
+                                        }
                                     } else {
                                         wheelState = 0;
                                     }
@@ -854,7 +892,7 @@ setup.initialize = function (callback) {
                         }
                         
                     }
-                } else if (selfCheckState == 7) {
+
                     if (fanChangeDelay >= FANCHECKDELAY) {
                         if (updateFanData(FC.ANALOG.fanAdc)) {
                             if (!fanOpened) {
@@ -864,27 +902,13 @@ setup.initialize = function (callback) {
                                     selfCheckState = 0;
                                     dialogAutoTestWait.close();
                                     showErrorDialog(i18n.getMessage('fanError'));
-                                    
                                 } else {
-                                    fanChangeDelay = 0;
+
                                     if (fanCheckEnd) {
-                                        selfCheckState = 8;//
-                                        // dialogAutoTestWait.close();
-                                        // showErrorDialog("一切正常");
-                                        if (FC.ANALOG.corner == 0x0f) {
-                                            waitFourCornerClose = true;
-                                            showFourCornerDialog(i18n.getMessage('dialogTestFourCornerOpenTitle'));
-                                        } else if (FC.ANALOG.corner == 0x00) {
-                                            waitFourCornerClose = false;
-                                            showFourCornerDialog(i18n.getMessage('dialogTestFourCornerCloseTitle'));
-                                        } else {
-                                            selfCheckState = 0;
-                                            dialogAutoTestWait.close();
-                                            showErrorDialog(i18n.getMessage('fourCornerError'));
-                                        }
-                                        
+                                        fanChangeDelay = 0;
                                     } else {
                                         MSP.send_message(MSPCodes.MSP_SET_FAN, [60], false, function () {
+                                            fanChangeDelay = 0;
                                             fanOpened = true;
                                         });
                                     }
@@ -909,23 +933,34 @@ setup.initialize = function (callback) {
                                 } else {
                                     fanChangeDelay = 0;
                                     fanCheckEnd = true;
+
                                     MSP.send_message(MSPCodes.MSP_SET_FAN, [0], false, function () {
                                         fanOpened = false;
+                                        if (wheelCheckEnd) {
+                                            selfCheckState = 8;//
+                                            if (FC.ANALOG.corner == 0x0f) {
+                                                waitFourCornerClose = true;
+                                                showFourCornerDialog(i18n.getMessage('dialogTestFourCornerOpenTitle'));
+                                            } else if (FC.ANALOG.corner == 0x00) {
+                                                waitFourCornerClose = false;
+                                                showFourCornerDialog(i18n.getMessage('dialogTestFourCornerCloseTitle'));
+                                            } else {
+                                                selfCheckState = 0;
+                                                dialogAutoTestWait.close();
+                                                showErrorDialog(i18n.getMessage('fourCornerError'));
+                                            }
+                                        }
                                     });
                                 }
                             }
                         }
-                        
                     } else {
                         self.sampleFan = 0;
                         fanChangeDelay++;
                     }
+                } else if (selfCheckState == 7) {
+                    
                 }
-            });
-
-            MSP.send_message(MSPCodes.MSP_ATTITUDE, false, false, function () {
-                rows[5].style.background = "green";
-                atti_yaw_e.text(i18n.getMessage('attiYawValue', [FC.SENSOR_DATA.kinematics[0]]));
             });
             
             if(FC.CONFIG.hw == 2) {
@@ -949,7 +984,6 @@ setup.initialize = function (callback) {
                             wheelState = 0;
                             wheelChangeDelay = 0;
                         }
-    
                     }   
                     
                 });
@@ -1023,6 +1057,35 @@ setup.initialize = function (callback) {
                                 selfCheckState = 3;
                             } else if(FC.CONFIG.hw == 3) {
                                 selfCheckState = 4;
+                                changeAutoTestDialogTitle(i18n.getMessage("dialogAutoTestAdapterTitle"));
+                                MSP.send_message(MSPCodes.MSP_ADAPTER, false, false, function () {
+                                    if (FC.ANALOG.adapter >= 22 && FC.ANALOG.adapter <= 26) {
+                                        adapterError = false;
+                                    } else {
+                                        adapterError = true;
+                                    }  
+                                    if (adapterError) {
+                                        selfCheckState = 0;
+                                        dialogAutoTestWait.close();
+                                        showErrorDialog(adapterError);
+                                    } else {
+                                        changeAutoTestDialogTitle(i18n.getMessage("dialogAutoTestWheelTitle"));
+                                        selfCheckState = 6;
+                                        //检测马达
+                                        wheelState = 0;
+                                        wheelChangeDelay = WHEELCHECKDELAY;
+                                        leftWheelError = false;
+                                        rightWheelError = false;
+                                        self.sampleWheel = 0;
+                                        wheelCheckEnd = false;
+
+                                        fanChangeDelay = FANCHECKDELAY;
+                                        self.sampleFan = 0;
+                                        fanCheckEnd = false;
+                                        fanError = false;
+                                    }
+                                      
+                                });
                             }
                             
                             //dialogTestFourCorner.showModal();
@@ -1046,38 +1109,13 @@ setup.initialize = function (callback) {
 
         }
 
-        GUI.interval_add('setup_data_pull_fast', get_fast_data, 33, true); // 30 fps
-        GUI.interval_add('setup_data_pull_slow', get_slow_data, 50, true); // 4 fps
+        GUI.interval_add('setup_data_pull_fast', get_fast_data, 50, true); // 30 fps
+        GUI.interval_add('setup_data_pull_slow', get_slow_data, 250, true); // 4 fps
 
         GUI.content_ready(callback);
     }
 };
 
-setup.initializeInstruments = function() {
-    const options = {size:90, showBox : false, img_directory: 'images/flightindicators/'};
-    const attitude = $.flightIndicator('#attitude', 'attitude', options);
-    const heading = $.flightIndicator('#heading', 'heading', options);
-
-    this.updateInstruments = function() {
-        attitude.setRoll(FC.SENSOR_DATA.kinematics[0]);
-        attitude.setPitch(FC.SENSOR_DATA.kinematics[1]);
-        heading.setHeading(FC.SENSOR_DATA.kinematics[2]);
-    };
-};
-
-setup.initModel = function () {
-    this.model = new Model($('.model-and-info #canvas_wrapper'), $('.model-and-info #canvas'));
-
-    $(window).on('resize', $.proxy(this.model.resize, this.model));
-};
-
-setup.renderModel = function () {
-    const x = (FC.SENSOR_DATA.kinematics[1] * -1.0) * 0.017453292519943295,
-        y = ((FC.SENSOR_DATA.kinematics[2] * -1.0) - this.yaw_fix) * 0.017453292519943295,
-        z = (FC.SENSOR_DATA.kinematics[0] * -1.0) * 0.017453292519943295;
-
-    this.model.rotateTo(x, y, z);
-};
 
 setup.cleanup = function (callback) {
     if (this.model) {

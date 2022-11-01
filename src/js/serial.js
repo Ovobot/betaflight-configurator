@@ -15,6 +15,14 @@ const serial = {
     transmitting:   false,
     outputBuffer:   [],
 
+    serialDevices: [
+        {'vendorId': 1027, 'productId': 24577}, // FT232R USB UART
+        {'vendorId': 1155, 'productId': 22336}, // STM Electronics Virtual COM Port
+        {'vendorId': 4292, 'productId': 60000}, // CP210x
+        {'vendorId': 4292, 'productId': 60001}, // CP210x
+        {'vendorId': 4292, 'productId': 60002}, // CP210x
+    ],
+
     connect: function (path, options, callback) {
         const self = this;
         const testUrl = path.match(/^tcp:\/\/([A-Za-z0-9\.-]+)(?:\:(\d+))?$/);
@@ -96,13 +104,14 @@ const serial = {
 
                         case 'frame_error':
                         case 'parity_error':
-                            // GUI.log(i18n.getMessage('serialError' + inflection.camelize(info.error)));
-                            // self.errorHandler(info.error, 'receive');
+                            GUI.log(i18n.getMessage(`serialError${inflection.camelize(info.error)}`));
+                            self.errorHandler(info.error, 'receive');
                             break;
                         case 'break': // This seems to be the error that is thrown under NW.js in Windows when the device reboots after typing 'exit' in CLI
                         case 'disconnected':
                         case 'device_lost':
                         default:
+                            console.log("info:" + info.error);
                             self.errorHandler(info.error, 'receive');
                             break;
                     }
@@ -209,6 +218,7 @@ const serial = {
     },
     disconnect: function (callback) {
         const self = this;
+        const id = self.connectionId;
         self.connected = false;
         self.emptyOutputBuffer();
 
@@ -221,6 +231,8 @@ const serial = {
             for (let i = (self.onReceiveError.listeners.length - 1); i >= 0; i--) {
                 self.onReceiveError.removeListener(self.onReceiveError.listeners[i]);
             }
+
+            let status = true;
             if (self.connectionType !== 'virtual') {
                 if (self.connectionType === 'tcp') {
                     chrome.sockets.tcp.disconnect(self.connectionId, function () {
@@ -231,23 +243,22 @@ const serial = {
 
                 const disconnectFn = (self.connectionType === 'serial') ? chrome.serial.disconnect : chrome.sockets.tcp.close;
                 disconnectFn(self.connectionId, function (result) {
-                    checkChromeRuntimeError();
-
+                    if (chrome.runtime.lastError) {
+                        console.log(chrome.runtime.lastError.message);
+                    }
                     result = result || self.connectionType === 'tcp';
-                    console.log(`${self.connectionType}: ${result ? 'closed' : 'failed to close'} connection with ID: ${self.connectionId}, Sent: ${self.bytesSent} bytes, Received: ${self.bytesReceived} bytes`);
-
-                    self.connectionId = false;
-                    self.bitrate = 0;
-
-                    if (callback) callback(result);
+                    console.log(`${self.connectionType}: ${result ? 'closed' : 'failed to close'} connection with ID: ${id}, Sent: ${self.bytesSent} bytes, Received: ${self.bytesReceived} bytes`);
+                    status = result;
                 });
             } else {
-                self.connectionId = false;
                 CONFIGURATOR.virtualMode = false;
                 self.connectionType = false;
-                if (callback) {
-                    callback(true);
-                }
+            }
+            self.connectionId = false;
+            self.bitrate = 0;
+
+            if (callback) {
+                callback(status);
             }
         } else {
             // connection wasn't opened, so we won't try to close anything
@@ -256,13 +267,22 @@ const serial = {
         }
     },
     getDevices: function (callback) {
+        const self = this;
+
         chrome.serial.getDevices(function (devices_array) {
             const devices = [];
+
             devices_array.forEach(function (device) {
-                devices.push({
-                              path: device.path,
-                              displayName: device.displayName,
-                             });
+                const isKnownSerialDevice = self.serialDevices.some(el => el.vendorId === device.vendorId) && self.serialDevices.some(el => el.productId === device.productId);
+
+                if (isKnownSerialDevice || PortHandler.showAllSerialDevices) {
+                    devices.push({
+                        path: device.path,
+                        displayName: device.displayName,
+                        vendorId: device.vendorId,
+                        productId: device.productId,
+                    });
+                }
             });
 
             callback(devices);
@@ -282,7 +302,8 @@ const serial = {
             const _callback = self.outputBuffer[0].callback;
 
             if (!self.connected) {
-                console.log(`${self.connectionType}: attempting to send when disconnected`);
+                console.log(`${self.connectionType}: attempting to send when disconnected. ID: ${self.connectionId}`);
+
                 if (_callback) {
                     _callback({
                         bytesSent: 0,
@@ -294,7 +315,9 @@ const serial = {
 
             const sendFn = (self.connectionType === 'serial') ? chrome.serial.send : chrome.sockets.tcp.send;
             sendFn(self.connectionId, _data, function (sendInfo) {
-                checkChromeRuntimeError();
+                if (chrome.runtime.lastError) {
+                    console.log(chrome.runtime.lastError.message);
+                }
 
                 if (sendInfo === undefined) {
                     console.log('undefined send error');
@@ -334,7 +357,7 @@ const serial = {
                             counter++;
                         }
 
-                        console.log(`${self.connectionType}: send buffer overflowing, dropped: ${counter} ${entries}`);
+                        console.log(`${self.connectionType}: send buffer overflowing, dropped: ${counter}`);
                     }
 
                     _send();
@@ -344,7 +367,7 @@ const serial = {
             });
         }
 
-        if (!self.transmitting) {
+        if (!self.transmitting && self.connected) {
             self.transmitting = true;
             _send();
         }
@@ -367,7 +390,7 @@ const serial = {
                     break;
                 }
             }
-        }
+        },
     },
     onReceiveError: {
         listeners: [],
@@ -387,7 +410,7 @@ const serial = {
                     break;
                 }
             }
-        }
+        },
     },
     emptyOutputBuffer: function () {
         this.outputBuffer = [];
@@ -400,7 +423,7 @@ const serial = {
         FC.CONFIG.armingDisabled = false;
         FC.CONFIG.runawayTakeoffPreventionDisabled = false;
 
-        let message = 'error: UNDEFINED';
+        let message;
         if (self.connectionType === 'tcp') {
             switch (result){
                 case -15:
@@ -429,12 +452,14 @@ const serial = {
                     break;
             }
         }
-        console.log(`${self.connectionType}: ${direction} ${message}: ${result}`);
+        console.log("error msg :" + message);
+        const resultMessage = message ? `${message} ${result}` : result;
+        console.warn(`${self.connectionType}: ${resultMessage} ID: ${self.connectionId} (${direction})`);
 
         if (GUI.connected_to || GUI.connecting_to) {
-            $('a.connect').click();
+            $('a.connect').trigger('click');
         } else {
-            self.disconnect();
+            serial.disconnect();
         }
     },
 };

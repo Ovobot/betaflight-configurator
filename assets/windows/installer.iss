@@ -9,18 +9,18 @@
 ; sourceFolder
 ; targetFolder
 
-#define ApplicationName "Betaflight Configurator"
-#define CompanyName "The Betaflight open source project"
-#define CompanyUrl "https://betaflight.com/"
-#define ExecutableFileName "betaflight-configurator.exe"
-#define GroupName "Betaflight"
-#define InstallerFileName "betaflight-configurator_" + version + "_" + archName + "-installer"
-#define SourcePath "..\..\" + sourceFolder + "\betaflight-configurator\" + archName
-#define TargetFolderName "Betaflight-Configurator"
+#define ApplicationName "Cleanrobot Test"
+#define CompanyName "南京天迈信息科技有限公司"
+#define CompanyUrl "https://www.ovobot.cn/zh-hans/"
+#define ExecutableFileName "cleanrobot-test.exe"
+#define GroupName "Timye"
+#define InstallerFileName "cleanrobot-test_" + version + "_" + archName + "-installer"
+#define SourcePath "..\..\" + sourceFolder + "\cleanrobot-test\" + archName
+#define TargetFolderName "Cleanrobot-Test"
 #define UpdatesUrl "https://github.com/betaflight/betaflight-configurator/releases"
 
 [CustomMessages]
-AppName=betaflight-configurator
+AppName=cleanrobot-test
 LaunchProgram=Start {#ApplicationName}
 
 [Files]

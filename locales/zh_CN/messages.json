@@ -6642,8 +6642,17 @@
     "initialAutoTestText": {
         "message": "自动化测试需注意<strong>风机 马达</strong>是否具备自动化测试条件"
     },
-    "dialogAutoTestTitle": {
-        "message": "自动检测中......"
+    "dialogAutoTestGyroAccTitle": {
+        "message": "<span class=\"message-positive-more\">陀螺仪</span>自动检测中......"
+    },
+    "dialogAutoTestAdapterTitle": {
+        "message": "<span class=\"message-positive-more\">电源适配器</span>自动检测中......"
+    },
+    "dialogAutoTestWheelTitle": {
+        "message": "<span class=\"message-positive-more\">边轮</span>自动检测中......"
+    },
+    "dialogAutoTestFanTitle": {
+        "message": "<span class=\"message-positive-more\">风机</span>自动检测中......"
     },
     "dialogAutoTestSuccessTitle": {
         "message": "<span class=\"message-positive-more\">自检结束，板子正常</span>"
@@ -6680,6 +6689,9 @@
     },
     "startSprayButton": {
         "message": "开始喷水"
+    },
+    "withoutspray": {
+        "message": "无喷水"
     },
     "dialogTestSprayTitle": {
         "message": "开始喷水测试"
