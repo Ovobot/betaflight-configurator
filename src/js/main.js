@@ -225,9 +225,9 @@ function startProcess() {
     // our view is reactive to model changes
     // updateTopBarVersion();
 
-    if (!GUI.isOther()) {
-        checkForConfiguratorUpdates();
-    }
+    // if (!GUI.isOther()) {
+    //     checkForConfiguratorUpdates();
+    // }
 
     // log webgl capability
     // it would seem the webgl "enabling" through advanced settings will be ignored in the future

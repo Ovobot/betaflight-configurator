@@ -10,7 +10,7 @@
 ; targetFolder
 
 #define ApplicationName "Cleanrobot Test"
-#define CompanyName "南京天迈信息科技有限公司"
+#define CompanyName "Nanjing Timye Information Technology Co., Ltd"
 #define CompanyUrl "https://www.ovobot.cn/zh-hans/"
 #define ExecutableFileName "cleanrobot-test.exe"
 #define GroupName "Timye"

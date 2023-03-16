@@ -46,6 +46,7 @@ const INITIAL_ANALOG = {
     fanAdc:                     0,
     batt:                       0,
     adapter:                    0,
+    waterstate:                 0,
     corner:                     0,
     rssi:                       0,
     amperage:                   0,

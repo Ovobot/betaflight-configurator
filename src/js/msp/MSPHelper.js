@@ -90,7 +90,10 @@ MspHelper.prototype.process_data = function(dataHandler) {
                     break;
                 case MSPCodes.MSP_BARO:
                     FC.SENSOR_DATA.baro = data.read32();
-                    break;    
+                    break;
+                case MSPCodes.MSP_WATER_BOX:
+                    FC.ANALOG.waterstate = data.readU8();
+                    break;        
                 case MSPCodes.MSP_ANALOG:
                     FC.ANALOG.leftMotorAdc = data.readU16();
                     FC.ANALOG.rightMotorAdc = data.readU16();

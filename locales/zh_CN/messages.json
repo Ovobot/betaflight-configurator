@@ -770,6 +770,18 @@
     "fanSlider":{
         "message": "风机控制:"
     },         
+    "initialVoiceSetup": {
+        "message": "语音控制:"
+    },
+    "initialVoiceNext": {
+        "message": "下一条语音"
+    },
+    "initialVoicePrevious": {
+        "message": "上一条语音"
+    },
+    "waterbox": {
+        "message": "水箱水量"
+    },
     "initialSetupCalibrateMagText": {
         "message": "将飞行器在所有轴向上都移动至少<strong>360</strong>度，你有30秒的时间可供进行这项操作。"
     },
@@ -6629,6 +6641,9 @@
     },
     "adapterValue": {
         "message": "$1 V" 
+    },
+    "waterStateValue": {
+        "message": "$1" 
     },
     "baroValue": {
         "message": "$1 Pa"

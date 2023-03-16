@@ -355,6 +355,16 @@ setup.initialize = function (callback) {
 
             });
         });
+        $('a.nextVoice').click(function () {
+            MSP.send_message(MSPCodes.MSP_PLAY_VOICE, [1], false, function () {
+
+            });
+        });
+        $('a.preVoice').click(function () {
+            MSP.send_message(MSPCodes.MSP_PLAY_VOICE, [0], false, function () {
+
+            });
+        });
         $('a.stop').click(function () {
             MSP.send_message(MSPCodes.MSP_SET_MOTOR, [0], false, function () {
 
@@ -444,6 +454,7 @@ setup.initialize = function (callback) {
             fan_adc_e = $('.fanAdc'),
             batt_adc_e = $('.battAdc'),
             adapter_adc_e = $('.adapterAdc'),
+            waterstate_e = $('.waterboxAdc'),
             atti_yaw_e = $('.attiYaw'),
             baro_val_e = $('.baroVal'),
             corner_ul_e = $('.cornerULVal'),
@@ -603,7 +614,7 @@ setup.initialize = function (callback) {
             }
 
             MSP.send_message(MSPCodes.MSP_ATTITUDE, false, false, function () {
-                rows[5].style.background = "green";
+                rows[6].style.background = "green";
                 atti_yaw_e.text(i18n.getMessage('attiYawValue', [FC.SENSOR_DATA.kinematics[0]]));
             });
 
@@ -645,6 +656,11 @@ setup.initialize = function (callback) {
                   
             });
 
+            MSP.send_message(MSPCodes.MSP_WATER_BOX, false, false, function () {
+                waterstate_e.text(i18n.getMessage('waterStateValue', [FC.ANALOG.waterstate]));
+                rows[5].style.background = "green";                
+            });
+
             MSP.send_message(MSPCodes.MSP_FOURCORNER, false, false, function () {
                 const ul_data = bitIsZero(FC.ANALOG.corner,3) ? 0 : 1 
                 const ur_data = bitIsZero(FC.ANALOG.corner,2) ? 0 : 1 
@@ -657,24 +673,24 @@ setup.initialize = function (callback) {
                 corner_br_e.text(i18n.getMessage('cornerValue', [br_data]));
 
                 if(ul_data ==  0) {
-                    rows[7].style.background = "red";
-                } else {
-                    rows[7].style.background = "green";
-                }
-                if(ur_data ==  0) {
                     rows[8].style.background = "red";
                 } else {
                     rows[8].style.background = "green";
                 }
-                if(bl_data ==  0) {
+                if(ur_data ==  0) {
                     rows[9].style.background = "red";
                 } else {
                     rows[9].style.background = "green";
                 }
-                if(br_data ==  0) {
+                if(bl_data ==  0) {
                     rows[10].style.background = "red";
                 } else {
                     rows[10].style.background = "green";
+                }
+                if(br_data ==  0) {
+                    rows[11].style.background = "red";
+                } else {
+                    rows[11].style.background = "green";
                 }
                 if (selfCheckState == 8) {
                     if (waitFourCornerClose) {
@@ -810,13 +826,13 @@ setup.initialize = function (callback) {
                                 let diffLeft = leftIdleAdc - leftAverageNum;
                                 let diffRight = rightIdleAdc - rightAverageNum;
 
-                                if (diffLeft >= 10 && diffLeft <= 40) {
+                                if (diffLeft >= 5 && diffLeft <= 40) {
                                     leftWheelError = false;
                                 } else {
                                     leftWheelError = true;
                                 }
                                 
-                                if(diffRight >= 10 && diffRight <= 40) {
+                                if(diffRight >= 5 && diffRight <= 40) {
                                     rightWheelError = false;
                                 } else {
                                     rightWheelError = true;
@@ -917,7 +933,7 @@ setup.initialize = function (callback) {
                             } else {
                                 let fanOpenAdc = calcAverage(fanAdcBuf);
                                 let diffFan = fanIdleAdc - fanOpenAdc;
-                                if(diffFan >= 80 && diffFan <= 200) {
+                                if(diffFan >= 50 && diffFan <= 200) {
                                     fanError = false;
                                 } else {
                                     fanError = true;
@@ -926,7 +942,7 @@ setup.initialize = function (callback) {
                                 if (fanError) {
                                     selfCheckState = 0;
                                     dialogAutoTestWait.close();
-                                    showErrorDialog(i18n.getMessage('fanError'));
+                                    showErrorDialog(i18n.getMessage('fanError') + diffFan);
                                     MSP.send_message(MSPCodes.MSP_SET_FAN, [0], false, function () {
                                         fanOpened = false;
                                     });
@@ -994,15 +1010,6 @@ setup.initialize = function (callback) {
 
                 if(updateGyroData(FC.SENSOR_DATA.gyroscope[0],FC.SENSOR_DATA.gyroscope[1],FC.SENSOR_DATA.gyroscope[2])) {                    
                     if(elementAllSame(gyroX) || FC.SENSOR_DATA.gyroscope[0] > 20 || FC.SENSOR_DATA.gyroscope[0] < -20) {
-                        rows[11].style.background = "red";
-                    } else {
-                        rows[11].style.background = "green";
-                        if (selfCheckState == 1) {
-                            gyrovalideCnt += 1;
-                        }
-                    }
-
-                    if(elementAllSame(gyroY) || FC.SENSOR_DATA.gyroscope[1] > 20 || FC.SENSOR_DATA.gyroscope[1] < -20) {
                         rows[12].style.background = "red";
                     } else {
                         rows[12].style.background = "green";
@@ -1010,10 +1017,19 @@ setup.initialize = function (callback) {
                             gyrovalideCnt += 1;
                         }
                     }
-                    if(elementAllSame(gyroZ) || FC.SENSOR_DATA.gyroscope[2] > 20 || FC.SENSOR_DATA.gyroscope[2] < -20) {
+
+                    if(elementAllSame(gyroY) || FC.SENSOR_DATA.gyroscope[1] > 20 || FC.SENSOR_DATA.gyroscope[1] < -20) {
                         rows[13].style.background = "red";
                     } else {
                         rows[13].style.background = "green";
+                        if (selfCheckState == 1) {
+                            gyrovalideCnt += 1;
+                        }
+                    }
+                    if(elementAllSame(gyroZ) || FC.SENSOR_DATA.gyroscope[2] > 20 || FC.SENSOR_DATA.gyroscope[2] < -20) {
+                        rows[14].style.background = "red";
+                    } else {
+                        rows[14].style.background = "green";
                         if (selfCheckState == 1) {
                             gyrovalideCnt += 1;
                         }
@@ -1027,15 +1043,6 @@ setup.initialize = function (callback) {
                 if(updateAccData(FC.SENSOR_DATA.accelerometer[0],FC.SENSOR_DATA.accelerometer[1],FC.SENSOR_DATA.accelerometer[2])) {
                     
                     if(elementAllSame(accX) || FC.SENSOR_DATA.accelerometer[0] > 300 || FC.SENSOR_DATA.accelerometer[0] < -300) {
-                        rows[14].style.background = "red";
-                    } else {
-                        rows[14].style.background = "green";
-                        if (selfCheckState == 2) {
-                            gyrovalideCnt += 1;  
-                        }
-                    }
-
-                    if(elementAllSame(accY) || FC.SENSOR_DATA.accelerometer[1] > 300 || FC.SENSOR_DATA.accelerometer[1] < -300) {
                         rows[15].style.background = "red";
                     } else {
                         rows[15].style.background = "green";
@@ -1043,10 +1050,19 @@ setup.initialize = function (callback) {
                             gyrovalideCnt += 1;  
                         }
                     }
-                    if(elementAllSame(accZ) || FC.SENSOR_DATA.accelerometer[2] < 3797 || FC.SENSOR_DATA.accelerometer[2] > 4396)  {
+
+                    if(elementAllSame(accY) || FC.SENSOR_DATA.accelerometer[1] > 300 || FC.SENSOR_DATA.accelerometer[1] < -300) {
                         rows[16].style.background = "red";
                     } else {
                         rows[16].style.background = "green";
+                        if (selfCheckState == 2) {
+                            gyrovalideCnt += 1;  
+                        }
+                    }
+                    if(elementAllSame(accZ) || FC.SENSOR_DATA.accelerometer[2] < 3797 || FC.SENSOR_DATA.accelerometer[2] > 4396)  {
+                        rows[17].style.background = "red";
+                    } else {
+                        rows[17].style.background = "green";
                         if (selfCheckState == 2) {
                             gyrovalideCnt += 1;  
                         }
