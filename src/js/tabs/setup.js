@@ -374,6 +374,13 @@ setup.initialize = function (callback) {
         $('a.spray').click(function () {
             MSP.send_message(MSPCodes.MSP_SET_SPRAY, [1], false, false);
         });
+        
+        $('a.wifitest').click(function () {
+            FC.ANALOG.rssi = 0;
+            MSP.send_message(MSPCodes.MSP_WIFI_TEST, false, false, function () {
+
+            });
+        });
 
         $('#sliderGyroFilterMultiplier').val(0);
         $('#sliderGyroFilterMultiplier').on('input', function () {
@@ -467,6 +474,7 @@ setup.initialize = function (callback) {
             acc_x_e = $('.accXData'),
             acc_y_e = $('.accYData'),
             acc_z_e = $('.accZData'),
+            wifi_rssi_e = $('.wifiRssiValue'),
             arming_disable_flags_e = $('.arming-disable-flags');
 
         if (semver.lt(FC.CONFIG.apiVersion, API_VERSION_1_36)) {
@@ -616,6 +624,22 @@ setup.initialize = function (callback) {
             MSP.send_message(MSPCodes.MSP_ATTITUDE, false, false, function () {
                 rows[6].style.background = "green";
                 atti_yaw_e.text(i18n.getMessage('attiYawValue', [FC.SENSOR_DATA.kinematics[0]]));
+            });
+            if (FC.ANALOG.rssi == 0) {
+                rows[18].style.background = "none";
+            }
+            MSP.send_message(MSPCodes.MSP_WIFI_RSSI, false, false, function () {
+                if (FC.ANALOG.rssi == 1) {
+                    rows[18].style.background = "red";
+                    wifi_rssi_e.text(i18n.getMessage('wifiRssiValue', "WIFI 没扫描到无线设备"));
+                } else if (FC.ANALOG.rssi == 2) {
+                    rows[18].style.background = "red";
+                    wifi_rssi_e.text(i18n.getMessage('wifiRssiValue', "WIFI模块未授权"));
+                } else if (FC.ANALOG.rssi > 2) {
+                    rows[18].style.background = "green";
+                    const rssi = FC.ANALOG.rssi - 3;
+                    wifi_rssi_e.text(i18n.getMessage('wifiRssiValue', [rssi]));
+                }
             });
 
             MSP.send_message(MSPCodes.MSP_ADAPTER, false, false, function () {

@@ -93,7 +93,10 @@ MspHelper.prototype.process_data = function(dataHandler) {
                     break;
                 case MSPCodes.MSP_WATER_BOX:
                     FC.ANALOG.waterstate = data.readU8();
-                    break;        
+                    break;
+                case MSPCodes.MSP_WIFI_RSSI:
+                    FC.ANALOG.rssi = data.readU8();
+                    break;
                 case MSPCodes.MSP_ANALOG:
                     FC.ANALOG.leftMotorAdc = data.readU16();
                     FC.ANALOG.rightMotorAdc = data.readU16();

@@ -773,6 +773,12 @@
     "initialVoiceSetup": {
         "message": "语音控制:"
     },
+    "initialWifiTestTitle": {
+        "message": "WIFI测试"
+    },
+    "initialWifiTestBtn": {
+        "message": "扫描路由"
+    },
     "initialVoiceNext": {
         "message": "下一条语音"
     },
@@ -872,8 +878,14 @@
     "initialSetupInfoHead": {
         "message": "AD检测"
     },
+    "initialRssiInfoHead": {
+        "message": "WIFI检测"
+    },
     "leftMotorCurrent": {
         "message": "左轮电流"
+    },
+    "wifiRssiResultText": {
+        "message": "RSSI"
     },
     "rightMotorCurrent": {
         "message": "右轮电流"
@@ -941,6 +953,9 @@
       "message": "角度"  
     },
     "leftMotorCurrentValue": {
+        "message": "$1"
+    },
+    "wifiRssiValue": {
         "message": "$1"
     },
     "rightMotorCurrentValue": {

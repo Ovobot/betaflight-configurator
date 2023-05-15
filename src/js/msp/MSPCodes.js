@@ -94,7 +94,8 @@ const MSPCodes = {
     MSP_FOURCORNER:                 112,
     MSP_BARO:                       113,
     MSP_WATER_BOX:                  114, // DEPRECATED  MSP_MISC
-    MSP_BOXNAMES:                   116,
+    MSP_WIFI_RSSI:                  115, // WIFI RSSI
+    MSP_WIFI_TEST:                  116,
     MSP_PIDNAMES:                   117,
     MSP_WP:                         118, // Not used
     MSP_BOXIDS:                     119,
