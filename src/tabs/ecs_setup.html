@@ -21,24 +21,6 @@
 
         <div class="modelwrapper"></div>
         <div class="grid-row">
-            <!-- <div class="grid-col col9 model-and-info">
-                <div id="interactive_block">
-                    <div id="canvas_wrapper" class="background_paper">
-                        <canvas id="canvas"></canvas>
-                        <div class="attitude_info">
-                            <dl>
-                                <dt>Heading:</dt>
-                                <dd class="heading">&nbsp;</dd>
-                                <dt>Pitch:</dt>
-                                <dd class="pitch">&nbsp;</dd>
-                                <dt>Roll:</dt>
-                                <dd class="roll">&nbsp;</dd>
-                            </dl>
-                        </div>
-                    </div>
-                    <a class="reset sm-min" href="#" i18n="initialSetupButtonResetZaxis"></a>
-                </div>
-            </div> -->
             <div class="grid-col col3">
                 <div class="gui_box grey">
                     <div class="gui_box_titlebar">
@@ -189,60 +171,37 @@
             </div>
         </div>
         <div class="modelwrapper"></div>
-        <div class="gui_box">
-            <div class="gui_box_titlebar">
-                <div class="spacer_box_title" i18n="tabOptions"></div>
-            </div>
-<!--                 
-                <div class="default_btn margin-bottom">
-                    <div  class="default_btn" style="width: 80px;" i18n="initialMotorSetup">
-                        
+        <div class="grid-row">
+            <div class="grid-col col6">
+                <div class="gui_box">
+                    <div class="gui_box_titlebar">
+                        <div class="spacer_box_title" i18n="tabOptions"></div>
                     </div>
-                    
-                    <div class="default_btn" style="width: 50px;">
-                        <a class="clockwise" href="#" i18n="initialMotorButtonClockWiseRun"></a>
-                    </div>
-                    <div class="default_btn" style="width: 50px;">
-                        <a class="anti_clockwise" href="#" i18n="initialMotorButtonAntiClockWiseRun"></a>
-                    </div>
-                    <div class="default_btn" style="width: 50px;">
-                        <a class="stop" href="#" i18n="initialMotorButtonStop"></a>
-                    </div>
-                    
-                </div>
-                <div class="checkForConfiguratorUnstableVersions margin-bottom">
-                    <div>
-                        <input type="checkbox" class="toggle" />
-                    </div>
-                    <span class="freelabel" i18n="checkForConfiguratorUnstableVersions"></span>
-                </div> -->
-
-
-                    <div class="grid-col col6 margin-bottom">
-                            <div class="grid-row">
-                                <div class="grid-col col2">
-                                    <span i18n="initialMotorSetup"></span>
-                                </div>
-                                <div class="grid-col col2">
-                                    <div class="default_btn">
-                                        <a class="clockwise" href="#" i18n="initialMotorButtonClockWiseRun"></a>
-                                    </div>
-                                </div>
-                                <div class="grid-col col2">
-                                    <div class="default_btn">
-                                        <a class="anti_clockwise" href="#" i18n="initialMotorButtonAntiClockWiseRun"></a>
-                                    </div>
-                                </div>
-    
-                                <div class="grid-col col2">
-                                    <div class="default_btn">
-                                        <a class="stop" href="#" i18n="initialMotorButtonStop"></a>
-                                    </div>
+                    <div class="grid-col  margin-bottom">
+                        <div class="grid-row">
+                            <div class="grid-col col2">
+                                <span i18n="initialMotorSetup"></span>
+                            </div>
+                            <div class="grid-col col2">
+                                <div class="default_btn">
+                                    <a class="clockwise" href="#" i18n="initialMotorButtonClockWiseRun"></a>
                                 </div>
                             </div>
+                            <div class="grid-col col2">
+                                <div class="default_btn">
+                                    <a class="anti_clockwise" href="#" i18n="initialMotorButtonAntiClockWiseRun"></a>
+                                </div>
+                            </div>
+
+                            <div class="grid-col col2">
+                                <div class="default_btn">
+                                    <a class="stop" href="#" i18n="initialMotorButtonStop"></a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="grid-col col6 margin-bottom">
+                    <div class="grid-col  margin-bottom">
                         <div class="grid-row">
                             <div class="grid-col col2">
                                 <span i18n="initialSpraySetup"></span>
@@ -257,7 +216,7 @@
                                     <a class="anti_clockwise" href="#" i18n="initialMotorButtonAntiClockWiseRun"></a>
                                 </div>
                             </div>
-
+    
                             <div class="grid-col col2">
                                 <div class="default_btn" style="display:none;">
                                     <a class="stop" href="#" i18n="initialMotorButtonStop"></a>
@@ -265,8 +224,8 @@
                             </div>
                         </div>
                     </div>
- 
-                    <div class="grid-col col6 margin-bottom">
+
+                    <div class="grid-col  margin-bottom">
                         <div class="grid-row">
                             <div class="grid-col col2">
                                 <span i18n="initialVoiceSetup"></span>
@@ -289,7 +248,7 @@
                         </div>
                     </div>
 
-                    <div class="grid-col col6 margin-bottom">
+                    <div class="grid-col  margin-bottom">
                         <div class="grid-row">
                             <div class="grid-col col2">
                                 <span i18n="fanSlider"></span>
@@ -304,27 +263,16 @@
                                     <a class="anti_clockwise" href="#" i18n="initialMotorButtonAntiClockWiseRun"></a>
                                 </div>
                             </div>
-
+    
                             <div class="grid-col col2">
                                 <div class="default_btn" style="display:none;">
                                     <a class="stop" href="#" i18n="initialMotorButtonStop"></a>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- <div style="float: left;">
-                            <span i18n="fanSlider"></span>
-                        </div>
-                            
-                        
-                        
-                        <div colspan="3">
-                            <input type="range" min="0" max="100" step="1" class="tuningSlider" id="sliderGyroFilterMultiplier" />
-                        </div> -->
-                        
                     </div>
 
-                    <div class="grid-col col6 margin-bottom">
+                    <div class="grid-col  margin-bottom">
                         <div class="grid-row">
                             <div class="grid-col col2">
                                 <span i18n="initialWifiTestTitle"></span>
@@ -346,7 +294,40 @@
                             </div>    
                         </div>
                     </div>
+                </div>
+            </div>
+            <div class="grid-col col6">
+                <div class="gui_box">
+                    <div class="gui_box_titlebar">
+                        <div class="spacer_box_title" i18n="defaultSupportHead"></div>
+                    </div>
+                    <div class="spacer">
+                    <p i18n="defaultSupport"></p>
                     
+                    <div class="grid-col  margin-bottom">
+                        <div class="grid-row">
+                            
+                            <div class="grid-col col2">
+                                <div class="default_btn">
+                                    <a class="accCali" href="#" i18n="initialAccCaliButton"></a>
+                                </div>
+                            </div>
+                            <div class="grid-col col2">
+                                <div class="default_btn" style="display:none;">
+                                    <a class="anti_clockwise" href="#" i18n="initialMotorButtonAntiClockWiseRun"></a>
+                                </div>
+                            </div>
+    
+                            <div class="grid-col col2">
+                                <div class="default_btn" style="display:none;">
+                                    <a class="stop" href="#" i18n="initialMotorButtonStop"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        
+                    </div>
+                </div>
             </div>
         </div>
 

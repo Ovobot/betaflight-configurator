@@ -375,6 +375,12 @@ setup.initialize = function (callback) {
             MSP.send_message(MSPCodes.MSP_SET_SPRAY, [1], false, false);
         });
         
+        $('a.accCali').click(function () {
+            MSP.send_message(MSPCodes.MSP_ACC_CALIBRATION, false, false, function () {
+
+            });
+        });
+
         $('a.wifitest').click(function () {
             FC.ANALOG.rssi = 0;
             MSP.send_message(MSPCodes.MSP_WIFI_TEST, false, false, function () {

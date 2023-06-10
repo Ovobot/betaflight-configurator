@@ -710,7 +710,13 @@
         "message": "最新发布版本的信息可以在 <a href=\"https://github.com/Betaflight/Betaflight/releases\" target=\"_blank\" rel=\"noopener noreferrer\">这里</a> 找到。"
     },
     "defaultSupportHead": {
-        "message": "支持"
+        "message": "加速度校准支持"
+    },
+    "initialAccSetup": {
+        "message": "加速度校准"
+    },
+    "initialAccCaliButton": {
+        "message": "加速度校准"
     },
     "defaultSupportSubline1": {
         "message": "支持资源"
@@ -719,7 +725,7 @@
         "message": "开发者"
     },
     "defaultSupport": {
-        "message": "需要帮助时请先搜索论坛或者咨询飞控的生产商。<br /><br />"
+        "message": "<span class=\"message-negative\">需要将治具放置水平才可使用加速度校准。</span><br /><br />"
     },
     "defaultSupport1": {
         "message": "<a href=\"http://www.rcgroups.com/forums/showthread.php?t=2464844&page=1\" target=\"_blank\" rel=\"noopener noreferrer\">RC Groups thread</a>"
