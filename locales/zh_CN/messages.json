@@ -791,6 +791,9 @@
     "initialVoicePrevious": {
         "message": "上一条语音"
     },
+    "initialPlayVoiceButton": {
+        "message": "播放此条语音"
+    },
     "waterbox": {
         "message": "水箱水量"
     },

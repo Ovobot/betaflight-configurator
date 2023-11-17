@@ -365,6 +365,14 @@ setup.initialize = function (callback) {
 
             });
         });
+
+        $('a.playVoiceIndex').click(function () {
+            const voiceindex = $('input[name="voice-number"]').val()
+            MSP.send_message(MSPCodes.MSP_PLAY_VOICE, [voiceindex], false, function () {
+
+            });
+        });
+
         $('a.stop').click(function () {
             MSP.send_message(MSPCodes.MSP_SET_MOTOR, [0], false, function () {
 
@@ -460,6 +468,10 @@ setup.initialize = function (callback) {
                 GUI.log(i18n.getMessage('initialSetupRestoreSuccess'));
             });
         });
+
+        const voicePlayNumberElement = $('input[name="voice-number"]');
+        voicePlayNumberElement.val(2).trigger('input');
+
 
         // cached elements
         const left_adc_e = $('.leftAdc'),
