@@ -20,7 +20,7 @@
     "storybook": "start-storybook -p 6006"
   },
   "window": {
-    "icon": "images/bf_icon_128.png",
+    "icon": "images/cleanrobot_icon128.png",
     "id": "main-window",
     "min_width": 1024,
     "min_height": 550,
@@ -125,7 +125,7 @@
     "karma-spec-reporter": "^0.0.34",
     "karma-tfs-reporter": "^1.0.2",
     "mocha": "^10.0.0",
-    "nw-builder": "^3.8.6",
+    "nw-builder": "3.8.3",
     "os": "^0.1.2",
     "postcss": "^8.4.17",
     "rollup": "^2.79.1",

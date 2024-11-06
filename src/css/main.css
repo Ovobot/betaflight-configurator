@@ -1277,7 +1277,7 @@ li.active .ic_motor {
 }
 
 .ic_welcome {
-    background-image: url(../images/icons/cf_icon_welcome_grey.svg);
+    background-image: url(../images/ovobot_images/ovobot_nobackground.png);
 }
 
 .ic_welcome:hover {

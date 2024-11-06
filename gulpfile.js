@@ -54,7 +54,7 @@ const nwBuilderOptions = {
     files: `${DIST_DIR}**/*`,
     macIcns: './src/images/bf_icon.icns',
     macPlist: { 'CFBundleDisplayName': 'Betaflight Configurator'},
-    winIco: './src/images/bf_icon.ico',
+    winIco: './src/images/ovobot_images/icons/cleanrobot_16-256.ico',
     zip: false,
 };
 

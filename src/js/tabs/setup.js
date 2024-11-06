@@ -10,6 +10,11 @@ const setup = {
     adcBufLen:20,
 };
 
+const background_tr = {
+    tr_red:'#fa1111',
+    tr_green:'#02d602',
+}
+
 setup.initialize = function (callback) {
     const self = this;
 
@@ -622,10 +627,10 @@ setup.initialize = function (callback) {
                     batt_adc_e.text(i18n.getMessage('battAdcValue', [FC.ANALOG.batt]));
                     if (FC.ANALOG.batt >= 12 && FC.ANALOG.batt <= 18) {
                         battError = false;
-                        rows[3].style.background = "green";
+                        rows[3].style.background = background_tr.tr_green;
                     } else {
                         battError = true;
-                        rows[3].style.background = "red";
+                        rows[3].style.background = background_tr.tr_red;
                     }
                     if (selfCheckState == 3) {
                         if (battError) {
@@ -640,7 +645,7 @@ setup.initialize = function (callback) {
             }
 
             MSP.send_message(MSPCodes.MSP_ATTITUDE, false, false, function () {
-                rows[6].style.background = "green";
+                rows[6].style.background = background_tr.tr_green;
                 atti_yaw_e.text(i18n.getMessage('attiYawValue', [FC.SENSOR_DATA.kinematics[0]]));
             });
             if (FC.ANALOG.rssi == 0) {
@@ -648,13 +653,13 @@ setup.initialize = function (callback) {
             }
             MSP.send_message(MSPCodes.MSP_WIFI_RSSI, false, false, function () {
                 if (FC.ANALOG.rssi == 1) {
-                    rows[18].style.background = "red";
+                    rows[18].style.background = background_tr.tr_red;
                     wifi_rssi_e.text(i18n.getMessage('wifiRssiValue', "WIFI 没扫描到无线设备"));
                 } else if (FC.ANALOG.rssi == 2) {
-                    rows[18].style.background = "red";
+                    rows[18].style.background = background_tr.tr_red;
                     wifi_rssi_e.text(i18n.getMessage('wifiRssiValue', "WIFI模块未授权"));
                 } else if (FC.ANALOG.rssi > 2) {
-                    rows[18].style.background = "green";
+                    rows[18].style.background = background_tr.tr_green;
                     const rssi = FC.ANALOG.rssi - 3;
                     wifi_rssi_e.text(i18n.getMessage('wifiRssiValue', [rssi]));
                 }
@@ -664,10 +669,10 @@ setup.initialize = function (callback) {
                 adapter_adc_e.text(i18n.getMessage('adapterValue', [FC.ANALOG.adapter]));
                 if (FC.ANALOG.adapter >= 22 && FC.ANALOG.adapter <= 26) {
                     adapterError = false;
-                    rows[4].style.background = "green";
+                    rows[4].style.background = background_tr.tr_green;
                 } else {
                     adapterError = true;
-                    rows[4].style.background = "red";
+                    rows[4].style.background = background_tr.tr_red;
                 }  
                 if (selfCheckState == 4) {
                     if (adapterError) {
@@ -700,7 +705,7 @@ setup.initialize = function (callback) {
 
             MSP.send_message(MSPCodes.MSP_WATER_BOX, false, false, function () {
                 waterstate_e.text(i18n.getMessage('waterStateValue', [FC.ANALOG.waterstate]));
-                rows[5].style.background = "green";                
+                rows[5].style.background = background_tr.tr_green;                
             });
 
             MSP.send_message(MSPCodes.MSP_FOURCORNER, false, false, function () {
@@ -715,24 +720,24 @@ setup.initialize = function (callback) {
                 corner_br_e.text(i18n.getMessage('cornerValue', [br_data]));
 
                 if(ul_data ==  0) {
-                    rows[8].style.background = "red";
+                    rows[8].style.background = background_tr.tr_red;
                 } else {
-                    rows[8].style.background = "green";
+                    rows[8].style.background = background_tr.tr_green;
                 }
                 if(ur_data ==  0) {
-                    rows[9].style.background = "red";
+                    rows[9].style.background = background_tr.tr_red;
                 } else {
-                    rows[9].style.background = "green";
+                    rows[9].style.background = background_tr.tr_green;
                 }
                 if(bl_data ==  0) {
-                    rows[10].style.background = "red";
+                    rows[10].style.background = background_tr.tr_red;
                 } else {
-                    rows[10].style.background = "green";
+                    rows[10].style.background = background_tr.tr_green;
                 }
                 if(br_data ==  0) {
-                    rows[11].style.background = "red";
+                    rows[11].style.background = background_tr.tr_red;
                 } else {
-                    rows[11].style.background = "green";
+                    rows[11].style.background = background_tr.tr_green;
                 }
                 if (selfCheckState == 8) {
                     if (waitFourCornerClose) {
@@ -769,37 +774,37 @@ setup.initialize = function (callback) {
                 right_adc_e.text(i18n.getMessage('rightMotorCurrentValue', [FC.ANALOG.rightMotorAdc]));
                 fan_adc_e.text(i18n.getMessage('fanAdcValue', [FC.ANALOG.fanAdc]));
                 if(FC.ANALOG.leftMotorAdc < 3100 && FC.ANALOG.leftMotorAdc > 2500) {
-                    rows[0].style.background = "green";
+                    rows[0].style.background = background_tr.tr_green;
                 } else {
-                    rows[0].style.background = "red";
+                    rows[0].style.background = background_tr.tr_red;
                 }
 
                 if(FC.ANALOG.rightMotorAdc < 3100 && FC.ANALOG.rightMotorAdc > 2500) {
-                    rows[1].style.background = "green";
+                    rows[1].style.background = background_tr.tr_green;
                 } else {
-                    rows[1].style.background = "red";
+                    rows[1].style.background = background_tr.tr_red;
                 }
 
 
                 if(FC.CONFIG.hw == 1) {
                     if(!fanOpened) {
                         if(FC.ANALOG.fanAdc < 100) {
-                            rows[2].style.background = "green";
+                            rows[2].style.background = background_tr.tr_green;
                         } else {
-                            rows[2].style.background = "red";
+                            rows[2].style.background = background_tr.tr_red;
                         }
                     } else {
                         if(FC.ANALOG.fanAdc > 500) {
-                            rows[2].style.background = "green";
+                            rows[2].style.background = background_tr.tr_green;
                         } else {
-                            rows[2].style.background = "red";
+                            rows[2].style.background = background_tr.tr_red;
                         }
                     }
                 } else {
                     if(FC.ANALOG.fanAdc < 3100 && FC.ANALOG.fanAdc > 2500) {
-                        rows[2].style.background = "green";
+                        rows[2].style.background = background_tr.tr_green;
                     } else {
-                        rows[2].style.background = "red";
+                        rows[2].style.background = background_tr.tr_red;
                     }
                 }
                 if (selfCheckState == 6) {
@@ -813,15 +818,15 @@ setup.initialize = function (callback) {
                                 if(FC.CONFIG.hw == 1) {
                                     if(!fanOpened) {
                                         if(FC.ANALOG.fanAdc < 100) {
-                                            rows[2].style.background = "green";
+                                            rows[2].style.background = background_tr.tr_green;
                                         } else {
-                                            rows[2].style.background = "red";
+                                            rows[2].style.background = background_tr.tr_red;
                                         }
                                     } else {
                                         if(FC.ANALOG.fanAdc > 500) {
-                                            rows[2].style.background = "green";
+                                            rows[2].style.background = background_tr.tr_green;
                                         } else {
-                                            rows[2].style.background = "red";
+                                            rows[2].style.background = background_tr.tr_red;
                                         }
                                     }
                                 } 
@@ -883,15 +888,15 @@ setup.initialize = function (callback) {
                                 if(FC.CONFIG.hw == 1) {
                                     if(!fanOpened) {
                                         if(FC.ANALOG.fanAdc < 100) {
-                                            rows[2].style.background = "green";
+                                            rows[2].style.background = background_tr.tr_green;
                                         } else {
-                                            rows[2].style.background = "red";
+                                            rows[2].style.background = background_tr.tr_red;
                                         }
                                     } else {
                                         if(FC.ANALOG.fanAdc > 500) {
-                                            rows[2].style.background = "green";
+                                            rows[2].style.background = background_tr.tr_green;
                                         } else {
-                                            rows[2].style.background = "red";
+                                            rows[2].style.background = background_tr.tr_red;
                                         }
                                     }
                                 }
@@ -1025,10 +1030,10 @@ setup.initialize = function (callback) {
                 MSP.send_message(MSPCodes.MSP_BARO, false, false, function () {
                     baro_val_e.text(i18n.getMessage('baroValue', [FC.SENSOR_DATA.baro]));
                     if (FC.SENSOR_DATA.baro >= 100000 && FC.SENSOR_DATA.baro <= 120000) {
-                        rows[6].style.background = "green";
+                        rows[6].style.background = background_tr.tr_green;
                         baroError = false;
                     } else {
-                        rows[6].style.background = "red";
+                        rows[6].style.background = background_tr.tr_red;
                         baroError = true;
                     }
                     if (selfCheckState == 5) {
@@ -1052,26 +1057,26 @@ setup.initialize = function (callback) {
 
                 if(updateGyroData(FC.SENSOR_DATA.gyroscope[0],FC.SENSOR_DATA.gyroscope[1],FC.SENSOR_DATA.gyroscope[2])) {                    
                     if(elementAllSame(gyroX) || FC.SENSOR_DATA.gyroscope[0] > 20 || FC.SENSOR_DATA.gyroscope[0] < -20) {
-                        rows[12].style.background = "red";
+                        rows[12].style.background = background_tr.tr_red;
                     } else {
-                        rows[12].style.background = "green";
+                        rows[12].style.background = background_tr.tr_green;
                         if (selfCheckState == 1) {
                             gyrovalideCnt += 1;
                         }
                     }
 
                     if(elementAllSame(gyroY) || FC.SENSOR_DATA.gyroscope[1] > 20 || FC.SENSOR_DATA.gyroscope[1] < -20) {
-                        rows[13].style.background = "red";
+                        rows[13].style.background = background_tr.tr_red;
                     } else {
-                        rows[13].style.background = "green";
+                        rows[13].style.background = background_tr.tr_green;
                         if (selfCheckState == 1) {
                             gyrovalideCnt += 1;
                         }
                     }
                     if(elementAllSame(gyroZ) || FC.SENSOR_DATA.gyroscope[2] > 20 || FC.SENSOR_DATA.gyroscope[2] < -20) {
-                        rows[14].style.background = "red";
+                        rows[14].style.background = background_tr.tr_red;
                     } else {
-                        rows[14].style.background = "green";
+                        rows[14].style.background = background_tr.tr_green;
                         if (selfCheckState == 1) {
                             gyrovalideCnt += 1;
                         }
@@ -1085,26 +1090,26 @@ setup.initialize = function (callback) {
                 if(updateAccData(FC.SENSOR_DATA.accelerometer[0],FC.SENSOR_DATA.accelerometer[1],FC.SENSOR_DATA.accelerometer[2])) {
                     
                     if(elementAllSame(accX) || FC.SENSOR_DATA.accelerometer[0] > 300 || FC.SENSOR_DATA.accelerometer[0] < -300) {
-                        rows[15].style.background = "red";
+                        rows[15].style.background = background_tr.tr_red;
                     } else {
-                        rows[15].style.background = "green";
+                        rows[15].style.background = background_tr.tr_green;
                         if (selfCheckState == 2) {
                             gyrovalideCnt += 1;  
                         }
                     }
 
                     if(elementAllSame(accY) || FC.SENSOR_DATA.accelerometer[1] > 300 || FC.SENSOR_DATA.accelerometer[1] < -300) {
-                        rows[16].style.background = "red";
+                        rows[16].style.background = background_tr.tr_red;
                     } else {
-                        rows[16].style.background = "green";
+                        rows[16].style.background = background_tr.tr_green;
                         if (selfCheckState == 2) {
                             gyrovalideCnt += 1;  
                         }
                     }
                     if(elementAllSame(accZ) || FC.SENSOR_DATA.accelerometer[2] < 3797 || FC.SENSOR_DATA.accelerometer[2] > 4396)  {
-                        rows[17].style.background = "red";
+                        rows[17].style.background = background_tr.tr_red;
                     } else {
-                        rows[17].style.background = "green";
+                        rows[17].style.background = background_tr.tr_green;
                         if (selfCheckState == 2) {
                             gyrovalideCnt += 1;  
                         }

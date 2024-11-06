@@ -9,15 +9,15 @@
 }
 
 &:root {
-    --accent: #ffbb00;
-    --error: red;
+    --accent: rgba(121, 213, 179, 1);
+    --error: #fa1111;
     --subtleAccent: silver;
     --quietText: #ffffff;
     --quietHeader: #828885;
     --defaultText: #000000;
     --subtleText: #c0c0c0;
     --mutedText: #616161;
-    --linkText: #2e2ebb;
+    --linkText: #79d5b3;
     --boxBackground: #ffffff;
     --alternativeBackground: #f9f9f9;
     --sideBackground: #ffffff;
@@ -28,10 +28,10 @@
     --switcherysecond: #c4c4c4;
     --pushedButton-background:  #c4c4c4;
     --pushedButton-fontColor:  #000000;
-    --hoverButton-background: #ffcc3e;
+    --hoverButton-background: rgba(43, 237, 237,1);
     --superSubtleAccent: #CCCCCC;
-    --accentBorder: #ffbb00;
-	--success:#006400;
+    --accentBorder: rgba(0, 220, 220, 1);
+	--success:#02d602;
 }
 * {
 	margin: 0;
@@ -116,7 +116,7 @@ a.disabled {
 		margin-top: -45px;
 		background-color: var(--accent);
 		border-radius: 3px;
-		border: 1px solid #e8b423;
+		border: 1px solid rgba(121,213,179,1);
 		color: #000;
 		float: right;
 		font-weight: bold;
@@ -127,7 +127,7 @@ a.disabled {
 		letter-spacing: 0.03em;
 		display: block;
 		&:hover {
-			background-color: #fecb3f;
+			background-color: rgba(43, 237, 237, 1);
 			transition: all ease 0.2s;
 		}
 	}
@@ -154,7 +154,7 @@ input[type="number"] {
 	margin-bottom: 20px;
 }
 .message-positive {
-	color: var(--accent) !important;
+	color: var(--success) !important;
 }
 .message-positive-more {
 	color: var(--success) !important;
@@ -197,6 +197,12 @@ input[type="number"] {
 	display: flex;
 	align-items: center;
 	padding: 0 15px;
+}
+.ovobot_logo {
+	width: 400px;
+		/* 设置图片宽度 */
+	height: auto;
+		/* 高度自动调整以保持图片比例 */
 }
 #menu_btn {
 	display: none;
@@ -337,7 +343,7 @@ input[type="number"] {
 	height: 52px;
 	a.connect {
 		background-color: var(--accent);
-		border: 1px solid #dba718;
+		border: 1px solid rgba(0, 220, 220, 1);
 		background-repeat: no-repeat;
 		height: 50px;
 		width: 50px;
@@ -349,7 +355,7 @@ input[type="number"] {
 		background-size: 44px;
 		background-position: center 6px;
 		&:hover {
-			background-color: #ffcc3f;
+			background-color: rgba(0, 255, 255, 1);
 		}
 	}
 	a.connect.disabled {
@@ -912,7 +918,7 @@ li.active {
 		background-image: url(../images/icons/cf_icon_motor_white.svg);
 	}
 	.ic_welcome {
-		background-image: url(../images/icons/cf_icon_welcome_white.svg);
+		background-image: url(../images/ovobot_images/ovobot_logo_min.png);
 	}
 	.ic_help {
 		background-image: url(../images/icons/cf_icon_help_white.svg);

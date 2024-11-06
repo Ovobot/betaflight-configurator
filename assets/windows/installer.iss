@@ -84,13 +84,13 @@ MinVersion=6.2
 OutputBaseFilename={#InstallerFileName}
 OutputDir=..\..\{#targetFolder}\
 PrivilegesRequiredOverridesAllowed=commandline dialog
-SetupIconFile=bf_installer_icon.ico
+SetupIconFile=cleanrobot_icon48.ico
 ShowLanguageDialog=yes
 SolidCompression=yes
 UninstallDisplayIcon={app}\{#ExecutableFileName}
 UninstallDisplayName={#ApplicationName}
-WizardImageFile=bf_installer.bmp
-WizardSmallImageFile=bf_installer_small.bmp
+WizardImageFile=ovobotinstall.bmp
+WizardSmallImageFile=cleanrobot_icon128.bmp
 WizardStyle=modern
 
 [Code]

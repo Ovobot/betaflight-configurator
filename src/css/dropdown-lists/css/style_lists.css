@@ -78,7 +78,7 @@
 .dropdown-select:focus {
   z-index: 3;
   width: 90%;
-  color: #4fa619;
+  color: #969797;
   outline: 0px solid #49aff2;
   outline: 0px solid -webkit-focus-ring-color;
   outline-offset: 5px;
@@ -143,6 +143,6 @@
 }
 
 .dropdown-dark .dropdown-select > option {
-  background: #56ab1a;
+  background: #969797;
   text-shadow: 0 1px rgba(0, 0, 0, 0.4);
 }
