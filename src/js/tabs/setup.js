@@ -422,6 +422,8 @@ setup.initialize = function (callback) {
                 });
             }
         });
+        $('.program_version').text([FC.CONFIG.firmwareVersion]);
+        console.info("=============:" + [FC.CONFIG.firmwareVersion]);
         $('.dialogConfirmReset-cancelbtn').click(function() {
             dialogConfirmReset.close();
         });

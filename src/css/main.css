@@ -1564,6 +1564,17 @@ dialog .dialog_toolbar .btn a.disabled {
     font-weight: 300;
     margin-bottom: 15px;
 }
+.title_ovobot_logo {
+    float: left;
+}
+.program_version {
+    float: left;
+    font-size: 12px;
+    line-height: 14px;
+    font-weight: 600;
+    padding-top: 10px;
+    height: 22px;
+}
 
 /* Note */
 .note {
@@ -2220,6 +2231,12 @@ button.active {
 
 input {
     font-size: 11px !important;
+}
+.voice_input {
+    background-color: white;
+    width:100%;
+    border-radius: 5px;
+    border: 1px solid #c4c4c4;
 }
 
 .helpicon {
