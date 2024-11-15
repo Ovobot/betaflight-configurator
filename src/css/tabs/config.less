@@ -1,4 +1,4 @@
-.tab-configuration {
+.tab-config {
 	.ui-grid-col {
 		margin-bottom: 0;
 	}
@@ -223,7 +223,7 @@
 			font-size: 11px;
 		}
 	}
-	.tab-configuration {
+	.tab-config {
 		.system {
 			.gui_box {
 				float: left;
@@ -345,9 +345,75 @@
 			margin-top: 10px;
 		}
 	}
+	.model_open_close {
+		height: 12px;
+		width: 12px;
+		margin-top: 3px;
+	}
+	.grid-model-inside {
+		margin-top: 10px;
+		display: flex;
+	}
+	.model-display {
+		display: none;
+	}
+	.model-fan-btn {
+		padding-left: 5px;
+		width: 25%;
+	}
+	.model-btn {
+		margin-right: 50px;
+	}
+	.no-click {
+		pointer-events:none;
+		background-color: #e2e2e2;
+	} 
+	.model-background {
+		background-color: #e2e2e2;
+	}
+	.model-input {
+		float: left;
+		width: 60%;
+		border-radius: 5px;
+		border: 1px solid #c4c4c4;
+		margin-left: 10px;
+		padding-left: 5px;
+	}
+	.rotate-90 {
+		/* 旋转90度 */
+		transform: rotate(90deg);
+		/* 确保旋转中心为图片中心 */
+		transform-origin: center;
+	}
+	.grid-row-title::before{
+		content: '';
+		display: inline-block;
+		width: 2.5%;
+		margin: 0 0.5em;
+		border-bottom: 1px solid #cbc9c9;
+		vertical-align: middle;
+	}
+	.grid-row-title::after {
+		content: '';
+		display: inline-block;
+		width: 87.5%;
+		margin: 0 0.5em;
+		border-bottom: 1px solid #cbc9c9;
+		vertical-align: middle;
+	}
+	// .grid-row-title::before {
+	// 	margin-left: -100%;
+	// }
+
+	// .grid-row-title::after {
+	// 	margin-right: -100%;
+	// }
+	// .grid-row-title {
+	// 	border-top: 1px solid #a9a8a8;
+	// }
 }
 @media only screen and (max-width: 1055px) {
-	.tab-configuration {
+	.tab-config {
 		.gui_box {
 			span {
 				line-height: 17px;
@@ -381,7 +447,7 @@
 	}
 }
 @media only screen and (max-device-width: 1055px) {
-	.tab-configuration {
+	.tab-config {
 		.gui_box {
 			span {
 				line-height: 17px;
@@ -415,7 +481,7 @@
 	}
 }
 @media all and (max-width: 575px) {
-	.tab-configuration {
+	.tab-config {
 		.system {
 			.gui_box {
 				min-height: auto;

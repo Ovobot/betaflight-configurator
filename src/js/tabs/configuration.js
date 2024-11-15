@@ -37,7 +37,11 @@ configuration.initialize = function (callback) {
     }
 
     function load_html() {
-        $('#content').load("./tabs/configuration.html", process_html);
+        if (FC.CONFIG.hw == 3) {
+            $('#content').load("./tabs/ecs_setup_config.html", process_html);
+        } else {
+            $('#content').load("./tabs/setup.html", process_html);
+        }
     }
 
     load_serial_config();

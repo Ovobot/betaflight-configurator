@@ -62,6 +62,18 @@ const INITIAL_BATTERY_CONFIG = {
     currentMeterSource:         0,
 };
 
+const INITIAL_WIN_FUNCTION = {
+    pwmvalue: 0,
+    pwmvaluemax: 0,
+    pwmvaluemin: 0,
+    fanpwmvalueatidel: 0,
+    fanpwmmax: 0,
+    fanpwmmin: 0,
+    defaulttargetfanpwmvalue: 0,
+    maxtargetfanpwmvalue: 0,
+    mintargetfanpwmvalue: 0,
+};
+
 const FC = {
 
     // define all the global variables that are uses to hold FC state
@@ -82,6 +94,8 @@ const FC = {
     // Shallow copy of original config and added getter
     // getter allows this to be used with simple dot notation
     // and bridges the vue and rest of the code
+
+    OVOBOT_FUNCTION: { ...INITIAL_WIN_FUNCTION},
     CONFIG: {
         ...INITIAL_CONFIG,
         get hardwareName() {
@@ -167,6 +181,8 @@ const FC = {
         Object.assign(this.CONFIG, INITIAL_CONFIG);
         Object.assign(this.ANALOG, INITIAL_CONFIG);
         Object.assign(this.BATTERY_CONFIG, INITIAL_BATTERY_CONFIG);
+
+        Object.assign(this.OVOBOT_FUNCTION, INITIAL_WIN_FUNCTION);
 
         this.BF_CONFIG = {
             currentscale:               0,

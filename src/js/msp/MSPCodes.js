@@ -2,11 +2,11 @@
 
 //MSPCodes needs to be re-integrated inside MSP object
 const MSPCodes = {
-    MSP_API_VERSION:                2,
+    CMD_VERSION:                    2,
     MSP_FC_VARIANT:                 2,
     MSP_FC_VERSION:                 3,
     MSP_BOARD_INFO:                 4,
-    MSP_BUILD_INFO:                 5,
+    CMD_BUILD_INFO:                 5,
 
     MSP_NAME:                       10,
     MSP_SET_NAME:                   11,
@@ -192,5 +192,23 @@ const MSPCodes = {
     MSP2_MOTOR_OUTPUT_REORDERING:   0x3001,
     MSP2_SET_MOTOR_OUTPUT_REORDERING:    0x3002,
     MSP2_SEND_DSHOT_COMMAND:        0x3003,
-    MSP2_GET_VTX_DEVICE_STATUS:     0x3004,
+    MSP2_GET_VTX_DEVICE_STATUS: 0x3004,
+
+    //GET
+    MSP_GET_PWMVALUE:                       301,
+    MSP_GET_USE_FAN_LEVEL_DYNAMIC_COMP:     302,
+    MSP_GET_USE_FAN_OUTPUT_PID:             303,
+    MSP_GET_MOTOR_VALUE:                    304,
+    MSP_GET_BOUNDLESS:                      305,
+    MSP_GET_SPRAY_VALUE:                    306,
+    MSP_GET_GYRO_THRESHOLD:                 307,
+
+    //SET
+    MSP_SET_PWMVALUE:                       401,
+    MSP_SET_USE_FAN_LEVEL_DYNAMIC_COMP:     402,
+    MSP_SET_USE_FAN_OUTPUT_PID:             403,
+    MSP_SET_MOTOR_VALUE:                    404,
+    MSP_SET_BOUNDLESS:                      405,
+    MSP_SET_SPRAY_VALUE:                    406,
+    MSP_SET_GYRO_THRESHOLD:                 407,
 };

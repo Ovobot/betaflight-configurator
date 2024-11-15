@@ -346,7 +346,7 @@ const MSP = {
             bufView[0] = 0xff; // preamble
             bufView[1] = 0xff; // option
 
-            if(FC.CONFIG.hw && code != MSPCodes.MSP_API_VERSION) {
+            if(FC.CONFIG.hw && code != MSPCodes.CMD_VERSION) {
                 bufView[2] = FC.CONFIG.hw; // device
             } else {
                 bufView[2] = 0x00; // device
@@ -397,11 +397,12 @@ const MSP = {
         }
         //this.code = code;
         let bufferOut;
-        if (code <= 254) {
-            bufferOut = this.encode_message_v1(code, data);
-        } else {
-            bufferOut = this.encode_message_v2(code, data);
-        }
+        // if (code <= 254) {
+        //     bufferOut = this.encode_message_v1(code, data);
+        // } else {
+        //     bufferOut = this.encode_message_v2(code, data);
+        // }
+        bufferOut = this.encode_message_v1(code, data);
 
         const obj = {'code': code, 'requestBuffer': bufferOut, 'callback': callback_msp ? callback_msp : false, 'timer': false, 'callbackOnError': doCallbackOnError};
 
@@ -463,5 +464,5 @@ const MSP = {
         this.packet_error = 0; // reset CRC packet error counter for next session
 
         this.callbacks_cleanup();
-    }
+    },
 };

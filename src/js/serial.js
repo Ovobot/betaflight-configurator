@@ -111,7 +111,7 @@ const serial = {
                         case 'disconnected':
                         case 'device_lost':
                         default:
-                            console.log("info:" + info.error);
+                            // console.log("info:" + info.error);
                             self.errorHandler(info.error, 'receive');
                             break;
                     }
@@ -452,7 +452,7 @@ const serial = {
                     break;
             }
         }
-        console.log("error msg :" + message);
+        // console.log("error msg :" + message);
         const resultMessage = message ? `${message} ${result}` : result;
         console.warn(`${self.connectionType}: ${resultMessage} ID: ${self.connectionId} (${direction})`);
 

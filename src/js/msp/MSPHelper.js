@@ -84,7 +84,7 @@ MspHelper.prototype.process_data = function(dataHandler) {
                     break;
                 case MSPCodes.MSP_ADAPTER:
                     FC.ANALOG.adapter = data.readU8();//parseFloat((data.read32() / 100.0).toFixed(2)); // correct scale factor
-                    break;    
+                    break;
                 case MSPCodes.MSP_FOURCORNER:
                     FC.ANALOG.corner = data.readU8();//parseFloat((data.read32() / 100.0).toFixed(2)); // correct scale factor
                     break;
@@ -115,10 +115,10 @@ MspHelper.prototype.process_data = function(dataHandler) {
                     console.log('Sprayed');
                     break;
 
-                case MSPCodes.MSP_API_VERSION:
+                case MSPCodes.CMD_VERSION:
                     FC.CONFIG.hw = data.readU8();
-                    FC.CONFIG.firmwareVersion = data.readU8()+ '.' + data.readU8() + '.' + data.readU8();
-                    FC.CONFIG.apiVersion = data.readU8() + '.' + data.readU8() + '.0';
+                    FC.CONFIG.firmwareVersion = `${data.readU8()}.${data.readU8()}.${data.readU8()}`;
+                    FC.CONFIG.apiVersion = `${data.readU8()}.${data.readU8()}.0`;
                     FC.CONFIG.build = data.readU8();
                     break;
 
@@ -131,10 +131,10 @@ MspHelper.prototype.process_data = function(dataHandler) {
                     break;
 
                 case MSPCodes.MSP_FC_VERSION:
-                    FC.CONFIG.flightControllerVersion = data.readU8() + '.' + data.readU8() + '.' + data.readU8();
+                    FC.CONFIG.flightControllerVersion = `${data.readU8()}.${data.readU8()}.${data.readU8()}`;
                     break;
 
-                case MSPCodes.MSP_BUILD_INFO:
+                case MSPCodes.CMD_BUILD_INFO:
                     const dateLength = 10;
                     buff = [];
 
@@ -149,12 +149,26 @@ MspHelper.prototype.process_data = function(dataHandler) {
                     }
                     FC.CONFIG.buildInfo = String.fromCharCode.apply(null, buff);
                     break;
-
+                case MSPCodes.MSP_GET_PWMVALUE:
+                    FC.OVOBOT_FUNCTION.pwmvalue = data.readU8();
+                    break;
+                case MSPCodes.MSP_GET_USE_FAN_LEVEL_DYNAMIC_COMP:
+                    FC.OVOBOT_FUNCTION.pwmvaluemax = data.readU8();
+                    FC.OVOBOT_FUNCTION.pwmvaluemin = data.readU8();
+                    break;
+                case MSPCodes.MSP_GET_USE_FAN_OUTPUT_PID:
+                    FC.OVOBOT_FUNCTION.fanpwmvalueatidel = data.readU8();
+                    FC.OVOBOT_FUNCTION.fanpwmmax = data.readU8();
+                    FC.OVOBOT_FUNCTION.fanpwmmin = data.readU8();
+                    FC.OVOBOT_FUNCTION.defaulttargetfanpwmvalue = data.readU16();
+                    FC.OVOBOT_FUNCTION.maxtargetfanpwmvalue = data.readU16();
+                    FC.OVOBOT_FUNCTION.mintargetfanpwmvalue = data.readU16();
+                    break;
                 default:
-                    console.log('Unknown code detected: ' + code);
+                    console.log(`Unknown code detected: ${code}`);
             }
         } else {
-            console.log('FC reports unsupported message error: ' + code);
+            console.log(`FC reports unsupported message error: ${code}`);
 
             if (code === MSPCodes.MSP_SET_REBOOT) {
                 TABS.onboard_logging.mscRebootFailedCallback();
@@ -912,12 +926,12 @@ MspHelper.prototype.dataflashRead = function(address, blockSize, onDataCallback)
                 }
             } else {
                 // Report address error
-                console.log('Expected address ' + address + ' but received ' + chunkAddress + ' - retrying');
+                // console.log('Expected address ' + address + ' but received ' + chunkAddress + ' - retrying');
                 onDataCallback(address, null);  // returning null to the callback forces a retry
             }
         } else {
             // Report crc error
-            console.log('CRC error for address ' + address + ' - retrying');
+            // console.log('CRC error for address ' + address + ' - retrying');
             onDataCallback(address, null);  // returning null to the callback forces a retry
         }
     }, true);

@@ -11,9 +11,9 @@ const setup = {
 };
 
 const background_tr = {
-    tr_red:'#fa1111',
-    tr_green:'#02d602',
-}
+    tr_red: '#fa1111',
+    tr_green: '#02d602',
+};
 
 setup.initialize = function (callback) {
     const self = this;
@@ -42,7 +42,7 @@ setup.initialize = function (callback) {
     }
 
     function bitIsZero(x, bitIndex) {
-        return (((x >> bitIndex) & 1) == 1) ? false : true
+        return (((x >> bitIndex) & 1) == 1) ? false : true;
     }
 
     //MSP.send_message(MSPCodes.MSP_ACC_TRIM, false, false, load_status);
@@ -161,36 +161,35 @@ setup.initialize = function (callback) {
 
     function showErrorDialog(message) {
         const dialog = $('.dialogError')[0];
-     
          $('.dialogError-content').html(message);
-     
+
          $('.dialogError-closebtn').click(function() {
              dialog.close();
          });
-     
+
          dialog.showModal();
     }
 
 
     function showSprayResultDialog() {
         const dialog = $('.dialogSprayConfirm')[0];
-         
+
         $('.dialogSprayConfirm-confirmbtn').click(function() {
-           autoTestReady = false; 
+           autoTestReady = false;
            dialog.close();
         });
         $('.dialogSprayConfirm-cancelbtn').click(function() {
             autoTestReady = false;
             dialog.close();
          });
-        dialog.showModal();       
+        dialog.showModal();
     }
 
     function showSprayTestDialog(message) {
         const dialog = $('.dialogTestSpray')[0];
-     
+
          $('.dialogTestSpray-content').html(message);
-     
+
          $('.dialogTestSpray-spraybtn').click(function() {
             MSP.send_message(MSPCodes.MSP_SET_SPRAY, [1], false, false);
             dialog.close();
@@ -200,18 +199,18 @@ setup.initialize = function (callback) {
          $('.dialogTestSpray-closebtn').click(function() {
             dialog.close();
          });
-     
+
          dialog.showModal();
     }
 
     function closeAutoTestDialog()
     {
-        const dialog = $('.dialogAutoTest')[0];    
+        const dialog = $('.dialogAutoTest')[0];
         dialog.close();
     }
 
     function showAutoTestDialogTitle(title) {
-        const dialog = $('.dialogAutoTest')[0];  
+        const dialog = $('.dialogAutoTest')[0];
         $('.dialogAutoTestTitle').html(title);
         dialog.showModal();
     }
@@ -337,7 +336,7 @@ setup.initialize = function (callback) {
         });
 
         const dialogConfirmReset = $('.dialogConfirmReset')[0];
-        const dialogAutoTestWait = $('.dialogAutoTest')[0];    
+        const dialogAutoTestWait = $('.dialogAutoTest')[0];
         $('.dialogAutoTest-closebtn').click(function() {
             selfCheckState = 0;
             self.sampleCnt = 0;
@@ -345,7 +344,7 @@ setup.initialize = function (callback) {
             dialogAutoTestWait.close();
         });
         const dialogTestFourCorner = $('.dialogTestFourCorner')[0];
-        
+
         $('a.autoTestPCB').click(function () {
             dialogConfirmReset.showModal();
         });
@@ -372,7 +371,7 @@ setup.initialize = function (callback) {
         });
 
         $('a.playVoiceIndex').click(function () {
-            const voiceindex = $('input[name="voice-number"]').val()
+            const voiceindex = $('input[name="voice-number"]').val();
             MSP.send_message(MSPCodes.MSP_PLAY_VOICE, [voiceindex], false, function () {
 
             });
@@ -387,7 +386,7 @@ setup.initialize = function (callback) {
         $('a.spray').click(function () {
             MSP.send_message(MSPCodes.MSP_SET_SPRAY, [1], false, false);
         });
-        
+
         $('a.accCali').click(function () {
             MSP.send_message(MSPCodes.MSP_ACC_CALIBRATION, false, false, function () {
 
@@ -423,11 +422,11 @@ setup.initialize = function (callback) {
             }
         });
         $('.program_version').text([FC.CONFIG.firmwareVersion]);
-        console.info("=============:" + [FC.CONFIG.firmwareVersion]);
+        // console.info("=============:" + [FC.CONFIG.firmwareVersion]);
         $('.dialogConfirmReset-cancelbtn').click(function() {
             dialogConfirmReset.close();
         });
-        //开始自动化测试    
+        //开始自动化测试
         $('.dialogConfirmReset-confirmbtn').click(function() {
             autoTestReady = true;
             dialogConfirmReset.close();
@@ -440,7 +439,6 @@ setup.initialize = function (callback) {
             showAutoTestDialogTitle(i18n.getMessage('dialogAutoTestGyroAccTitle'));
         });
 
-        
 
         // display current yaw fix value (important during tab re-initialization)
         $('div#interactive_block > a.reset').text(i18n.getMessage('initialSetupButtonResetZaxisValue', [self.yaw_fix]));
@@ -507,9 +505,9 @@ setup.initialize = function (callback) {
         }
 
         const calcAverage = function(arr) {
-            var sum=0;
-            var s=0;
-            for(var i=0;i<arr.length;i++){
+            let sum=0;
+            let s=0;
+            for (let i=0;i<arr.length;i++){
                 sum+=arr[i];
             }
             let ave=sum/arr.length;
@@ -521,9 +519,9 @@ setup.initialize = function (callback) {
         };
 
         const elementAllSame = function(arr) {
-            var sum=0;
-            var fl= arr[0];
-            for(var i=1;i<arr.length;i++){
+            let sum=0;
+            let fl= arr[0];
+            for (let i=1;i<arr.length;i++){
                 if (fl == arr[i]) {
                     sum += 1;
                 }
@@ -535,14 +533,14 @@ setup.initialize = function (callback) {
             return false;
         };
 
-        const gyrostring = function(arr) {
-            var gstr = ""
-            for(var i=0;i<arr.length;i++){
+        const gyrostring = function (arr) {
+            let gstr = "";
+            for (let i = 0; i < arr.length; i++) {
                 gstr += arr[i];
-                gstr += ","
+                gstr += ",";
             }
             return gstr;
-        }
+        };
 
         // if (elementAllSame(testZ)) {
         //     dialogAutoTestWait.showModal();
@@ -602,21 +600,21 @@ setup.initialize = function (callback) {
             arming_disable_flags_e.append('<span id="initialSetupArmingAllowed" i18n="initialSetupArmingAllowed" style="display: none;"></span>');
 
             // Arming disabled flags
-            for (let i = 0; i < FC.CONFIG.armingDisableCount; i++) {
+            // for (let i = 0; i < FC.CONFIG.armingDisableCount; i++) {
 
-                // All the known elements but the ARM_SWITCH (it must be always the last element)
-                if (i < disarmFlagElements.length - 1) {
-                    arming_disable_flags_e.append('<span id="initialSetupArmingDisableFlags' + i + '" class="cf_tip disarm-flag" title="' + i18n.getMessage('initialSetupArmingDisableFlagsTooltip' + disarmFlagElements[i]) + '" style="display: none;">' + disarmFlagElements[i] + '</span>');
+            //     // All the known elements but the ARM_SWITCH (it must be always the last element)
+            //     if (i < disarmFlagElements.length - 1) {
+            //         arming_disable_flags_e.append('<span id="initialSetupArmingDisableFlags' + i + '" class="cf_tip disarm-flag" title="' + i18n.getMessage('initialSetupArmingDisableFlagsTooltip' + disarmFlagElements[i]) + '" style="display: none;">' + disarmFlagElements[i] + '</span>');
 
-                // The ARM_SWITCH, always the last element
-                } else if (i == FC.CONFIG.armingDisableCount - 1) {
-                    arming_disable_flags_e.append('<span id="initialSetupArmingDisableFlags' + i + '" class="cf_tip disarm-flag" title="' + i18n.getMessage('initialSetupArmingDisableFlagsTooltipARM_SWITCH') + '" style="display: none;">ARM_SWITCH</span>');
+            //     // The ARM_SWITCH, always the last element
+            //     } else if (i == FC.CONFIG.armingDisableCount - 1) {
+            //         arming_disable_flags_e.append('<span id="initialSetupArmingDisableFlags' + i + '" class="cf_tip disarm-flag" title="' + i18n.getMessage('initialSetupArmingDisableFlagsTooltipARM_SWITCH') + '" style="display: none;">ARM_SWITCH</span>');
 
-                // Unknown disarm flags
-                } else {
-                    arming_disable_flags_e.append('<span id="initialSetupArmingDisableFlags' + i + '" class="disarm-flag" style="display: none;">' + (i + 1) + '</span>');
-                }
-            }
+            //     // Unknown disarm flags
+            //     } else {
+            //         arming_disable_flags_e.append('<span id="initialSetupArmingDisableFlags' + i + '" class="disarm-flag" style="display: none;">' + (i + 1) + '</span>');
+            //     }
+            // }
         };
 
         prepareDisarmFlags();
@@ -675,7 +673,7 @@ setup.initialize = function (callback) {
                 } else {
                     adapterError = true;
                     rows[4].style.background = background_tr.tr_red;
-                }  
+                }
                 if (selfCheckState == 4) {
                     if (adapterError) {
                         selfCheckState = 0;
@@ -699,22 +697,21 @@ setup.initialize = function (callback) {
                         } else if(FC.CONFIG.hw == 2) {
                             selfCheckState = 5;
                         }
-                        
                     }
                 }
-                  
+
             });
 
             MSP.send_message(MSPCodes.MSP_WATER_BOX, false, false, function () {
                 waterstate_e.text(i18n.getMessage('waterStateValue', [FC.ANALOG.waterstate]));
-                rows[5].style.background = background_tr.tr_green;                
+                rows[5].style.background = background_tr.tr_green;
             });
 
             MSP.send_message(MSPCodes.MSP_FOURCORNER, false, false, function () {
-                const ul_data = bitIsZero(FC.ANALOG.corner,3) ? 0 : 1 
-                const ur_data = bitIsZero(FC.ANALOG.corner,2) ? 0 : 1 
-                const bl_data = bitIsZero(FC.ANALOG.corner,1) ? 0 : 1 
-                const br_data = bitIsZero(FC.ANALOG.corner,0) ? 0 : 1 
+                const ul_data = bitIsZero(FC.ANALOG.corner, 3) ? 0 : 1;
+                const ur_data = bitIsZero(FC.ANALOG.corner, 2) ? 0 : 1;
+                const bl_data = bitIsZero(FC.ANALOG.corner, 1) ? 0 : 1;
+                const br_data = bitIsZero(FC.ANALOG.corner, 0) ? 0 : 1;
 
                 corner_ul_e.text(i18n.getMessage('cornerValue', [ul_data]));
                 corner_ur_e.text(i18n.getMessage('cornerValue', [ur_data]));
@@ -769,8 +766,8 @@ setup.initialize = function (callback) {
 
             const tb = $('.cf_table tbody');
             const rows = tb.find("tr");
-            if (!autoTestReady) return;    
-            
+            if (!autoTestReady) return;
+
             MSP.send_message(MSPCodes.MSP_ANALOG, false, false, function () {
                 left_adc_e.text(i18n.getMessage('leftMotorCurrentValue', [FC.ANALOG.leftMotorAdc]));
                 right_adc_e.text(i18n.getMessage('rightMotorCurrentValue', [FC.ANALOG.rightMotorAdc]));
@@ -831,15 +828,15 @@ setup.initialize = function (callback) {
                                             rows[2].style.background = background_tr.tr_red;
                                         }
                                     }
-                                } 
-                                let errorWheelString = ''
+                                }
+                                let errorWheelString = '';
                                 if (leftWheelError) {
                                     errorWheelString += i18n.getMessage('leftWheelError');
-                                } 
+                                }
                                 if (rightWheelError) {
-                                    errorWheelString += " "
+                                    errorWheelString += " ";
                                     errorWheelString += i18n.getMessage('rightWheelError');
-                                } 
+                                }
                                 if (errorWheelString.length > 0) {
                                     selfCheckState = 0;
                                     wheelState = -1;
@@ -859,14 +856,14 @@ setup.initialize = function (callback) {
                                         MSP.send_message(MSPCodes.MSP_SET_MOTOR, [2], false, function () {
                                             wheelChangeDelay = 1;
                                         });
-                                    }    
+                                    }
                                 }
                             }
                         } else {
                             self.sampleWheel = 0;
                             wheelChangeDelay++;
                         }
-                        
+
                     } else if (wheelState == 1) {
                         if (wheelChangeDelay >= WHEELCHECKDELAY) {
                             if (updateWheelData(FC.ANALOG.leftMotorAdc,FC.ANALOG.rightMotorAdc)) {
@@ -880,13 +877,13 @@ setup.initialize = function (callback) {
                                 } else {
                                     leftWheelError = true;
                                 }
-                                
+
                                 if(diffRight >= 5 && diffRight <= 40) {
                                     rightWheelError = false;
                                 } else {
                                     rightWheelError = true;
                                 }
-                
+
                                 if(FC.CONFIG.hw == 1) {
                                     if(!fanOpened) {
                                         if(FC.ANALOG.fanAdc < 100) {
@@ -902,21 +899,21 @@ setup.initialize = function (callback) {
                                         }
                                     }
                                 }
-                                let errorWheelString = ''
+                                let errorWheelString = '';
                                 if (leftWheelError) {
                                     errorWheelString += (i18n.getMessage('leftWheelError') + FC.ANALOG.leftMotorAdc);
-                                } 
+                                }
                                 if (rightWheelError) {
-                                    errorWheelString += " "
+                                    errorWheelString += " ";
                                     errorWheelString += (i18n.getMessage('rightWheelError') + FC.ANALOG.rightMotorAdc);
-                                } 
+                                }
                                 if (errorWheelString.length > 0) {
                                     selfCheckState = 0;
                                     wheelState = -1;
                                     dialogAutoTestWait.close();
                                     showErrorDialog(errorWheelString);
                                     MSP.send_message(MSPCodes.MSP_SET_MOTOR, [0], false, function () {
-                                        
+
                                     });
                                 } else {
                                     if (!wheelfront) {
@@ -947,7 +944,7 @@ setup.initialize = function (callback) {
                                     wheelfront = !wheelfront;
                                     wheelChangeDelay = 0;
                                     MSP.send_message(MSPCodes.MSP_SET_MOTOR, [0], false, function () {
-                                        
+
                                     });
                                 }
                             }
@@ -955,7 +952,7 @@ setup.initialize = function (callback) {
                             self.sampleWheel = 0;
                             wheelChangeDelay += 1;
                         }
-                        
+
                     }
 
                     if (fanChangeDelay >= FANCHECKDELAY) {
@@ -977,7 +974,7 @@ setup.initialize = function (callback) {
                                             fanOpened = true;
                                         });
                                     }
-                                    
+
                                 }
                             } else {
                                 let fanOpenAdc = calcAverage(fanAdcBuf);
@@ -987,7 +984,6 @@ setup.initialize = function (callback) {
                                 } else {
                                     fanError = true;
                                 }
-                
                                 if (fanError) {
                                     selfCheckState = 0;
                                     dialogAutoTestWait.close();
@@ -1024,10 +1020,10 @@ setup.initialize = function (callback) {
                         fanChangeDelay++;
                     }
                 } else if (selfCheckState == 7) {
-                    
+
                 }
             });
-            
+
             if(FC.CONFIG.hw == 2) {
                 MSP.send_message(MSPCodes.MSP_BARO, false, false, function () {
                     baro_val_e.text(i18n.getMessage('baroValue', [FC.SENSOR_DATA.baro]));
@@ -1049,15 +1045,15 @@ setup.initialize = function (callback) {
                             wheelState = 0;
                             wheelChangeDelay = 0;
                         }
-                    }   
-                    
+                    }
+
                 });
             }
 
 
             MSP.send_message(MSPCodes.MSP_RAW_IMU, false, false, function () {
 
-                if(updateGyroData(FC.SENSOR_DATA.gyroscope[0],FC.SENSOR_DATA.gyroscope[1],FC.SENSOR_DATA.gyroscope[2])) {                    
+                if(updateGyroData(FC.SENSOR_DATA.gyroscope[0],FC.SENSOR_DATA.gyroscope[1],FC.SENSOR_DATA.gyroscope[2])) {
                     if(elementAllSame(gyroX) || FC.SENSOR_DATA.gyroscope[0] > 20 || FC.SENSOR_DATA.gyroscope[0] < -20) {
                         rows[12].style.background = background_tr.tr_red;
                     } else {
@@ -1086,17 +1082,17 @@ setup.initialize = function (callback) {
                     if (selfCheckState == 1) {
                         selfCheckState = 2;
                     }
-                    
+
                 }
 
                 if(updateAccData(FC.SENSOR_DATA.accelerometer[0],FC.SENSOR_DATA.accelerometer[1],FC.SENSOR_DATA.accelerometer[2])) {
-                    
+
                     if(elementAllSame(accX) || FC.SENSOR_DATA.accelerometer[0] > 300 || FC.SENSOR_DATA.accelerometer[0] < -300) {
                         rows[15].style.background = background_tr.tr_red;
                     } else {
                         rows[15].style.background = background_tr.tr_green;
                         if (selfCheckState == 2) {
-                            gyrovalideCnt += 1;  
+                            gyrovalideCnt += 1;
                         }
                     }
 
@@ -1105,7 +1101,7 @@ setup.initialize = function (callback) {
                     } else {
                         rows[16].style.background = background_tr.tr_green;
                         if (selfCheckState == 2) {
-                            gyrovalideCnt += 1;  
+                            gyrovalideCnt += 1;
                         }
                     }
                     if(elementAllSame(accZ) || FC.SENSOR_DATA.accelerometer[2] < 3797 || FC.SENSOR_DATA.accelerometer[2] > 4396)  {
@@ -1113,7 +1109,7 @@ setup.initialize = function (callback) {
                     } else {
                         rows[17].style.background = background_tr.tr_green;
                         if (selfCheckState == 2) {
-                            gyrovalideCnt += 1;  
+                            gyrovalideCnt += 1;
                         }
                     }
                     if (selfCheckState == 2) {
@@ -1128,7 +1124,7 @@ setup.initialize = function (callback) {
                                         adapterError = false;
                                     } else {
                                         adapterError = true;
-                                    }  
+                                    }
                                     if (adapterError) {
                                         selfCheckState = 0;
                                         dialogAutoTestWait.close();
@@ -1149,18 +1145,18 @@ setup.initialize = function (callback) {
                                         fanCheckEnd = false;
                                         fanError = false;
                                     }
-                                      
+
                                 });
                             }
-                            
+
                             //dialogTestFourCorner.showModal();
                         } else {
                             selfCheckState = 0;
                             dialogAutoTestWait.close();
                             showErrorDialog(i18n.getMessage('gyroError'));
-                        } 
+                        }
                     }
-                    
+
                 }
 
                 gyro_x_e.text(i18n.getMessage('gyroXValue', [FC.SENSOR_DATA.gyroscope[0]]));

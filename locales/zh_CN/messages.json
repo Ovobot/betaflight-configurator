@@ -306,6 +306,9 @@
     "tabConfiguration": {
         "message": "配置"
     },
+    "tabConfig": {
+        "message": "配置"
+    },
     "tabPorts": {
         "message": "端口"
     },
@@ -976,6 +979,15 @@
     "leftMotorErrorCurrentValue": {
         "message": "<span class=\"message-negative\">$1</span>"
     },   
+    "pwmvalue":{
+       "message": "$1" 
+    },
+    "pwmvaluemax": {
+        "message": "$1"
+    },
+    "pwmvaluemin": {
+        "message": "$1"
+    },
     "initialSetupDrawn": {
         "message": "已用容量："
     },

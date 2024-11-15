@@ -1,0 +1,140 @@
+<div class="tab-config">
+    <div class="content_wrapper initialstyle">
+        <!-- should be the first DIV on each tab -->
+        <div class="tab_title" i18n="tabConfig"></div>
+        <div class="grid-row model_fan">
+            <div class="grid-col col12">
+                <div class="grid-row-title">
+                    <img src="images/ovobot_images/model_open_close.png" class="model_open_close rotate-90" alt="公司Logo" />
+                    <span class="grid-col col12">风机参数</span>
+                </div>
+            </div>
+            <div class="grid-col col12 grid-row-content" id="model-fan">
+                <div class="grid-row">
+                    <div class="grid-col col3">
+                        <div class="grid-model-inside">
+                            <span>正常占比:</span>
+                            <input id="general-fan" name="general-fan" class="model-input model-background" type="text" value="0" readonly />
+                        </div>
+                        <div class="grid-model-inside">
+                            <span>最大占比:</span>
+                            <input id="max-fan" name="max-fan" class="model-input model-background" type="text" value="0" readonly />
+                        </div>
+                        <div class="grid-model-inside">
+                            <span>最小占比:</span>
+                            <input id="min-fan" name="min-fan" class="model-input model-background" type="text" value="0" readonly />
+                        </div>
+                    </div>
+                    <div class="grid-col col3">
+                        <div class="grid-model-inside">
+                            <span>一般占比:</span>
+                            <input name="general-fan" class="model-input model-background" type="text" value="" readonly />
+                        </div>
+                        <div class="grid-model-inside">
+                            <span>最大占比:</span>
+                            <input name="general-fan" class="model-input model-background" type="text" value="" readonly />
+                        </div>
+                        <div class="grid-model-inside">
+                            <span>最小占比:</span>
+                            <input name="general-fan" class="model-input model-background" type="text" value="" readonly />
+                        </div>
+                    </div>
+                    <div class="grid-col col3">
+                        <div class="grid-model-inside">
+                            <span>一般占比:</span>
+                            <input name="general-fan" class="model-input model-background" type="text" value="" readonly />
+                        </div>
+                        <div class="grid-model-inside">
+                            <span>最大占比:</span>
+                            <input name="general-fan" class="model-input model-background" type="text" value="" readonly />
+                        </div>
+                        <div class="grid-model-inside">
+                            <span>最小占比:</span>
+                            <input name="general-fan" class="model-input model-background" type="text" value="" readonly />
+                        </div>
+                    </div>
+                    <div id ='model-fan-btn' class="grid-col col2 grid-model-inside model-btn">
+                        <div class="default_btn model-fan-btn edit-fan"><a class="clockwise i18n-replaced">修改</a></div>
+                        <div class="default_btn model-fan-btn cancle-fan"><a class="clockwise i18n-replaced no-click">取消</a></div>
+                        <div class="default_btn model-fan-btn save-fan" ><a class="clockwise i18n-replaced no-click">保存</a></div>
+                    </div>
+                    <!-- <dialog class="dialogConfiguratorUpdate">
+                        <h3 i18n="noticeTitle"></h3>
+                        <div class="content">
+                            <div class="dialogConfiguratorUpdate-content" style="margin-top: 10px"></div>
+                        </div>
+                        <div class="buttons">
+                            <a href="#" class="dialogConfiguratorUpdate-websitebtn regular-button" i18n="configuratorUpdateWebsite"></a>
+                            <a href="#" class="dialogConfiguratorUpdate-closebtn regular-button" i18n="close"></a>
+                        </div>
+                    </dialog> -->
+                    <!-- <dialog class="dialogConfiguratorUpdate">
+                        <h3 i18n="noticeTitle"></h3>
+                        <div class="content">
+                            <div class="dialogConfiguratorUpdate-content" style="margin-top: 10px"></div>
+                        </div>
+                        <div class="buttons">
+                            <a href="#" class="dialogConfiguratorUpdate-websitebtn regular-button" i18n="configuratorUpdateWebsite"></a>
+                            <a href="#" class="dialogConfiguratorUpdate-closebtn regular-button" i18n="close"></a>
+                        </div>
+                    </dialog> -->
+                </div>
+            </div>
+        </div>
+        <div class="grid-row model_motor">
+            <div class="grid-col col12">
+                <div class="grid-row-title">
+                    <img src="images/ovobot_images/model_open_close.png" class="model_open_close rotate-90" alt="公司Logo" />
+                    <span class="grid-col col12">马达参数</span>
+                </div>
+            </div>
+            <div class="grid-col col12 grid-row-content">
+                <div class="grid-col col3"></div>
+                <div class="grid-col col3"></div>
+                <div class="grid-col col3"></div>
+            </div>
+        </div>
+        <div class="grid-row model_waterpump">
+            <div class="grid-col col12">
+                <div class="grid-row-title">
+                    <img src="images/ovobot_images/model_open_close.png" class="model_open_close rotate-90" alt="公司Logo" />
+                    <span class="grid-col col12">喷水参数</span>
+                </div>
+            </div>
+            <div class="grid-col col12 grid-row-content">
+                <div class="grid-col col3"></div>
+                <div class="grid-col col3"></div>
+                <div class="grid-col col3"></div>
+            </div>
+        </div>
+        <!-- <div class="grid-row">
+            <div class="grid-col col3">
+                <div class="default_btn">
+                    <a class="autoTestPCB" href="#" i18n="initialAutoTestButton"></a>
+                </div>
+            </div>
+            <div class="grid-col col9">
+                <div class="cell_setup">
+                    <span i18n="initialAutoTestText"></span>
+                </div>
+            </div>
+        </div> -->
+        <!-- <div class="gui_box grey info">
+            <div class="gui_box_titlebar">
+            </div>
+            <div class="spacer_box">
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="cf_table">
+                    <tbody>
+                        <tr>
+                            <td class="video-mode"></td>
+                        </tr>
+                        <tr>
+                            <td class="camera-connected"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div> -->
+
+    </div>
+</div>

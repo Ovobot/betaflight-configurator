@@ -458,7 +458,7 @@ receiver.initialize = function (callback) {
             function save_rx_config() {
                 const nextCallback = (boot) ? save_feature_config : save_to_eeprom;
                 if (semver.gte(FC.CONFIG.apiVersion, "1.20.0")) {
-                    MSP.send_message(MSPCodes.MSP_SET_RX_CONFIG, mspHelper.crunch(MSPCodes.MSP_SET_RX_CONFIG), false, nextCallback);
+                    //MSP.send_message(MSPCodes.MSP_SET_RX_CONFIG, mspHelper.crunch(MSPCodes.MSP_SET_RX_CONFIG), false, nextCallback);
                 } else {
                     nextCallback();
                 }

@@ -403,9 +403,9 @@ function startProcess() {
                             setup_osd.initialize(content_ready),
                         );
                         break;
-                    case 'configuration':
-                        import("./tabs/configuration").then(({ configuration }) =>
-                            configuration.initialize(content_ready),
+                    case 'config':
+                        import("./tabs/config").then(({ config }) =>
+                            config.initialize(content_ready),
                         );
                         break;
                     case 'pid_tuning':

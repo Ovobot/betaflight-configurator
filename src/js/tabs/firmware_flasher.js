@@ -823,7 +823,7 @@ firmware_flasher.initialize = function (callback) {
 
                 function getBoard() {
                     console.log(`Requesting board information`);
-                    MSP.send_message(MSPCodes.MSP_API_VERSION, false, false, () => {
+                    MSP.send_message(MSPCodes.CMD_VERSION, false, false, () => {
                         if (!FC.CONFIG.apiVersion || FC.CONFIG.apiVersion === 'null.null.0') {
                             FC.CONFIG.apiVersion = '0.0.0';
                         }

@@ -47,7 +47,7 @@ MSPConnectorImpl.prototype.connect = function (port, baud, onConnectCallback, on
             const mspHelper = new MspHelper();
             MSP.listen(mspHelper.process_data.bind(mspHelper));
 
-            MSP.send_message(MSPCodes.MSP_API_VERSION, false, false, function () {
+            MSP.send_message(MSPCodes.CMD_VERSION, false, false, function () {
                 CONFIGURATOR.connectionValid = true;
 
                 GUI.timeout_remove('msp_connector');

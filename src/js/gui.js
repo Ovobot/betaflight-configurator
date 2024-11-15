@@ -31,6 +31,7 @@ const GuiControl = function () {
     ];
     this.defaultAllowedFCTabsWhenConnected = [
         'setup',
+        'config',
     ];
 
     this.allowedTabs = this.defaultAllowedTabsWhenDisconnected;

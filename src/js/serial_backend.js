@@ -248,7 +248,7 @@ function onOpen(openInfo) {
         MSP.listen(mspHelper.process_data.bind(mspHelper));
         console.log(`Requesting configuration data`);
 
-        MSP.send_message(MSPCodes.MSP_API_VERSION, false, false, function () {
+        MSP.send_message(MSPCodes.CMD_VERSION, false, false, function () {
             analytics.setFlightControllerData(analytics.DATA.API_VERSION, FC.CONFIG.apiVersion);
 
             GUI.log(i18n.getMessage('apiVersionReceived', [FC.CONFIG.apiVersion]));
@@ -264,7 +264,7 @@ function onOpen(openInfo) {
 
                             GUI.log(i18n.getMessage('fcInfoReceived', [FC.CONFIG.firmwareVersion]));
 
-                            MSP.send_message(MSPCodes.MSP_BUILD_INFO, false, false, function () {
+                            MSP.send_message(MSPCodes.CMD_BUILD_INFO, false, false, function () {
 
                                 //GUI.log(i18n.getMessage('buildInfoReceived', [FC.CONFIG.buildInfo]));
                                 processBoardInfo();
@@ -687,7 +687,7 @@ function update_live_status() {
     const statuswrapper = $('#quad-status_wrapper');
 
     $(".quad-status-contents").css({
-       display: 'inline-block'
+       display: 'inline-block',
     });
 
     if (GUI.active_tab != 'cli') {
@@ -780,42 +780,42 @@ function bit_clear(num, bit) {
 function update_dataflash_global() {
     function formatFilesize(bytes) {
         if (bytes < 1024) {
-            return bytes + "B";
+            return `${bytes}B`;
         }
         const kilobytes = bytes / 1024;
 
         if (kilobytes < 1024) {
-            return Math.round(kilobytes) + "kB";
+            return `${Math.round(kilobytes)}kB`;
         }
 
         const megabytes = kilobytes / 1024;
 
-        return megabytes.toFixed(1) + "MB";
+        return `${megabytes.toFixed(1)}MB`;
     }
 
     const supportsDataflash = FC.DATAFLASH.totalSize > 0;
 
     if (supportsDataflash){
         $(".noflash_global").css({
-           display: 'none'
+           display: 'none',
         });
 
         $(".dataflash-contents_global").css({
-           display: 'block'
+           display: 'block',
         });
 
         $(".dataflash-free_global").css({
-           width: (100-(FC.DATAFLASH.totalSize - FC.DATAFLASH.usedSize) / FC.DATAFLASH.totalSize * 100) + "%",
-           display: 'block'
+            width: `${(100 - (FC.DATAFLASH.totalSize - FC.DATAFLASH.usedSize) / FC.DATAFLASH.totalSize * 100)}%`,
+           display: 'block',
         });
-        $(".dataflash-free_global div").text('Dataflash: free ' + formatFilesize(FC.DATAFLASH.totalSize - FC.DATAFLASH.usedSize));
+        $(".dataflash-free_global div").text(`Dataflash: free${formatFilesize(FC.DATAFLASH.totalSize - FC.DATAFLASH.usedSize)}`);
      } else {
         $(".noflash_global").css({
-           display: 'block'
+           display: 'block',
         });
 
         $(".dataflash-contents_global").css({
-           display: 'none'
+           display: 'none',
         });
      }
 }

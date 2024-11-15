@@ -8,7 +8,7 @@ const i18n = {};
 window.i18n = i18n;
 
 
-const languagesAvailables = ['zh_CN',];
+const languagesAvailables = ['zh_CN'];
 
 const languageFallback = {
                             'pt': ['pt_BR', 'en'],
