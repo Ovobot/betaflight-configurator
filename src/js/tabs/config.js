@@ -36,26 +36,9 @@ config.initialize = function (callback) {
             // general_fan = $('#general-fan'),
             // general_fan = $('#general-fan'),
 
-        // $('.tab-configuration .info').hide(); // requires an MSP update
-        /*      Only used by get_slow_data() which is commented out.
-                const osdVideoModes = new Set([
-                    'AUTO',
-                    'NTSC',
-                    'PAL'
-                ]);
-        */
         // translate to user-selected language
         i18n.localizePage();
-        // const dialogConfiguratorUpdate = $('.dialogConfiguratorUpdate')[0];
-        // $('a.resetSettings').click(function () {
-            // MSP.send_message(MSPCodes.MSP_RESET_CONF, false, false, function () {
-            //     GUI.log(i18n.getMessage('initialSetupSettingsRestored'));
 
-            //     GUI.tab_switch_cleanup(function () {
-            //         TABS.configuration.initialize();
-            //     });
-            // });
-        // });
         $('.model_fan .model_open_close').click(function () {
             $(this).toggleClass('rotate-90');
             $(".model_fan .grid-row-content").toggleClass('model-display');
@@ -85,21 +68,18 @@ config.initialize = function (callback) {
         // })
 
         function get_slow_data() {
-            /* FIXME requires MSP update
-            MSP.send_message(MSPCodes.MSP_OSD_VIDEO_STATUS, false, false, function () {
-                let element element = $('.video-mode');
-                const osdVideoMode = osdVideoModes[OSD_VIDEO_STATE.video_mode];
-                element.text(osdVideoMode);
 
-                element = $('.camera-connected');
-                element.text(OSD_VIDEO_STATE.camera_connected ? i18n.getMessage('yes') : i18n.getMessage('No'));
-            });
-            */
             MSP.send_message(MSPCodes.MSP_GET_PWMVALUE, false, false, function () {
-                // console.log("==========pwmvalue:" + [FC.OVOBOT_FUNCTION.pwmvalue]);
+                // console.log("==========pwmvaluemax:" + [FC.OVOBOT_FUNCTION.pwmvaluemax]);
+                let pwmvaluemax = [FC.OVOBOT_FUNCTION.pwmvaluemax];
                 general_fan.val(i18n.getMessage('pwmvalue', [FC.OVOBOT_FUNCTION.pwmvalue]));
-                max_fan.val(i18n.getMessage('pwmvaluemax', [FC.OVOBOT_FUNCTION.pwmvaluemax]));
-                min_fan.val(i18n.getMessage('pwmvaluemin', [FC.OVOBOT_FUNCTION.pwmvaluemin]));
+                if (Number(pwmvaluemax) === 0) {
+                    max_fan.parent('div').hide();
+                    min_fan.parent('div').hide();
+                } else {
+                    max_fan.val(i18n.getMessage('pwmvaluemax', [FC.OVOBOT_FUNCTION.pwmvaluemax]));
+                    min_fan.val(i18n.getMessage('pwmvaluemin', [FC.OVOBOT_FUNCTION.pwmvaluemin]));
+                }
             });
         }
 

@@ -397,12 +397,11 @@ const MSP = {
         }
         //this.code = code;
         let bufferOut;
-        // if (code <= 254) {
-        //     bufferOut = this.encode_message_v1(code, data);
-        // } else {
-        //     bufferOut = this.encode_message_v2(code, data);
-        // }
-        bufferOut = this.encode_message_v1(code, data);
+        if (code <= 254) {
+            bufferOut = this.encode_message_v1(code, data);
+        } else {
+            bufferOut = this.encode_message_v2(code, data);
+        }
 
         const obj = {'code': code, 'requestBuffer': bufferOut, 'callback': callback_msp ? callback_msp : false, 'timer': false, 'callbackOnError': doCallbackOnError};
 
