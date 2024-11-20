@@ -114,7 +114,12 @@ MspHelper.prototype.process_data = function(dataHandler) {
                 case MSPCodes.MSP_SET_SPRAY:
                     console.log('Sprayed');
                     break;
-
+                case MSPCodes.MSP_SET_PWMVALUE:
+                    break;
+                case MSPCodes.MSP_SET_USE_FAN_LEVEL_DYNAMIC_COMP:
+                    break;
+                case MSPCodes.MSP_SET_USE_FAN_OUTPUT_PID:
+                    break;
                 case MSPCodes.CMD_VERSION:
                     FC.CONFIG.hw = data.readU8();
                     FC.CONFIG.firmwareVersion = `${data.readU8()}.${data.readU8()}.${data.readU8()}`;

@@ -6306,6 +6306,12 @@
     "dialogConfirmResetClose": {
         "message": "取消"
     },
+    "dialogConfirmCancel": {
+        "message":"请确认是否取消修改？"
+    },
+    "dialogConfirmSave": {
+        "message": "请确认是否保存修改？"
+    },
     "modeCameraWifi": {
         "message": "摄像头 WI-FI 按键"
     },

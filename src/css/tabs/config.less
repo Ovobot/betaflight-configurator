@@ -385,6 +385,23 @@
 		/* 确保旋转中心为图片中心 */
 		transform-origin: center;
 	}
+	/* 取消上下箭头 */
+	input::-webkit-outer-spin-button,
+	input::-webkit-inner-spin-button {
+		-webkit-appearance: none !important;
+	}
+
+	input[type='number'] {
+		-moz-appearance: textfield;
+	}
+	dialog {
+		width: 30%;
+		.content {
+			font-size: 14px;
+			margin-top: 10px;
+			margin-bottom: 10px;
+		}
+	}
 	.grid-row-title::before{
 		content: '';
 		display: inline-block;
