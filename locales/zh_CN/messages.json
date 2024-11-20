@@ -988,6 +988,24 @@
     "pwmvaluemin": {
         "message": "$1"
     },
+    "fanpwmvalueatidel": {
+        "message": "$1"
+    },
+    "fanpwmmax": {
+        "message": "$1"
+    },
+    "fanpwmmin": {
+        "message": "$1"
+    },
+    "defaulttargetfanpwmvalue": {
+        "message": "$1"
+    },
+    "maxtargetfanpwmvalue": {
+        "message": "$1"
+    },
+    "mintargetfanpwmvalue": {
+        "message": "$1"
+    },
     "initialSetupDrawn": {
         "message": "已用容量："
     },

@@ -14,43 +14,52 @@
                     <div class="grid-col col3">
                         <div class="grid-model-inside">
                             <span>正常占比:</span>
-                            <input id="general-fan" name="general-fan" class="model-input model-background" type="text" value="0" readonly />
+                            <input id="general-fan" name="general-fan" class="model-input model-background" type="text" step="1" min="0" max="100" value="0" readonly />
+                            <div class=""></div>
                         </div>
                         <div class="grid-model-inside">
                             <span>最大占比:</span>
-                            <input id="max-fan" name="max-fan" class="model-input model-background" type="text" value="0" readonly />
+                            <input id="max-fan" name="max-fan" class="model-input model-background" type="text" step="1" min="0" max="100" value="0" readonly />
+                            <div class=""></div>
                         </div>
                         <div class="grid-model-inside">
                             <span>最小占比:</span>
-                            <input id="min-fan" name="min-fan" class="model-input model-background" type="text" value="0" readonly />
+                            <input id="min-fan" name="min-fan" class="model-input model-background" type="text" step="1" min="0" max="100" value="0" readonly />
+                            <div class=""></div>
                         </div>
                     </div>
-                    <div class="grid-col col3">
+                    <div class="grid-col col3 constant-fan">
                         <div class="grid-model-inside">
-                            <span>一般占比:</span>
-                            <input name="general-fan" class="model-input model-background" type="text" value="" readonly />
+                            <span>恒压-正常占比:</span>
+                            <input id="constant-fan" name="constant-fan" class="model-input model-background" type="text" step="1" min="0" max="100" value="" readonly />
+                            <div class=""></div>
                         </div>
                         <div class="grid-model-inside">
-                            <span>最大占比:</span>
-                            <input name="general-fan" class="model-input model-background" type="text" value="" readonly />
+                            <span>恒压-最大占比:</span>
+                            <input id="constant-max-fan" name="constant-max-fan" class="model-input model-background" type="text" step="1" min="0" max="100" value="" readonly />
+                            <div class=""></div>
                         </div>
                         <div class="grid-model-inside">
-                            <span>最小占比:</span>
-                            <input name="general-fan" class="model-input model-background" type="text" value="" readonly />
+                            <span>恒压-最小占比:</span>
+                            <input id="constant-min-fan" name="constant-min-fan" class="model-input model-background" type="text" step="1" min="0" max="100" value="" readonly />
+                            <div class=""></div>
                         </div>
                     </div>
-                    <div class="grid-col col3">
+                    <div class="grid-col col3 constant-fan">
                         <div class="grid-model-inside">
-                            <span>一般占比:</span>
-                            <input name="general-fan" class="model-input model-background" type="text" value="" readonly />
+                            <span>恒压-正常吸力:</span>
+                            <input id="constant-suction" name="constant-suction" class="model-input model-background" type="text" step="1" min="0" max="500" value="" readonly />
+                            <div class=""></div>
                         </div>
                         <div class="grid-model-inside">
-                            <span>最大占比:</span>
-                            <input name="general-fan" class="model-input model-background" type="text" value="" readonly />
+                            <span>恒压-最大吸力:</span>
+                            <input id="constant-max-suction" name="constant-max-suction" class="model-input model-background" type="text" step="1" min="0" max="500" value="" readonly />
+                            <div class=""></div>
                         </div>
                         <div class="grid-model-inside">
-                            <span>最小占比:</span>
-                            <input name="general-fan" class="model-input model-background" type="text" value="" readonly />
+                            <span>恒压-最小吸力:</span>
+                            <input id="constant-min-suction" name="constant-min-suction" class="model-input model-background" type="text" step="1" min="0" max="500" value="" readonly />
+                            <div class=""></div>
                         </div>
                     </div>
                     <div id ='model-fan-btn' class="grid-col col2 grid-model-inside model-btn">

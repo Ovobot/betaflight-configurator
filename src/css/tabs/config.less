@@ -396,21 +396,19 @@
 	.grid-row-title::after {
 		content: '';
 		display: inline-block;
-		width: 87.5%;
+		width: calc(87.5% - 7px);
 		margin: 0 0.5em;
 		border-bottom: 1px solid #cbc9c9;
 		vertical-align: middle;
 	}
-	// .grid-row-title::before {
-	// 	margin-left: -100%;
-	// }
+	.edit-sign {
+		float: left;
+		width: 10px;
+		height: 22px;
+		background-image:url('../../images/ovobot_images/edit-mark.png');
+		margin-left: -25px;
+	}
 
-	// .grid-row-title::after {
-	// 	margin-right: -100%;
-	// }
-	// .grid-row-title {
-	// 	border-top: 1px solid #a9a8a8;
-	// }
 }
 @media only screen and (max-width: 1055px) {
 	.tab-config {
