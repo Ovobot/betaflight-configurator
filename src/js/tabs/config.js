@@ -107,7 +107,6 @@ config.initialize = function (callback) {
         function set_fan_data() {
             let generalfanval = '';
             let ischange = general_fan.parent().children('div').hasClass("edit-sign");
-            // console.log("==================ischange:" + ischange);
             if (ischange == true) {
                 generalfanval = general_fan.val();
             }
@@ -118,14 +117,15 @@ config.initialize = function (callback) {
             MSP.send_message(MSPCodes.MSP_SET_USE_FAN_LEVEL_DYNAMIC_COMP, [max_fan.val(), min_fan.val()], false, function () {
 
             });
-            let data = [];
-            MSP.send_message(MSPCodes.MSP_SET_USE_FAN_OUTPUT_PID, data, false, function () {
-                data.push(constant_fan.val());
-                data.push(constant_max_fan.val());
-                data.push(constant_min_fan.val());
-                data.push(constant_suction.val());
-                data.push(constant_max_suction.val());
-                data.push(constant_min_suction.val());
+            let data_constant = [];
+            data_constant.push(constant_fan.val());
+            data_constant.push(constant_max_fan.val());
+            data_constant.push(constant_min_fan.val());
+            data_constant.push((constant_suction.val() & 0xff), constant_suction.val() >> 8);
+            data_constant.push((constant_max_suction.val() & 0xff), constant_max_suction.val() >> 8);
+            data_constant.push((constant_min_suction.val() & 0xff), constant_min_suction.val() >> 8);
+
+            MSP.send_message(MSPCodes.MSP_SET_USE_FAN_OUTPUT_PID, data_constant, false, function () {
             });
         }
         function get_fan_data() {
@@ -133,11 +133,9 @@ config.initialize = function (callback) {
             min_fan.parent('div').hide();
             $(".constant-fan").hide();
             MSP.send_message(MSPCodes.MSP_GET_PWMVALUE, false, false, function () {
-                // console.log("==========pwmvaluemax:" + [FC.OVOBOT_FUNCTION.pwmvaluemax]);
                 general_fan.val(i18n.getMessage('pwmvalue', [FC.OVOBOT_FUNCTION.pwmvalue]));
             });
             MSP.send_message(MSPCodes.MSP_GET_USE_FAN_LEVEL_DYNAMIC_COMP, false, false, function () {
-                // console.log("==========pwmvaluemax:" + [FC.OVOBOT_FUNCTION.pwmvaluemax]);
                 let pwmvaluemax = [FC.OVOBOT_FUNCTION.pwmvaluemax];
                 if (Number(pwmvaluemax) !== 0) {
                     max_fan.val(i18n.getMessage('pwmvaluemax', [FC.OVOBOT_FUNCTION.pwmvaluemax]));
