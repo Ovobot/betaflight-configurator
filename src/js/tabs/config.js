@@ -158,6 +158,7 @@ config.initialize = function (callback) {
                     constant_max_suction.val(i18n.getMessage('maxtargetfanpwmvalue', [(FC.OVOBOT_FUNCTION.maxtargetfanpwmvalue / 100).toFixed(2)]));
                     constant_min_suction.val(i18n.getMessage('mintargetfanpwmvalue', [(FC.OVOBOT_FUNCTION.mintargetfanpwmvalue / 100).toFixed(2)]));
                     $(".constant-fan").show();
+                    general_fan.parent().parent('div').hide();
                 }
             });
         }
