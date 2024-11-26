@@ -22,6 +22,7 @@ config.initialize = function (callback) {
     load_status();
 
     function process_html() {
+
         const general_fan = $('#general-fan'),
             max_fan = $('#max-fan'),
             min_fan = $('#min-fan'),
@@ -121,10 +122,12 @@ config.initialize = function (callback) {
             data_constant.push(constant_fan.val());
             data_constant.push(constant_max_fan.val());
             data_constant.push(constant_min_fan.val());
-            data_constant.push((constant_suction.val() & 0xff), constant_suction.val() >> 8);
-            data_constant.push((constant_max_suction.val() & 0xff), constant_max_suction.val() >> 8);
-            data_constant.push((constant_min_suction.val() & 0xff), constant_min_suction.val() >> 8);
-
+            let constant_suction_val = (constant_suction.val() * 100).toFixed(2);
+            data_constant.push((constant_suction_val & 0xff), constant_suction_val >> 8);
+            let constant_max_suction_val = (constant_max_suction.val() * 100).toFixed(2);
+            data_constant.push((constant_max_suction_val & 0xff), constant_max_suction_val >> 8);
+            let constant_min_suction_val = (constant_min_suction.val() * 100).toFixed(2);
+            data_constant.push((constant_min_suction_val & 0xff), constant_min_suction_val >> 8);
             MSP.send_message(MSPCodes.MSP_SET_USE_FAN_OUTPUT_PID, data_constant, false, function () {
             });
         }
@@ -151,9 +154,9 @@ config.initialize = function (callback) {
                     constant_fan.val(i18n.getMessage('fanpwmvalueatidel', [FC.OVOBOT_FUNCTION.fanpwmvalueatidel]));
                     constant_max_fan.val(i18n.getMessage('fanpwmmax', [FC.OVOBOT_FUNCTION.fanpwmmax]));
                     constant_min_fan.val(i18n.getMessage('fanpwmmin', [FC.OVOBOT_FUNCTION.fanpwmmin]));
-                    constant_suction.val(i18n.getMessage('defaulttargetfanpwmvalue', [FC.OVOBOT_FUNCTION.defaulttargetfanpwmvalue]));
-                    constant_max_suction.val(i18n.getMessage('maxtargetfanpwmvalue', [FC.OVOBOT_FUNCTION.maxtargetfanpwmvalue]));
-                    constant_min_suction.val(i18n.getMessage('mintargetfanpwmvalue', [FC.OVOBOT_FUNCTION.mintargetfanpwmvalue]));
+                    constant_suction.val(i18n.getMessage('defaulttargetfanpwmvalue', [(FC.OVOBOT_FUNCTION.defaulttargetfanpwmvalue / 100).toFixed(2)]));
+                    constant_max_suction.val(i18n.getMessage('maxtargetfanpwmvalue', [(FC.OVOBOT_FUNCTION.maxtargetfanpwmvalue / 100).toFixed(2)]));
+                    constant_min_suction.val(i18n.getMessage('mintargetfanpwmvalue', [(FC.OVOBOT_FUNCTION.mintargetfanpwmvalue / 100).toFixed(2)]));
                     $(".constant-fan").show();
                 }
             });
