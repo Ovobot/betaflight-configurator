@@ -72,6 +72,9 @@ const INITIAL_WIN_FUNCTION = {
     defaulttargetfanpwmvalue: 0,
     maxtargetfanpwmvalue: 0,
     mintargetfanpwmvalue: 0,
+    minpwmvalue: 0,
+    upminpwmvalue:0,
+
 };
 
 const FC = {

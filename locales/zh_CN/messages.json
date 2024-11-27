@@ -1006,6 +1006,12 @@
     "mintargetfanpwmvalue": {
         "message": "$1"
     },
+    "minpwmvalue":{
+        "message": "$1"
+    },
+    "upminpwmvalue": {
+        "message": "$1"
+    },
     "initialSetupDrawn": {
         "message": "已用容量："
     },

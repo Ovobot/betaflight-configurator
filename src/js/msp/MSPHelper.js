@@ -120,6 +120,8 @@ MspHelper.prototype.process_data = function(dataHandler) {
                     break;
                 case MSPCodes.MSP_SET_USE_FAN_OUTPUT_PID:
                     break;
+                case MSPCodes.MSP_SET_MOTOR_VALUE:
+                    break;
                 case MSPCodes.CMD_VERSION:
                     FC.CONFIG.hw = data.readU8();
                     FC.CONFIG.firmwareVersion = `${data.readU8()}.${data.readU8()}.${data.readU8()}`;
@@ -168,6 +170,10 @@ MspHelper.prototype.process_data = function(dataHandler) {
                     FC.OVOBOT_FUNCTION.defaulttargetfanpwmvalue = data.readU16();
                     FC.OVOBOT_FUNCTION.maxtargetfanpwmvalue = data.readU16();
                     FC.OVOBOT_FUNCTION.mintargetfanpwmvalue = data.readU16();
+                    break;
+                case MSPCodes.MSP_GET_MOTOR_VALUE:
+                    FC.OVOBOT_FUNCTION.minpwmvalue = data.readU8();
+                    FC.OVOBOT_FUNCTION.upminpwmvalue = data.readU8();
                     break;
                 default:
                     console.log(`Unknown code detected: ${code}`);

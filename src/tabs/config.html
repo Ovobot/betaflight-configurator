@@ -67,26 +67,6 @@
                         <div class="default_btn model-fan-btn cancle-fan"><a class="clockwise i18n-replaced no-click">取消</a></div>
                         <div class="default_btn model-fan-btn save-fan" ><a class="clockwise i18n-replaced no-click">保存</a></div>
                     </div>
-                    <!-- <dialog class="dialogConfiguratorUpdate">
-                        <h3 i18n="noticeTitle"></h3>
-                        <div class="content">
-                            <div class="dialogConfiguratorUpdate-content" style="margin-top: 10px"></div>
-                        </div>
-                        <div class="buttons">
-                            <a href="#" class="dialogConfiguratorUpdate-websitebtn regular-button" i18n="configuratorUpdateWebsite"></a>
-                            <a href="#" class="dialogConfiguratorUpdate-closebtn regular-button" i18n="close"></a>
-                        </div>
-                    </dialog> -->
-                    <!-- <dialog class="dialogConfiguratorUpdate">
-                        <h3 i18n="noticeTitle"></h3>
-                        <div class="content">
-                            <div class="dialogConfiguratorUpdate-content" style="margin-top: 10px"></div>
-                        </div>
-                        <div class="buttons">
-                            <a href="#" class="dialogConfiguratorUpdate-websitebtn regular-button" i18n="configuratorUpdateWebsite"></a>
-                            <a href="#" class="dialogConfiguratorUpdate-closebtn regular-button" i18n="close"></a>
-                        </div>
-                    </dialog> -->
                 </div>
                 <!-- 确认取消弹框 -->
                 <dialog class="dialogConfirmCancel">
@@ -119,10 +99,26 @@
                     <span class="grid-col col12">马达参数</span>
                 </div>
             </div>
-            <div class="grid-col col12 grid-row-content">
-                <div class="grid-col col3"></div>
-                <div class="grid-col col3"></div>
-                <div class="grid-col col3"></div>
+            <div class="grid-col col12 grid-row-content" id="model-motor">
+                <div class="grid-row">
+                    <div class="grid-col col3">
+                        <div class="grid-model-inside">
+                            <span>正常-最小占比:</span>
+                            <input id="general-min-motor" name="general-min-motor" class="model-input model-background" type="text" step="1" min="0" max="100" value="0" readonly />
+                            <div class=""></div>
+                        </div>
+                        <div class="grid-model-inside">
+                            <span>向上-最小占比:</span>
+                            <input id="up-min-motor" name="up-min-motor" class="model-input model-background" type="text" step="1" min="0" max="100" value="0" readonly />
+                            <div class=""></div>
+                        </div>
+                    </div>
+                    <div id='model-motor-btn' class="grid-col col2 grid-model-inside model-btn">
+                        <div class="default_btn model-fan-btn edit-fan"><a class="clockwise i18n-replaced">修改</a></div>
+                        <div class="default_btn model-fan-btn cancle-fan"><a class="clockwise i18n-replaced no-click">取消</a></div>
+                        <div class="default_btn model-fan-btn save-fan"><a class="clockwise i18n-replaced no-click">保存</a></div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="grid-row model_waterpump">

@@ -1,4 +1,4 @@
-import { data } from "jquery";
+import { data, isEmptyObject } from "jquery";
 import { i18n } from "../localization";
 
 const config = {
@@ -32,77 +32,118 @@ config.initialize = function (callback) {
             constant_suction = $('#constant-suction'),
             constant_max_suction = $('#constant-max-suction'),
             constant_min_suction = $('#constant-min-suction');
-
+        const general_min_motor = $("#general-min-motor"),
+            up_min_motor = $("#up-min-motor");
 
         // translate to user-selected language
         i18n.localizePage();
 
-        $('.model_fan .model_open_close').click(function () {
+        $('.model_open_close').click(function () {
             $(this).toggleClass('rotate-90');
-            $(".model_fan .grid-row-content").toggleClass('model-display');
+            $(this).closest('.grid-row').find('.grid-row-content').toggleClass('model-display');
         });
-        $('#model-fan-btn .edit-fan a').click(function () {
-            $("#model-fan input").removeAttr("readonly");
-            $(".grid-row-content input").removeClass('model-background');
-            $('#model-fan-btn div a').removeClass('no-click');
-            $('#model-fan-btn .edit-fan a').addClass('no-click');
-            $('#model-fan input').attr('type', 'number');
+
+        $('.edit-fan a').click(function () {
+            $(this).closest('.grid-row').find('input').removeAttr("readonly");
+            $(this).closest('.grid-row').find('input').removeClass('model-background');
+            $(this).closest('.model-btn').find('a').removeClass('no-click');
+            $(this).addClass('no-click');
+            $(this).closest('.grid-row').find('input').attr('type', 'number');
         });
         const message = i18n.getMessage('dialogConfirmCancel');
         // GUI.log(message);//日志
         const dialogConfirmCancel = $('.dialogConfirmCancel')[0];
-        $('#model-fan-btn .cancle-fan a').click(function () {
+        let model_div = '';
+        let model_btn_div = '';
+        $('.cancle-fan a').click(function () {
             $('.dialogConfirmCancel-content').html(message);
             dialogConfirmCancel.showModal();
+
+            model_div = $(this).closest('.grid-row-content');
+            model_btn_div = $(this).closest('.model-btn');
         });
         $('.dialogConfirmCancel-closebtn').click(function () {
             dialogConfirmCancel.close();
         });
-
         $('.dialogConfirmCancel-confirmbtn').click(function () {
-            $("#model-fan input").prop('readonly', true);
-            $(".grid-row-content input").addClass('model-background');
-            $('#model-fan-btn .cancle-fan a').addClass('no-click');
-            $('#model-fan-btn .save-fan a').addClass('no-click');
-            $('#model-fan-btn .edit-fan a').removeClass('no-click');
-            $('#model-fan input').attr('type', 'text');
+            model_div.find('input').prop('readonly', true);
+            model_div.find('input').addClass('model-background');
+            model_btn_div.find('a').addClass('no-click');
+            model_btn_div.find('.edit-fan').children('a').removeClass('no-click');
+            model_div.find('input').attr('type', 'text');
 
-            get_slow_data();
-            $('#model-fan input').parent().children('div').removeClass('edit-sign');
+            get_slow_data(model_div.attr("id"));
+            model_div.find('input').parent().children('div').removeClass('edit-sign');
             dialogConfirmCancel.close();
         });
+
         //保存
         const messageSave = i18n.getMessage('dialogConfirmSave');
         const dialogConfirmSave = $('.dialogConfirmSave')[0];
-        $('#model-fan-btn .save-fan a').click(function () {
+        $('.save-fan a').click(function () {
             $('.dialogConfirmSave-content').html(messageSave);
             dialogConfirmSave.showModal();
+
+            model_div = $(this).closest('.grid-row-content');
+            model_btn_div = $(this).closest('.model-btn');
         });
         $('.dialogConfirmSave-closebtn').click(function () {
             dialogConfirmSave.close();
         });
 
         $('.dialogConfirmSave-confirmbtn').click(function () {
-            $("#model-fan input").prop('readonly', true);
-            $(".grid-row-content input").addClass('model-background');
-            $('#model-fan-btn .cancle-fan a').addClass('no-click');
-            $('#model-fan-btn .save-fan a').addClass('no-click');
-            $('#model-fan-btn .edit-fan a').removeClass('no-click');
-            $('#model-fan input').attr('type', 'text');
-            set_fan_data();
-            get_slow_data();
-            $('#model-fan input').parent().children('div').removeClass('edit-sign');
+            model_div.find('input').prop('readonly', true);
+            model_div.find('input').addClass('model-background');
+            model_btn_div.find('a').addClass('no-click');
+            model_btn_div.find('.edit-fan').children('a').removeClass('no-click');
+            model_div.find('input').attr('type', 'text');
+
+            set_slow_data(model_div.attr("id"));
+            get_slow_data(model_div.attr("id"));
+            model_div.find('input').parent().children('div').removeClass('edit-sign');
             dialogConfirmSave.close();
         });
         //监听input值是否被修改
-        $('#model-fan').on('input','input', function () {
+        $('.content_wrapper').on('input','input', function () {
             $(this).parent().children('div').addClass('edit-sign');
         });
 
 
-        function get_slow_data() {
-                get_fan_data();
+        function get_slow_data(id) {
+            if (isEmptyObject(id) == false && undefined != id) {
+                if (id == 'model-fan') {
+                    get_fan_data();
+                } else if (id == 'model-motor') {
+                    get_motor_data();
+                } else if (id == 'model-spary') {
 
+                } else if (id == 'model-motor1') {
+
+                } else if (id == 'model-motor1') {
+
+                }
+            } else {
+                get_fan_data();
+                get_motor_data();
+            }
+        }
+        function set_slow_data(id) {
+            if (isEmptyObject(id) == false && undefined != id) {
+                if (id == 'model-fan') {
+                    set_fan_data();
+                } else if (id == 'model-motor') {
+                    set_motor_data();
+                } else if (id == 'model-spary') {
+
+                } else if (id == 'model-motor1') {
+
+                } else if (id == 'model-motor1') {
+
+                }
+            } else {
+                set_fan_data();
+                set_motor_data();
+            }
         }
 
         function set_fan_data() {
@@ -131,6 +172,13 @@ config.initialize = function (callback) {
             MSP.send_message(MSPCodes.MSP_SET_USE_FAN_OUTPUT_PID, data_constant, false, function () {
             });
         }
+        function set_motor_data() {
+
+            MSP.send_message(MSPCodes.MSP_SET_MOTOR_VALUE, [general_min_motor.val(), up_min_motor.val()], false, function () {
+
+            });
+        }
+
         function get_fan_data() {
             max_fan.parent('div').hide();
             min_fan.parent('div').hide();
@@ -162,7 +210,16 @@ config.initialize = function (callback) {
                 }
             });
         }
+        function get_motor_data() {
 
+            MSP.send_message(MSPCodes.MSP_GET_MOTOR_VALUE, false, false, function () {
+                general_min_motor.val(i18n.getMessage('minpwmvalue', [FC.OVOBOT_FUNCTION.minpwmvalue]));
+                up_min_motor.val(i18n.getMessage('upminpwmvalue', [FC.OVOBOT_FUNCTION.upminpwmvalue]));
+            });
+
+        }
+        //清空所有的input
+        // $('input').val('');
         get_slow_data();
 
         GUI.content_ready(callback);
