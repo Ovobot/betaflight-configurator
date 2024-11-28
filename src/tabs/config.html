@@ -1,4 +1,4 @@
-<div class="tab-config toolbar_fixed_bottom">
+<div class="tab-config ">
     <div class="content_wrapper initialstyle">
         <!-- should be the first DIV on each tab -->
         <div class="tab_title" i18n="tabConfig"></div>
@@ -68,28 +68,6 @@
                         <div class="default_btn model-fan-btn save-fan" ><a class="clockwise i18n-replaced no-click">保存</a></div>
                     </div>
                 </div>
-                <!-- 确认取消弹框 -->
-                <dialog class="dialogConfirmCancel">
-                    <h3 i18n="dialogConfirmResetTitle"></h3>
-                    <div class="content">
-                        <div class="dialogConfirmCancel-content"></div>
-                    </div>
-                    <div class="buttons">
-                        <a href="#" class="dialogConfirmCancel-confirmbtn regular-button" i18n="dialogConfirmResetConfirm"></a>
-                        <a href="#" class="dialogConfirmCancel-closebtn regular-button" i18n="close"></a>
-                    </div>
-                </dialog>
-                <!-- 确认保存弹框 -->
-                <dialog class="dialogConfirmSave">
-                    <h3 i18n="dialogConfirmResetTitle"></h3>
-                    <div class="content">
-                        <div class="dialogConfirmSave-content"></div>
-                    </div>
-                    <div class="buttons">
-                        <a href="#" class="dialogConfirmSave-confirmbtn regular-button" i18n="dialogConfirmResetConfirm"></a>
-                        <a href="#" class="dialogConfirmSave-closebtn regular-button" i18n="close"></a>
-                    </div>
-                </dialog>
             </div>
         </div>
         <div class="grid-row model_motor">
@@ -175,6 +153,43 @@
                 </div>
             </div>
         </div>
+        <div class="grid-row model_boundless">
+            <div class="grid-col col12">
+                <div class="grid-row-title">
+                    <img src="images/ovobot_images/model_open_close.png" class="model_open_close rotate-90" alt="公司Logo" />
+                    <span class="grid-col col12">无边参数</span>
+                </div>
+            </div>
+            <div class="grid-col col12 grid-row-content" id="model-boundless">
+                <div class="grid-row">
+                    <div class="grid-col col3">
+                        <div class="grid-model-inside">
+                            <span>正常行走阈值:</span>
+                            <input id="boundless-fanthrdadd" name="boundless-fanthrdadd" class="model-input model-background"
+                                type="text" step="1" min="0" max="2000" value="0" readonly />
+                            <div class=""></div>
+                        </div>
+                        <div class="grid-model-inside">
+                            <span>向上行走阈值:</span>
+                            <input id="boundless-fanupthrdadd" name="boundless-fanupthrdadd" class="model-input model-background"
+                                type="text" step="1" min="0" max="100" value="0" readonly />
+                            <div class=""></div>
+                        </div>
+                        <div class="grid-model-inside">
+                            <span>阈值生效次数:</span>
+                            <input id="boundless-hangcnt" name="boundless-hangcnt" class="model-input model-background"
+                                type="text" step="1" min="0" max="100" value="0" readonly />
+                            <div class=""></div>
+                        </div>
+                    </div>
+                    <div id='model-boundless-btn' class="grid-col col2 grid-model-inside model-btn">
+                        <div class="default_btn model-fan-btn edit-fan"><a class="clockwise i18n-replaced">修改</a></div>
+                        <div class="default_btn model-fan-btn cancle-fan"><a class="clockwise i18n-replaced no-click">取消</a></div>
+                        <div class="default_btn model-fan-btn save-fan"><a class="clockwise i18n-replaced no-click">保存</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- <div class="grid-row">
             <div class="grid-col col3">
                 <div class="default_btn">
@@ -205,4 +220,26 @@
         </div> -->
 
     </div>
+    <!-- 确认取消弹框 -->
+    <dialog class="dialogConfirmCancel">
+        <h3 i18n="dialogConfirmResetTitle"></h3>
+        <div class="content">
+            <div class="dialogConfirmCancel-content"></div>
+        </div>
+        <div class="buttons">
+            <a href="#" class="dialogConfirmCancel-confirmbtn regular-button" i18n="dialogConfirmResetConfirm"></a>
+            <a href="#" class="dialogConfirmCancel-closebtn regular-button" i18n="close"></a>
+        </div>
+    </dialog>
+    <!-- 确认保存弹框 -->
+    <dialog class="dialogConfirmSave">
+        <h3 i18n="dialogConfirmResetTitle"></h3>
+        <div class="content">
+            <div class="dialogConfirmSave-content"></div>
+        </div>
+        <div class="buttons">
+            <a href="#" class="dialogConfirmSave-confirmbtn regular-button" i18n="dialogConfirmResetConfirm"></a>
+            <a href="#" class="dialogConfirmSave-closebtn regular-button" i18n="close"></a>
+        </div>
+    </dialog>
 </div>

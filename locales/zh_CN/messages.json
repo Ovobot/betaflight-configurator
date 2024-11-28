@@ -1021,6 +1021,15 @@
     "waterpumpmovecnt": {
         "message": "$1"
     },
+    "fanthrdadd": {
+        "message": "$1"
+    },
+    "fanupthrdadd": {
+        "message": "$1"
+    },
+    "hangcnt": {
+        "message": "$1"
+    },
     "initialSetupDrawn": {
         "message": "已用容量："
     },

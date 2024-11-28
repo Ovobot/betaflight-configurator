@@ -78,6 +78,9 @@ const INITIAL_WIN_FUNCTION = {
     waterpumpduration: 0,
     waterpumpstartangle: 0,
     waterpumpmovecnt: 0,
+    fanthrdadd: 0,
+    fanupthrdadd: 0,
+    hangcnt: 0,
 
 };
 

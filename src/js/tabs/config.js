@@ -37,6 +37,9 @@ config.initialize = function (callback) {
         const waterpump_duration = $('#waterpump-duration'),
             waterpump_start_angle = $('#waterpump-start-angle'),
             waterpump_move_cnt = $('#waterpump-move-cnt');
+        const boundless_fanthrdadd = $('#boundless-fanthrdadd'),
+            boundless_fanupthrdadd = $('#boundless-fanupthrdadd'),
+            boundless_hangcnt = $('#boundless-hangcnt');
         // translate to user-selected language
         i18n.localizePage();
 
@@ -118,8 +121,8 @@ config.initialize = function (callback) {
                     get_motor_data();
                 } else if (id == 'model-spary') {
                     get_waterpump_data(model_div == '' ? $('#model-spary') : model_div);
-                } else if (id == 'model-motor1') {
-
+                } else if (id == 'model-boundless') {
+                    get_boundless_data();
                 } else if (id == 'model-motor1') {
 
                 }
@@ -127,7 +130,7 @@ config.initialize = function (callback) {
                 get_fan_data();
                 get_motor_data();
                 get_waterpump_data(model_div == '' ? $('#model-spary') : model_div);
-
+                get_boundless_data();
             }
         }
         function set_slow_data(id) {
@@ -138,8 +141,8 @@ config.initialize = function (callback) {
                     set_motor_data();
                 } else if (id == 'model-spary') {
                     set_waterpump_data();
-                } else if (id == 'model-motor1') {
-
+                } else if (id == 'model-boundless') {
+                    set_boundless_data();
                 } else if (id == 'model-motor1') {
 
                 }
@@ -147,6 +150,7 @@ config.initialize = function (callback) {
                 set_fan_data();
                 set_motor_data();
                 set_waterpump_data();
+                set_boundless_data();
             }
         }
 
@@ -188,6 +192,15 @@ config.initialize = function (callback) {
             data_waterpump.push(waterpump_start_angle.val());
             data_waterpump.push(waterpump_move_cnt.val());
             MSP.send_message(MSPCodes.MSP_SET_SPRAY_VALUE, data_waterpump, false, function () {
+
+            });
+        }
+        function set_boundless_data() {
+            let data_boundless = [];
+            data_boundless.push(boundless_fanthrdadd.val());
+            data_boundless.push(boundless_fanupthrdadd.val());
+            data_boundless.push(boundless_hangcnt.val());
+            MSP.send_message(MSPCodes.MSP_SET_BOUNDLESS, data_boundless, false, function () {
 
             });
         }
@@ -243,6 +256,14 @@ config.initialize = function (callback) {
                 } else {
                     modelDiv.addClass('model-display');
                 }
+            });
+        }
+        function get_boundless_data() {
+            MSP.send_message(MSPCodes.MSP_GET_BOUNDLESS, false, false, function () {
+                boundless_fanthrdadd.val(i18n.getMessage('fanthrdadd', [FC.OVOBOT_FUNCTION.fanthrdadd]));
+                boundless_fanupthrdadd.val(i18n.getMessage('fanupthrdadd', [FC.OVOBOT_FUNCTION.fanupthrdadd]));
+                boundless_hangcnt.val(i18n.getMessage('hangcnt', [FC.OVOBOT_FUNCTION.hangcnt]));
+
             });
         }
         //清空所有的input

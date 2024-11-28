@@ -183,6 +183,11 @@ MspHelper.prototype.process_data = function(dataHandler) {
                     FC.OVOBOT_FUNCTION.waterpumpstartangle = data.readU8();
                     FC.OVOBOT_FUNCTION.waterpumpmovecnt = data.readU8();
                     break;
+                case MSPCodes.MSP_GET_BOUNDLESS:
+                    FC.OVOBOT_FUNCTION.fanthrdadd = data.readU8();
+                    FC.OVOBOT_FUNCTION.fanupthrdadd = data.readU8();
+                    FC.OVOBOT_FUNCTION.hangcnt = data.readU8();
+                    break;
                 default:
                     console.log(`Unknown code detected: ${code}`);
             }
