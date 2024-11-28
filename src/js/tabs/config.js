@@ -198,7 +198,10 @@ config.initialize = function (callback) {
         function set_boundless_data() {
             let data_boundless = [];
             data_boundless.push(boundless_fanthrdadd.val());
-            data_boundless.push(boundless_fanupthrdadd.val());
+            let fanupthrdaddval = boundless_fanupthrdadd.val();
+            if (Number(fanupthrdaddval) !== 0) {
+                data_boundless.push(fanupthrdaddval);
+            }
             data_boundless.push(boundless_hangcnt.val());
             MSP.send_message(MSPCodes.MSP_SET_BOUNDLESS, data_boundless, false, function () {
 
@@ -245,23 +248,30 @@ config.initialize = function (callback) {
 
         }
 
-        function get_waterpump_data(modelDiv) {
+        function get_waterpump_data(modeDiv) {
             MSP.send_message(MSPCodes.MSP_GET_SPRAY_VALUE, false, false, function () {
                 let waterpump = FC.OVOBOT_FUNCTION.waterpump;
                 if (Number(waterpump) !== 0) {
-                    modelDiv.removeClass('model-display');
+                    modeDiv.parent('div').removeClass('model-display');
                     waterpump_duration.val(i18n.getMessage('waterpumpduration', [FC.OVOBOT_FUNCTION.waterpumpduration]));
                     waterpump_start_angle.val(i18n.getMessage('waterpumpstartangle', [FC.OVOBOT_FUNCTION.waterpumpstartangle]));
                     waterpump_move_cnt.val(i18n.getMessage('waterpumpmovecnt', [FC.OVOBOT_FUNCTION.waterpumpmovecnt]));
                 } else {
-                    modelDiv.addClass('model-display');
+                    modeDiv.parent('div').addClass('model-display');
                 }
             });
         }
         function get_boundless_data() {
             MSP.send_message(MSPCodes.MSP_GET_BOUNDLESS, false, false, function () {
+                let fanupthrdadd = FC.OVOBOT_FUNCTION.fanupthrdadd;
+                if (Number(fanupthrdadd) !== 0) {
+                    boundless_fanupthrdadd.val(i18n.getMessage('fanupthrdadd', [fanupthrdadd]));
+                    boundless_fanupthrdadd.parent('div').show();
+                } else {
+                    boundless_fanupthrdadd.parent('div').hide();
+                }
                 boundless_fanthrdadd.val(i18n.getMessage('fanthrdadd', [FC.OVOBOT_FUNCTION.fanthrdadd]));
-                boundless_fanupthrdadd.val(i18n.getMessage('fanupthrdadd', [FC.OVOBOT_FUNCTION.fanupthrdadd]));
+                // boundless_fanupthrdadd.val(i18n.getMessage('fanupthrdadd', [fanupthrdadd]));
                 boundless_hangcnt.val(i18n.getMessage('hangcnt', [FC.OVOBOT_FUNCTION.hangcnt]));
 
             });
