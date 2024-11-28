@@ -42,7 +42,7 @@ config.initialize = function (callback) {
 
         $('.model_open_close').click(function () {
             $(this).toggleClass('rotate-90');
-            $(this).closest('.grid-row-content').find('.grid-row-content').toggleClass('model-display');
+            $(this).closest('.grid-row').find('.grid-row-content').toggleClass('model-display');
         });
 
         $('.edit-fan a').click(function () {
