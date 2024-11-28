@@ -1012,6 +1012,15 @@
     "upminpwmvalue": {
         "message": "$1"
     },
+    "waterpumpduration": {
+        "message": "$1"
+    },
+    "waterpumpstartangle": {
+        "message": "$1"
+    },
+    "waterpumpmovecnt": {
+        "message": "$1"
+    },
     "initialSetupDrawn": {
         "message": "已用容量："
     },

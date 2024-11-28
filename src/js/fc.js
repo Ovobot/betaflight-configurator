@@ -73,7 +73,11 @@ const INITIAL_WIN_FUNCTION = {
     maxtargetfanpwmvalue: 0,
     mintargetfanpwmvalue: 0,
     minpwmvalue: 0,
-    upminpwmvalue:0,
+    upminpwmvalue: 0,
+    waterpump: 0,
+    waterpumpduration: 0,
+    waterpumpstartangle: 0,
+    waterpumpmovecnt: 0,
 
 };
 

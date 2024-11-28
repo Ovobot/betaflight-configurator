@@ -122,6 +122,8 @@ MspHelper.prototype.process_data = function(dataHandler) {
                     break;
                 case MSPCodes.MSP_SET_MOTOR_VALUE:
                     break;
+                case MSPCodes.MSP_SET_SPRAY_VALUE:
+                    break;
                 case MSPCodes.CMD_VERSION:
                     FC.CONFIG.hw = data.readU8();
                     FC.CONFIG.firmwareVersion = `${data.readU8()}.${data.readU8()}.${data.readU8()}`;
@@ -174,6 +176,12 @@ MspHelper.prototype.process_data = function(dataHandler) {
                 case MSPCodes.MSP_GET_MOTOR_VALUE:
                     FC.OVOBOT_FUNCTION.minpwmvalue = data.readU8();
                     FC.OVOBOT_FUNCTION.upminpwmvalue = data.readU8();
+                    break;
+                case MSPCodes.MSP_GET_SPRAY_VALUE:
+                    FC.OVOBOT_FUNCTION.waterpump = data.readU8();
+                    FC.OVOBOT_FUNCTION.waterpumpduration = data.readU16();
+                    FC.OVOBOT_FUNCTION.waterpumpstartangle = data.readU8();
+                    FC.OVOBOT_FUNCTION.waterpumpmovecnt = data.readU8();
                     break;
                 default:
                     console.log(`Unknown code detected: ${code}`);

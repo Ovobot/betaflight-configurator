@@ -34,21 +34,23 @@ config.initialize = function (callback) {
             constant_min_suction = $('#constant-min-suction');
         const general_min_motor = $("#general-min-motor"),
             up_min_motor = $("#up-min-motor");
-
+        const waterpump_duration = $('#waterpump-duration'),
+            waterpump_start_angle = $('#waterpump-start-angle'),
+            waterpump_move_cnt = $('#waterpump-move-cnt');
         // translate to user-selected language
         i18n.localizePage();
 
         $('.model_open_close').click(function () {
             $(this).toggleClass('rotate-90');
-            $(this).closest('.grid-row').find('.grid-row-content').toggleClass('model-display');
+            $(this).closest('.grid-row-content').find('.grid-row-content').toggleClass('model-display');
         });
 
         $('.edit-fan a').click(function () {
-            $(this).closest('.grid-row').find('input').removeAttr("readonly");
-            $(this).closest('.grid-row').find('input').removeClass('model-background');
+            $(this).closest('.grid-row-content').find('input').removeAttr("readonly");
+            $(this).closest('.grid-row-content').find('input').removeClass('model-background');
             $(this).closest('.model-btn').find('a').removeClass('no-click');
             $(this).addClass('no-click');
-            $(this).closest('.grid-row').find('input').attr('type', 'number');
+            $(this).closest('.grid-row-content').find('input').attr('type', 'number');
         });
         const message = i18n.getMessage('dialogConfirmCancel');
         // GUI.log(message);//日志
@@ -108,7 +110,6 @@ config.initialize = function (callback) {
             $(this).parent().children('div').addClass('edit-sign');
         });
 
-
         function get_slow_data(id) {
             if (isEmptyObject(id) == false && undefined != id) {
                 if (id == 'model-fan') {
@@ -116,7 +117,7 @@ config.initialize = function (callback) {
                 } else if (id == 'model-motor') {
                     get_motor_data();
                 } else if (id == 'model-spary') {
-
+                    get_waterpump_data(model_div == '' ? $('#model-spary') : model_div);
                 } else if (id == 'model-motor1') {
 
                 } else if (id == 'model-motor1') {
@@ -125,6 +126,8 @@ config.initialize = function (callback) {
             } else {
                 get_fan_data();
                 get_motor_data();
+                get_waterpump_data(model_div == '' ? $('#model-spary') : model_div);
+
             }
         }
         function set_slow_data(id) {
@@ -134,7 +137,7 @@ config.initialize = function (callback) {
                 } else if (id == 'model-motor') {
                     set_motor_data();
                 } else if (id == 'model-spary') {
-
+                    set_waterpump_data();
                 } else if (id == 'model-motor1') {
 
                 } else if (id == 'model-motor1') {
@@ -143,6 +146,7 @@ config.initialize = function (callback) {
             } else {
                 set_fan_data();
                 set_motor_data();
+                set_waterpump_data();
             }
         }
 
@@ -175,6 +179,15 @@ config.initialize = function (callback) {
         function set_motor_data() {
 
             MSP.send_message(MSPCodes.MSP_SET_MOTOR_VALUE, [general_min_motor.val(), up_min_motor.val()], false, function () {
+
+            });
+        }
+        function set_waterpump_data() {
+            let data_waterpump = [];
+            data_waterpump.push(waterpump_duration.val() & 0xff, waterpump_duration.val() >> 8);
+            data_waterpump.push(waterpump_start_angle.val());
+            data_waterpump.push(waterpump_move_cnt.val());
+            MSP.send_message(MSPCodes.MSP_SET_SPRAY_VALUE, data_waterpump, false, function () {
 
             });
         }
@@ -217,6 +230,20 @@ config.initialize = function (callback) {
                 up_min_motor.val(i18n.getMessage('upminpwmvalue', [FC.OVOBOT_FUNCTION.upminpwmvalue]));
             });
 
+        }
+
+        function get_waterpump_data(modelDiv) {
+            MSP.send_message(MSPCodes.MSP_GET_SPRAY_VALUE, false, false, function () {
+                let waterpump = FC.OVOBOT_FUNCTION.waterpump;
+                if (Number(waterpump) !== 0) {
+                    modelDiv.removeClass('model-display');
+                    waterpump_duration.val(i18n.getMessage('waterpumpduration', [FC.OVOBOT_FUNCTION.waterpumpduration]));
+                    waterpump_start_angle.val(i18n.getMessage('waterpumpstartangle', [FC.OVOBOT_FUNCTION.waterpumpstartangle]));
+                    waterpump_move_cnt.val(i18n.getMessage('waterpumpmovecnt', [FC.OVOBOT_FUNCTION.waterpumpmovecnt]));
+                } else {
+                    modelDiv.addClass('model-display');
+                }
+            });
         }
         //清空所有的input
         // $('input').val('');

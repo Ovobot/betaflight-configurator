@@ -128,10 +128,51 @@
                     <span class="grid-col col12">喷水参数</span>
                 </div>
             </div>
-            <div class="grid-col col12 grid-row-content">
-                <div class="grid-col col3"></div>
-                <div class="grid-col col3"></div>
-                <div class="grid-col col3"></div>
+            <div class="grid-col col12 grid-row-content" id="model-spary">
+                <!-- <div class="grid-row">
+                    <div class="grid-col col1">
+                        <span>喷水功能：</span>
+                    </div>
+                    <div class="grid-col col8">
+                        <div class="permanentExpertMode">
+                            <span>关</span>
+                            <input name ="waterpump" type="checkbox" class="toggle" />
+                            <span>开</span>
+                        </div>
+                    </div>
+                    <div id='model-waterpump-btn' class="grid-col col2 grid-model-inside model-btn">
+                        <div class="default_btn model-fan-btn edit-fan"><a class="clockwise i18n-replaced">修改</a></div>
+                        <div class="default_btn model-fan-btn cancle-fan"><a class="clockwise i18n-replaced no-click">取消</a></div>
+                        <div class="default_btn model-fan-btn save-fan"><a class="clockwise i18n-replaced no-click">保存</a></div>
+                    </div>
+                </div> -->
+                <div class="grid-row">
+                    <div class="grid-col col3">
+                        <div class="grid-model-inside">
+                            <span>喷水时长(ms):</span>
+                            <input id="waterpump-duration" name="waterpump-duration" class="model-input model-background" type="text"
+                                step="1" min="0" max="2000" value="0" readonly />
+                            <div class=""></div>
+                        </div>
+                        <div class="grid-model-inside">
+                            <span>喷水开始角度:</span>
+                            <input id="waterpump-start-angle" name="waterpump-start-angle" class="model-input model-background" type="text" step="1"
+                                min="0" max="100" value="0" readonly />
+                            <div class=""></div>
+                        </div>
+                        <div class="grid-model-inside">
+                            <span>喷水间隔步数:</span>
+                            <input id="waterpump-move-cnt" name="waterpump-move-cnt" class="model-input model-background" type="text" step="1" min="0"
+                                max="100" value="0" readonly />
+                            <div class=""></div>
+                        </div>
+                    </div>
+                    <div id='model-waterpump-btn' class="grid-col col2 grid-model-inside model-btn">
+                        <div class="default_btn model-fan-btn edit-fan"><a class="clockwise i18n-replaced">修改</a></div>
+                        <div class="default_btn model-fan-btn cancle-fan"><a class="clockwise i18n-replaced no-click">取消</a></div>
+                        <div class="default_btn model-fan-btn save-fan"><a class="clockwise i18n-replaced no-click">保存</a></div>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- <div class="grid-row">
