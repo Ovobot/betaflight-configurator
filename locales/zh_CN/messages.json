@@ -1030,6 +1030,18 @@
     "hangcnt": {
         "message": "$1"
     },
+    "gyrodiffthreshold": {
+        "message": "$1"
+    },
+    "gyrothreshold": {
+        "message": "$1"
+    },
+    "gyroupdiffthreshold": {
+        "message": "$1"
+    },
+    "gyroupthreshold": {
+        "message": "$1"
+    },
     "initialSetupDrawn": {
         "message": "已用容量："
     },

@@ -81,6 +81,11 @@ const INITIAL_WIN_FUNCTION = {
     fanthrdadd: 0,
     fanupthrdadd: 0,
     hangcnt: 0,
+    gyrodiffthreshold: 0,
+    gyrothreshold: 0,
+    gyroupdiffthreshold: 0,
+    gyroupthreshold: 0,
+
 
 };
 

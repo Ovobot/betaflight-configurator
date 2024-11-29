@@ -124,6 +124,8 @@ MspHelper.prototype.process_data = function(dataHandler) {
                     break;
                 case MSPCodes.MSP_SET_SPRAY_VALUE:
                     break;
+                case MSPCodes.MSP_SET_GYRO_THRESHOLD:
+                    break;
                 case MSPCodes.CMD_VERSION:
                     FC.CONFIG.hw = data.readU8();
                     FC.CONFIG.firmwareVersion = `${data.readU8()}.${data.readU8()}.${data.readU8()}`;
@@ -187,6 +189,12 @@ MspHelper.prototype.process_data = function(dataHandler) {
                     FC.OVOBOT_FUNCTION.fanthrdadd = data.readU8();
                     FC.OVOBOT_FUNCTION.fanupthrdadd = data.readU8();
                     FC.OVOBOT_FUNCTION.hangcnt = data.readU8();
+                    break;
+                case MSPCodes.MSP_GET_GYRO_THRESHOLD:
+                    FC.OVOBOT_FUNCTION.gyrodiffthreshold = data.readU8();
+                    FC.OVOBOT_FUNCTION.gyrothreshold = data.readU8();
+                    FC.OVOBOT_FUNCTION.gyroupdiffthreshold = data.readU8();
+                    FC.OVOBOT_FUNCTION.gyroupthreshold = data.readU8();
                     break;
                 default:
                     console.log(`Unknown code detected: ${code}`);

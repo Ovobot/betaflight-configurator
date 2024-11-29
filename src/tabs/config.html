@@ -135,7 +135,7 @@
                         <div class="grid-model-inside">
                             <span>喷水开始角度:</span>
                             <input id="waterpump-start-angle" name="waterpump-start-angle" class="model-input model-background" type="text" step="1"
-                                min="0" max="100" value="0" readonly />
+                                min="0" max="180" value="0" readonly />
                             <div class=""></div>
                         </div>
                         <div class="grid-model-inside">
@@ -166,13 +166,13 @@
                         <div class="grid-model-inside">
                             <span>正常行走阈值:</span>
                             <input id="boundless-fanthrdadd" name="boundless-fanthrdadd" class="model-input model-background"
-                                type="text" step="1" min="0" max="2000" value="0" readonly />
+                                type="text" step="1" min="0" max="254" value="0" readonly />
                             <div class=""></div>
                         </div>
                         <div class="grid-model-inside">
                             <span>向上行走阈值:</span>
                             <input id="boundless-fanupthrdadd" name="boundless-fanupthrdadd" class="model-input model-background"
-                                type="text" step="1" min="0" max="100" value="0" readonly />
+                                type="text" step="1" min="0" max="254" value="0" readonly />
                             <div class=""></div>
                         </div>
                         <div class="grid-model-inside">
@@ -190,34 +190,47 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="grid-row">
-            <div class="grid-col col3">
-                <div class="default_btn">
-                    <a class="autoTestPCB" href="#" i18n="initialAutoTestButton"></a>
+        <div class="grid-row model_gyro">
+            <div class="grid-col col12">
+                <div class="grid-row-title">
+                    <img src="images/ovobot_images/model_open_close.png" class="model_open_close rotate-90" alt="公司Logo" />
+                    <span class="grid-col col12">陀螺仪参数</span>
                 </div>
             </div>
-            <div class="grid-col col9">
-                <div class="cell_setup">
-                    <span i18n="initialAutoTestText"></span>
+            <div class="grid-col col12 grid-row-content" id="model-gyro">
+                <div class="grid-row">
+                    <div class="grid-col col3">
+                        <div class="grid-model-inside">
+                            <span>正常行走阈值:</span>
+                            <input id="gyro-diff-threshold" name="gyro-diff-threshold" class="model-input model-background" type="text" step="1" min="0" max="254" value="0" readonly />
+                            <div class=""></div>
+                        </div>
+                        <div class="grid-model-inside">
+                            <span>边缘堵转阈值:</span>
+                            <input id="edge-gyro-threshold" name="edge-gyro-threshold" class="model-input model-background" type="text" step="1" min="0" max="254" value="0"
+                                readonly />
+                            <div class=""></div>
+                        </div>
+                        <div class="grid-model-inside">
+                            <span>向上行走阈值:</span>
+                            <input id="up-gyro-diff-threshold" name="gyro-up-diff-threshold" class="model-input model-background" type="text" step="1" min="0" max="254" value="0" readonly />
+                            <div class=""></div>
+                        </div>
+                        <div class="grid-model-inside">
+                            <span>向上边缘阈值:</span>
+                            <input id="up-edge-gyro-threshold" name="up-edge-gyro-threshold" class="model-input model-background" type="text" step="1" min="0" max="254" value="0" readonly />
+                            <div class=""></div>
+                        </div>
+                    </div>
+                    <div id='model-gyro-btn' class="grid-col col2 grid-model-inside model-btn">
+                        <div class="default_btn model-fan-btn edit-fan"><a class="clockwise i18n-replaced">修改</a></div>
+                        <div class="default_btn model-fan-btn cancle-fan"><a class="clockwise i18n-replaced no-click">取消</a>
+                        </div>
+                        <div class="default_btn model-fan-btn save-fan"><a class="clockwise i18n-replaced no-click">保存</a></div>
+                    </div>
                 </div>
             </div>
-        </div> -->
-        <!-- <div class="gui_box grey info">
-            <div class="gui_box_titlebar">
-            </div>
-            <div class="spacer_box">
-                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="cf_table">
-                    <tbody>
-                        <tr>
-                            <td class="video-mode"></td>
-                        </tr>
-                        <tr>
-                            <td class="camera-connected"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div> -->
+        </div>
 
     </div>
     <!-- 确认取消弹框 -->

@@ -40,6 +40,10 @@ config.initialize = function (callback) {
         const boundless_fanthrdadd = $('#boundless-fanthrdadd'),
             boundless_fanupthrdadd = $('#boundless-fanupthrdadd'),
             boundless_hangcnt = $('#boundless-hangcnt');
+        const gyro_diff_threshold = $('#gyro-diff-threshold'),
+            edge_gyro_threshold = $('#edge-gyro-threshold'),
+            up_gyro_diff_threshold = $('#up-gyro-diff-threshold'),
+            up_edge_gyro_threshold = $('#up-edge-gyro-threshold');
         // translate to user-selected language
         i18n.localizePage();
 
@@ -123,14 +127,15 @@ config.initialize = function (callback) {
                     get_waterpump_data(model_div == '' ? $('#model-spary') : model_div);
                 } else if (id == 'model-boundless') {
                     get_boundless_data();
-                } else if (id == 'model-motor1') {
-
+                } else if (id == 'model-gyro') {
+                    get_gyro_data();
                 }
             } else {
                 get_fan_data();
                 get_motor_data();
                 get_waterpump_data(model_div == '' ? $('#model-spary') : model_div);
                 get_boundless_data();
+                get_gyro_data();
             }
         }
         function set_slow_data(id) {
@@ -143,14 +148,15 @@ config.initialize = function (callback) {
                     set_waterpump_data();
                 } else if (id == 'model-boundless') {
                     set_boundless_data();
-                } else if (id == 'model-motor1') {
-
+                } else if (id == 'model-gyro') {
+                    set_gyro_data();
                 }
             } else {
                 set_fan_data();
                 set_motor_data();
                 set_waterpump_data();
                 set_boundless_data();
+                set_gyro_data();
             }
         }
 
@@ -204,6 +210,16 @@ config.initialize = function (callback) {
             }
             data_boundless.push(boundless_hangcnt.val());
             MSP.send_message(MSPCodes.MSP_SET_BOUNDLESS, data_boundless, false, function () {
+
+            });
+        }
+        function set_gyro_data() {
+            let data_gyro = [];
+            data_gyro.push(gyro_diff_threshold.val());
+            data_gyro.push(edge_gyro_threshold.val());
+            data_gyro.push(up_gyro_diff_threshold.val());
+            data_gyro.push(up_edge_gyro_threshold.val());
+            MSP.send_message(MSPCodes.MSP_SET_GYRO_THRESHOLD, data_gyro, false, function () {
 
             });
         }
@@ -271,13 +287,19 @@ config.initialize = function (callback) {
                     boundless_fanupthrdadd.parent('div').hide();
                 }
                 boundless_fanthrdadd.val(i18n.getMessage('fanthrdadd', [FC.OVOBOT_FUNCTION.fanthrdadd]));
-                // boundless_fanupthrdadd.val(i18n.getMessage('fanupthrdadd', [fanupthrdadd]));
                 boundless_hangcnt.val(i18n.getMessage('hangcnt', [FC.OVOBOT_FUNCTION.hangcnt]));
 
             });
         }
-        //清空所有的input
-        // $('input').val('');
+        function get_gyro_data() {
+            MSP.send_message(MSPCodes.MSP_GET_GYRO_THRESHOLD, false, false, function () {
+                gyro_diff_threshold.val(i18n.getMessage('gyrodiffthreshold', [FC.OVOBOT_FUNCTION.gyrodiffthreshold]));
+                edge_gyro_threshold.val(i18n.getMessage('gyrothreshold', [FC.OVOBOT_FUNCTION.gyrothreshold]));
+                up_gyro_diff_threshold.val(i18n.getMessage('gyroupdiffthreshold', [FC.OVOBOT_FUNCTION.gyroupdiffthreshold]));
+                up_edge_gyro_threshold.val(i18n.getMessage('gyroupthreshold', [FC.OVOBOT_FUNCTION.gyroupthreshold]));
+
+            });
+        }
         get_slow_data();
 
         GUI.content_ready(callback);
