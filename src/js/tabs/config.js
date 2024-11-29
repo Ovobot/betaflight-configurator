@@ -175,8 +175,8 @@ config.initialize = function (callback) {
             });
             let data_constant = [];
             data_constant.push(constant_fan.val());
-            data_constant.push(constant_max_fan.val());
             data_constant.push(constant_min_fan.val());
+            data_constant.push(constant_max_fan.val());
             let constant_suction_val = (constant_suction.val() * 100).toFixed(2);
             data_constant.push((constant_suction_val & 0xff), constant_suction_val >> 8);
             let constant_max_suction_val = (constant_max_suction.val() * 100).toFixed(2);

@@ -169,8 +169,8 @@ MspHelper.prototype.process_data = function(dataHandler) {
                     break;
                 case MSPCodes.MSP_GET_USE_FAN_OUTPUT_PID:
                     FC.OVOBOT_FUNCTION.fanpwmvalueatidel = data.readU8();
-                    FC.OVOBOT_FUNCTION.fanpwmmax = data.readU8();
                     FC.OVOBOT_FUNCTION.fanpwmmin = data.readU8();
+                    FC.OVOBOT_FUNCTION.fanpwmmax = data.readU8();
                     FC.OVOBOT_FUNCTION.defaulttargetfanpwmvalue = data.readU16();
                     FC.OVOBOT_FUNCTION.maxtargetfanpwmvalue = data.readU16();
                     FC.OVOBOT_FUNCTION.mintargetfanpwmvalue = data.readU16();
